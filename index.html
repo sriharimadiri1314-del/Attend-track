@@ -300,6 +300,131 @@
     .btn-csv{background:rgba(34,197,94,.1);color:#86efac;border:1.5px solid rgba(34,197,94,.3);}
     .btn-csv:hover{transform:translateY(-3px);background:rgba(34,197,94,.2);box-shadow:0 8px 24px rgba(34,197,94,.18);}
 
+    /* ══════════════════════════════════
+       PREDICTOR SECTION
+    ══════════════════════════════════ */
+    .predictor-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      animation: cardPop .6s 0.34s ease both;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    .predictor-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .predictor-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .predictor-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .target-highlight {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      padding: 16px;
+      background: rgba(59, 130, 246, 0.08);
+      border-left: 4px solid var(--blue);
+      border-radius: 4px 8px 8px 4px;
+      line-height: 1.5;
+    }
+    .target-highlight.success {
+      border-left-color: var(--green);
+      background: rgba(34, 197, 94, 0.08);
+    }
+    .target-highlight.warning {
+      border-left-color: var(--red);
+      background: rgba(239, 68, 68, 0.08);
+    }
+    .simulator-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .sim-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .sim-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .sim-input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sim-btn-step {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .sim-btn-step:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: var(--blue);
+      transform: scale(1.05);
+    }
+    .sim-num-display {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+      min-width: 30px;
+      text-align: center;
+    }
+    .sim-result {
+      margin-top: 16px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      text-align: center;
+    }
+    .sim-result-pct {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-top: 4px;
+      letter-spacing: -0.02em;
+    }
+    .sim-result-diff {
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
     /* TOAST */
     #toast-container{position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
     .toast{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:14px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border2);font-size:.88rem;font-weight:600;min-width:260px;max-width:360px;box-shadow:var(--shadow-lg);animation:toastIn .4s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;}
@@ -444,6 +569,51 @@
       <div id="progressBar" class="progress-fill"></div>
     </div>
     <p id="attendanceStatus"><span class="status-dot"></span><span id="statusText">Mark absent periods in the table below</span></p>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       ATTENDANCE PREDICTOR & SIMULATOR
+  ══════════════════════════════════════════ -->
+  <section class="predictor-section" aria-label="Attendance predictor and simulator">
+    <div class="predictor-card">
+      <div>
+        <h3 class="predictor-title">🔮 Attendance Target Planner</h3>
+        <p class="predictor-desc">Find out how many consecutive periods you must attend or can afford to miss to stay above the 75% threshold.</p>
+      </div>
+      <div id="targetPlannerOutput" class="target-highlight">
+        Mark periods below to view attendance goals.
+      </div>
+    </div>
+
+    <div class="predictor-card">
+      <div>
+        <h3 class="predictor-title">🧪 What-If Simulator</h3>
+        <p class="predictor-desc">Simulate how your overall percentage will increase or decrease if you attend or miss upcoming periods.</p>
+      </div>
+      <div class="simulator-controls">
+        <div class="sim-row">
+          <span class="sim-label">Attending next periods:</span>
+          <div class="sim-input-group">
+            <button class="sim-btn-step" type="button" onclick="adjustSim('attend', -1)">-</button>
+            <span id="simAttendVal" class="sim-num-display">0</span>
+            <button class="sim-btn-step" type="button" onclick="adjustSim('attend', 1)">+</button>
+          </div>
+        </div>
+        <div class="sim-row">
+          <span class="sim-label">Missing next periods:</span>
+          <div class="sim-input-group">
+            <button class="sim-btn-step" type="button" onclick="adjustSim('absent', -1)">-</button>
+            <span id="simAbsentVal" class="sim-num-display">0</span>
+            <button class="sim-btn-step" type="button" onclick="adjustSim('absent', 1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="sim-result">
+        <span class="sim-label" style="font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)">Simulated Attendance</span>
+        <div id="simResultPct" class="sim-result-pct">0%</div>
+        <div id="simResultDiff" class="sim-result-diff">No change</div>
+      </div>
+    </div>
   </section>
 
   <section class="table-section" aria-label="Daily attendance table">
@@ -601,6 +771,12 @@ function submitRollNumber() {
 function switchRollNumber() {
   currentRollNumber = '';
   document.querySelectorAll('.absence-checkbox').forEach(cb => { cb.checked = false; });
+  // Reset simulator values on switch
+  simAttendCount = 0;
+  simAbsentCount = 0;
+  document.getElementById('simAttendVal').textContent = 0;
+  document.getElementById('simAbsentVal').textContent = 0;
+
   calculateAttendance();
   document.getElementById('rollSuffix').value = '';
   showRollOverlay();
@@ -712,6 +888,99 @@ function calculateAttendance(){
   const fp=tp>0?(pr/tp)*100:0;
   document.getElementById('overallPercentage').textContent=fp.toFixed(2)+'%';
   updateProgress(fp);
+
+  // Update Predictor State
+  currentTotalPeriods = tp;
+  currentPresentPeriods = pr;
+  updatePredictorOutput();
+}
+
+/* ══════════════════════════════════════════════════
+   PREDICTOR & SIMULATOR LOGIC
+══════════════════════════════════════════════════ */
+let currentTotalPeriods = 0;
+let currentPresentPeriods = 0;
+let simAttendCount = 0;
+let simAbsentCount = 0;
+
+function updatePredictorOutput() {
+  const targetEl = document.getElementById('targetPlannerOutput');
+  if (currentTotalPeriods === 0) {
+    targetEl.className = 'target-highlight';
+    targetEl.innerHTML = 'Enter your Roll Number and mark past periods to view your target goals.';
+    runSimulation();
+    return;
+  }
+
+  const pct = (currentPresentPeriods / currentTotalPeriods) * 100;
+
+  if (pct >= 75) {
+    const maxMiss = Math.floor((4 * currentPresentPeriods - 3 * currentTotalPeriods) / 3);
+    if (maxMiss <= 0) {
+      targetEl.className = 'target-highlight warning';
+      targetEl.innerHTML = `⚠️ <strong>Margin Warning:</strong> You are currently at <strong>${pct.toFixed(2)}%</strong>. If you miss even <strong>1 period</strong>, your attendance will fall below the required 75%!`;
+    } else {
+      targetEl.className = 'target-highlight success';
+      targetEl.innerHTML = `✅ <strong>Safe Zone:</strong> You are at <strong>${pct.toFixed(2)}%</strong>. You can afford to miss up to <strong>${maxMiss} consecutive period${maxMiss > 1 ? 's' : ''}</strong> without dropping below 75%.`;
+    }
+  } else {
+    const reqAttend = Math.max(0, Math.ceil(3 * currentTotalPeriods - 4 * currentPresentPeriods));
+    targetEl.className = 'target-highlight warning';
+    targetEl.innerHTML = `🚨 <strong>Shortage:</strong> You are currently at <strong>${pct.toFixed(2)}%</strong>. You need to attend the next <strong>${reqAttend} consecutive period${reqAttend > 1 ? 's' : ''}</strong> to bring your overall average up to 75%.`;
+  }
+
+  runSimulation();
+}
+
+function adjustSim(type, val) {
+  if (type === 'attend') {
+    simAttendCount = Math.max(0, simAttendCount + val);
+    document.getElementById('simAttendVal').textContent = simAttendCount;
+  } else {
+    simAbsentCount = Math.max(0, simAbsentCount + val);
+    document.getElementById('simAbsentVal').textContent = simAbsentCount;
+  }
+  runSimulation();
+}
+
+function runSimulation() {
+  const simTotal = currentTotalPeriods + simAttendCount + simAbsentCount;
+  const simPresent = currentPresentPeriods + simAttendCount;
+  const resultPctEl = document.getElementById('simResultPct');
+  const resultDiffEl = document.getElementById('simResultDiff');
+
+  if (simTotal === 0) {
+    resultPctEl.textContent = '0.00%';
+    resultPctEl.style.color = 'var(--muted)';
+    resultDiffEl.textContent = 'No change';
+    resultDiffEl.style.color = 'var(--muted)';
+    return;
+  }
+
+  const currentPct = currentTotalPeriods > 0 ? (currentPresentPeriods / currentTotalPeriods) * 100 : 0;
+  const simPct = (simPresent / simTotal) * 100;
+
+  resultPctEl.textContent = simPct.toFixed(2) + '%';
+  
+  if (simPct >= 75) {
+    resultPctEl.style.color = 'var(--green)';
+  } else if (simPct >= 65) {
+    resultPctEl.style.color = 'var(--amber)';
+  } else {
+    resultPctEl.style.color = 'var(--red)';
+  }
+
+  const diff = simPct - currentPct;
+  if (diff > 0) {
+    resultDiffEl.textContent = `📈 Increase of +${diff.toFixed(2)}%`;
+    resultDiffEl.style.color = 'var(--green)';
+  } else if (diff < 0) {
+    resultDiffEl.textContent = `📉 Decrease of ${diff.toFixed(2)}%`;
+    resultDiffEl.style.color = 'var(--red)';
+  } else {
+    resultDiffEl.textContent = 'No change';
+    resultDiffEl.style.color = 'var(--muted)';
+  }
 }
 
 function setColor(el,pct){el.className=pct>=75?'good':pct>=65?'warning':'danger';}
