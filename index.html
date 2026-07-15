@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance Tracker | III B.Tech CSE-AI</title>
+  <meta name="description" content="Daily & Weekly Attendance Tracker for III B.Tech CSE – AI, 2026-27." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#060b18; --bg2:#0b1225;
+      --surface:rgba(255,255,255,0.045); --surface2:rgba(255,255,255,0.07);
+      --border:rgba(255,255,255,0.09); --border2:rgba(255,255,255,0.14);
+      --text:#e8edf8; --muted:#7b88b0;
+      --blue:#3b82f6; --blue-soft:rgba(59,130,246,0.15);
+      --green:#22c55e; --green-soft:rgba(34,197,94,0.15);
+      --red:#ef4444; --red-soft:rgba(239,68,68,0.15);
+      --amber:#f59e0b; --purple:#a855f7;
+      --radius:16px; --font:'Outfit',sans-serif;
+      --shadow:0 8px 32px rgba(0,0,0,0.4);
+      --shadow-lg:0 24px 60px rgba(0,0,0,0.5);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+    /* BG */
+    .bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+    .bg-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.35;animation:orbDrift 18s ease-in-out infinite;}
+    .bg-orb-1{width:600px;height:600px;background:#1d4ed8;top:-200px;left:-150px;animation-delay:0s;}
+    .bg-orb-2{width:500px;height:500px;background:#7c3aed;bottom:-200px;right:-150px;animation-delay:-6s;}
+    .bg-orb-3{width:400px;height:400px;background:#0e7490;top:40%;left:50%;animation-delay:-12s;}
+    @keyframes orbDrift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(40px,-50px) scale(1.08);}66%{transform:translate(-30px,40px) scale(0.92);}}
+
+    /* ══════════════════════════════════
+       ROLL NUMBER ENTRY OVERLAY
+    ══════════════════════════════════ */
+    .roll-overlay{
+      position:fixed;inset:0;z-index:99999;
+      background:rgba(6,11,24,0.97);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      display:flex;align-items:center;justify-content:center;
+      animation:mfadeIn .3s ease;
+    }
+    .roll-overlay.hidden{display:none;}
+
+    .roll-card{
+      background:rgba(255,255,255,0.05);
+      border:1px solid var(--border2);
+      border-radius:24px;
+      padding:48px 40px;
+      max-width:420px;width:90%;
+      text-align:center;
+      box-shadow:var(--shadow-lg);
+      animation:modalPop .4s cubic-bezier(.34,1.56,.64,1);
+      position:relative;
+      overflow:hidden;
+    }
+    .roll-card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:3px;
+      background:linear-gradient(90deg,var(--blue),var(--purple),var(--green));
+    }
+
+    .roll-icon{font-size:3rem;margin-bottom:16px;display:block;}
+    .roll-card h2{font-size:1.6rem;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;}
+    .roll-card p{font-size:.88rem;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+
+    .roll-input-wrap{
+      position:relative;
+      margin-bottom:20px;
+    }
+    .roll-input-label{
+      display:block;text-align:left;
+      font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:8px;
+    }
+
+    /* Split roll number input: prefix + suffix */
+    .roll-split{
+      display:flex;align-items:center;
+      background:rgba(255,255,255,0.06);
+      border:1.5px solid var(--border2);
+      border-radius:12px;
+      overflow:hidden;
+      transition:border-color .2s ease,box-shadow .2s ease;
+      font-family:var(--font);
+    }
+    .roll-split:focus-within{
+      border-color:var(--blue);
+      box-shadow:0 0 0 3px rgba(59,130,246,.18);
+    }
+    .roll-split.error{
+      border-color:var(--red);
+      box-shadow:0 0 0 3px rgba(239,68,68,.18);
+      animation:shake .3s ease;
+    }
+    .roll-prefix{
+      padding:14px 16px;
+      background:rgba(59,130,246,0.12);
+      border-right:1.5px solid rgba(59,130,246,.25);
+      font-size:1.1rem;font-weight:800;
+      color:#93c5fd;letter-spacing:.06em;
+      white-space:nowrap;user-select:none;
+      flex-shrink:0;
+    }
+    .roll-suffix{
+      flex:1;padding:14px 16px;
+      background:transparent;border:none;
+      font-family:var(--font);font-size:1.3rem;font-weight:800;
+      color:var(--text);letter-spacing:.18em;
+      outline:none;text-align:center;
+      width:80px;
+    }
+    .roll-suffix::placeholder{color:var(--muted);font-size:1rem;font-weight:400;letter-spacing:.02em;}
+    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+
+    /* legacy .roll-input kept for chips input if needed */
+    .roll-input{
+      width:100%;padding:14px 18px;
+      background:rgba(255,255,255,0.06);
+      border:1.5px solid var(--border2);
+      border-radius:12px;
+      font-family:var(--font);font-size:1.1rem;font-weight:700;
+      color:var(--text);letter-spacing:.08em;text-transform:uppercase;
+      outline:none;transition:border-color .2s ease,box-shadow .2s ease;
+      text-align:center;display:none;
+    }
+
+    .roll-error-msg{
+      font-size:.78rem;color:var(--red);margin-bottom:16px;
+      display:none;text-align:left;
+    }
+    .roll-error-msg.show{display:block;}
+
+    .roll-submit-btn{
+      width:100%;padding:14px;
+      background:linear-gradient(135deg,var(--blue),var(--purple));
+      border:none;border-radius:12px;
+      font-family:var(--font);font-size:1rem;font-weight:700;
+      color:#fff;cursor:pointer;
+      transition:transform .2s ease,box-shadow .2s ease;
+      box-shadow:0 4px 20px rgba(59,130,246,.35);
+      position:relative;overflow:hidden;
+    }
+    .roll-submit-btn::after{
+      content:'';position:absolute;top:-50%;left:-75%;width:50%;height:200%;
+      background:linear-gradient(to right,transparent,rgba(255,255,255,.2),transparent);
+      transform:skewX(-20deg);transition:left .5s ease;
+    }
+    .roll-submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(59,130,246,.45);}
+    .roll-submit-btn:hover::after{left:125%;}
+
+    .roll-saved-list{
+      margin-top:24px;
+      border-top:1px solid var(--border);
+      padding-top:20px;
+      text-align:left;
+      display:none;
+    }
+    .roll-saved-list.show{display:block;}
+    .roll-saved-title{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+    .roll-saved-chips{display:flex;flex-wrap:wrap;gap:8px;}
+    .roll-chip{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);
+      border-radius:50px;padding:6px 14px;
+      font-size:.82rem;font-weight:700;color:#93c5fd;
+      cursor:pointer;transition:all .2s ease;
+    }
+    .roll-chip:hover{background:rgba(59,130,246,.25);transform:scale(1.05);}
+
+    /* ══════════════════════════════════
+       ROLL NUMBER DISPLAY IN HEADER
+    ══════════════════════════════════ */
+    .roll-display-bar{
+      position:relative;z-index:10;
+      background:rgba(59,130,246,0.08);
+      border-bottom:1px solid rgba(59,130,246,0.15);
+      padding:10px 24px;
+      display:flex;align-items:center;justify-content:center;gap:16px;
+      flex-wrap:wrap;
+    }
+    .roll-display-text{
+      display:flex;align-items:center;gap:10px;
+      font-size:.88rem;font-weight:600;color:#93c5fd;
+    }
+    .roll-display-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(59,130,246,.18);border:1px solid rgba(59,130,246,.35);
+      border-radius:50px;padding:4px 14px;
+      font-size:.92rem;font-weight:800;letter-spacing:.06em;color:#bfdbfe;
+    }
+    .roll-switch-btn{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(255,255,255,.06);border:1px solid var(--border2);
+      border-radius:50px;padding:5px 14px;
+      font-family:var(--font);font-size:.78rem;font-weight:700;
+      color:var(--muted);cursor:pointer;transition:all .2s ease;
+    }
+    .roll-switch-btn:hover{background:rgba(255,255,255,.1);color:var(--text);border-color:var(--border2);}
+
+    /* HEADER */
+    header{position:relative;z-index:10;background:linear-gradient(135deg,rgba(29,78,216,.55),rgba(124,58,237,.35));backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border2);padding:52px 24px 44px;text-align:center;overflow:hidden;}
+    header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(59,130,246,.18),transparent 65%);pointer-events:none;}
+    .header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,.18);border:1px solid rgba(59,130,246,.35);border-radius:50px;padding:6px 18px;font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#93c5fd;margin-bottom:20px;animation:fadeDown .7s ease both;}
+    .header-badge::before{content:'●';font-size:8px;color:#22c55e;animation:blink 2s ease infinite;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+    header h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:14px;background:linear-gradient(135deg,#fff 30%,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeDown .7s .1s ease both;}
+    .header-meta{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;animation:fadeDown .7s .2s ease both;}
+    .header-pill{background:rgba(255,255,255,.08);border:1px solid var(--border2);border-radius:50px;padding:6px 16px;font-size:.85rem;color:#bfdbfe;font-weight:500;}
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+
+    /* MAIN */
+    main{position:relative;z-index:5;width:95%;max-width:1500px;margin:36px auto 60px;display:flex;flex-direction:column;gap:28px;}
+
+    /* DASHBOARD */
+    .dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+    .stat-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;animation:cardPop .6s ease both;}
+    .stat-card:nth-child(1){animation-delay:.05s;} .stat-card:nth-child(2){animation-delay:.12s;} .stat-card:nth-child(3){animation-delay:.19s;} .stat-card:nth-child(4){animation-delay:.26s;}
+    @keyframes cardPop{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    .stat-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--border2);}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius) var(--radius) 0 0;}
+    .stat-card.total::before{background:linear-gradient(90deg,var(--blue),var(--purple));}
+    .stat-card.present::before{background:linear-gradient(90deg,var(--green),#4ade80);}
+    .stat-card.absent::before{background:linear-gradient(90deg,var(--red),#f87171);}
+    .stat-card.pct::before{background:linear-gradient(90deg,var(--blue),var(--green));}
+    .stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px;}
+    .stat-card.total .stat-icon{background:var(--blue-soft);}
+    .stat-card.present .stat-icon{background:var(--green-soft);}
+    .stat-card.absent .stat-icon{background:var(--red-soft);}
+    .stat-card.pct .stat-icon{background:var(--blue-soft);}
+    .stat-label{font-size:.8rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+    .stat-value{font-size:2.6rem;font-weight:800;line-height:1;letter-spacing:-.03em;}
+    .stat-card.total .stat-value{color:var(--blue);}
+    .stat-card.present .stat-value{color:var(--green);}
+    .stat-card.absent .stat-value{color:var(--red);}
+    .stat-card.pct .stat-value{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+    /* PROGRESS */
+    .progress-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 30px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:cardPop .6s .3s ease both;}
+    .progress-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+    .progress-title{font-size:1rem;font-weight:700;color:var(--text);}
+    .progress-meta{font-size:.82rem;color:var(--muted);font-weight:500;}
+    .progress-track{width:100%;height:14px;background:rgba(255,255,255,.06);border-radius:50px;overflow:hidden;border:1px solid var(--border);}
+    .progress-fill{height:100%;width:0%;border-radius:50px;background:linear-gradient(90deg,#22c55e,#4ade80);transition:width .8s cubic-bezier(.4,0,.2,1),background .5s ease;position:relative;overflow:hidden;}
+    .progress-fill::after{content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmerSlide 2.5s ease-in-out infinite;}
+    @keyframes shimmerSlide{0%{left:-60%;}100%{left:120%;}}
+    #attendanceStatus{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:.92rem;font-weight:600;color:var(--muted);}
+    .status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;background:var(--muted);transition:background .4s ease;}
+
+    /* TABLE */
+    .table-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:cardPop .6s .38s ease both;overflow:hidden;}
+    .table-section-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+    .table-section-header h2{font-size:1.25rem;font-weight:700;}
+    .instruction{font-size:.82rem;color:var(--muted);line-height:1.6;max-width:480px;}
+    .table-scroll{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+    .table-scroll::-webkit-scrollbar{height:6px;} .table-scroll::-webkit-scrollbar-track{background:transparent;} .table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+    table{width:100%;min-width:1060px;border-collapse:collapse;}
+    thead{background:rgba(59,130,246,.12);border-bottom:1px solid rgba(59,130,246,.25);}
+    thead th{padding:14px 12px;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#93c5fd;white-space:nowrap;}
+    td{padding:11px 12px;text-align:center;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+    tbody tr.day-row{transition:background .2s ease;}
+    tbody tr.day-row:hover{background:rgba(59,130,246,.07);}
+    tbody tr.day-row:last-child td{border-bottom:none;}
+    .week-heading-row td{background:rgba(59,130,246,.1);color:#93c5fd;font-size:.82rem;font-weight:700;letter-spacing:.06em;text-align:left;padding:10px 20px;border-bottom:1px solid rgba(59,130,246,.2);border-left:3px solid var(--blue);}
+    .mid-heading td{background:rgba(245,158,11,.1);color:#fcd34d;border-left-color:var(--amber);border-bottom-color:rgba(245,158,11,.25);}
+    .day-name{display:block;font-weight:700;color:var(--text);font-size:.9rem;}
+    .day-date{display:block;margin-top:3px;color:var(--muted);font-size:.78rem;}
+    .saturday-row{background:rgba(245,158,11,.04);}
+    .future-row{opacity:.45;}
+    .future-row:hover{background:transparent !important;}
+
+    /* PERIOD BTNS */
+    .period-checkboxes{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;}
+    .period-box{position:relative;}
+    .period-box input{position:absolute;opacity:0;pointer-events:none;}
+    .period-box span{display:inline-flex;align-items:center;justify-content:center;width:38px;height:34px;background:rgba(255,255,255,.06);color:var(--muted);border:1.5px solid var(--border2);border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s ease;user-select:none;}
+    .period-box span:hover{border-color:var(--blue);background:var(--blue-soft);color:#93c5fd;transform:scale(1.08);}
+    .period-box input:checked + span{background:var(--red-soft);color:#fca5a5;border-color:rgba(239,68,68,.5);box-shadow:0 0 0 2px rgba(239,68,68,.15);transform:scale(1.05);}
+    .future-period span{background:rgba(255,255,255,.025) !important;color:rgba(255,255,255,.15) !important;border-color:rgba(255,255,255,.07) !important;cursor:not-allowed !important;transform:none !important;}
+
+    /* COLORS */
+    .good{color:var(--green);font-weight:700;} .warning{color:var(--amber);font-weight:700;} .danger{color:var(--red);font-weight:700;} .upcoming{color:var(--muted);font-weight:500;font-style:italic;}
+
+    /* ACTIONS */
+    .actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;animation:cardPop .6s .44s ease both;}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border:none;border-radius:12px;font-family:var(--font);font-size:.95rem;font-weight:700;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden;}
+    .btn::after{content:'';position:absolute;top:-50%;left:-75%;width:50%;height:200%;background:linear-gradient(to right,transparent,rgba(255,255,255,.18),transparent);transform:skewX(-20deg);transition:left .5s ease;}
+    .btn:hover::after{left:125%;}
+    .btn-save{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;box-shadow:0 4px 20px rgba(34,197,94,.3);}
+    .btn-save:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(34,197,94,.4);}
+    .btn-reset{background:rgba(239,68,68,.12);color:#fca5a5;border:1.5px solid rgba(239,68,68,.3);}
+    .btn-reset:hover{transform:translateY(-3px);background:rgba(239,68,68,.2);box-shadow:0 8px 24px rgba(239,68,68,.2);}
+    .btn-download{background:rgba(59,130,246,.12);color:#93c5fd;border:1.5px solid rgba(59,130,246,.3);}
+    .btn-download:hover{transform:translateY(-3px);background:rgba(59,130,246,.22);box-shadow:0 8px 24px rgba(59,130,246,.2);}
+    .btn-import{background:rgba(168,85,247,.12);color:#d8b4fe;border:1.5px solid rgba(168,85,247,.3);}
+    .btn-import:hover{transform:translateY(-3px);background:rgba(168,85,247,.22);box-shadow:0 8px 24px rgba(168,85,247,.2);}
+    .btn-csv{background:rgba(34,197,94,.1);color:#86efac;border:1.5px solid rgba(34,197,94,.3);}
+    .btn-csv:hover{transform:translateY(-3px);background:rgba(34,197,94,.2);box-shadow:0 8px 24px rgba(34,197,94,.18);}
+
+    /* TOAST */
+    #toast-container{position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
+    .toast{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:14px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border2);font-size:.88rem;font-weight:600;min-width:260px;max-width:360px;box-shadow:var(--shadow-lg);animation:toastIn .4s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;}
+    .toast.hide{animation:toastOut .35s ease forwards;}
+    .toast-success{background:rgba(17,33,18,.9);color:#86efac;border-color:rgba(34,197,94,.3);}
+    .toast-danger{background:rgba(33,17,17,.9);color:#fca5a5;border-color:rgba(239,68,68,.3);}
+    .toast-info{background:rgba(17,24,39,.9);color:#bfdbfe;border-color:rgba(59,130,246,.3);}
+    .toast-icon{font-size:1.1rem;}
+    @keyframes toastIn{from{opacity:0;transform:translateX(50px) scale(.9);}to{opacity:1;transform:none;}}
+    @keyframes toastOut{from{opacity:1;transform:none;}to{opacity:0;transform:translateX(50px) scale(.9);}}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:9998;display:none;align-items:center;justify-content:center;}
+    .modal-overlay.active{display:flex;animation:mfadeIn .25s ease;}
+    @keyframes mfadeIn{from{opacity:0;}to{opacity:1;}}
+    .modal{background:#101829;border:1px solid var(--border2);border-radius:20px;padding:36px 32px;max-width:400px;width:90%;text-align:center;box-shadow:var(--shadow-lg);animation:modalPop .35s cubic-bezier(.34,1.56,.64,1);}
+    @keyframes modalPop{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:none;}}
+    .modal-icon{font-size:2.5rem;margin-bottom:16px;}
+    .modal h3{font-size:1.2rem;font-weight:700;margin-bottom:10px;}
+    .modal p{font-size:.88rem;color:var(--muted);line-height:1.6;margin-bottom:28px;}
+    .modal-actions{display:flex;gap:12px;justify-content:center;}
+    .modal-actions .btn{min-width:120px;justify-content:center;}
+
+    /* FOOTER */
+    footer{position:relative;z-index:5;background:rgba(11,18,37,.85);border-top:1px solid var(--border);text-align:center;padding:24px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+    footer p{font-size:.85rem;color:var(--muted);font-weight:500;}
+    footer span{color:var(--blue);}
+
+    @media(max-width:900px){.dashboard{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:520px){
+      .dashboard{grid-template-columns:1fr;}
+      header h1{font-size:1.8rem;}
+      main{width:98%;gap:20px;}
+      .table-section,.progress-section{padding:18px;}
+      .actions .btn{width:100%;justify-content:center;}
+      .roll-card{padding:32px 24px;}
+      .roll-display-bar{flex-direction:column;gap:8px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── BG ── -->
+<div class="bg-canvas" aria-hidden="true">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+</div>
+
+<!-- ── TOAST ── -->
+<div id="toast-container" role="status" aria-live="polite"></div>
+
+<!-- ══════════════════════════════════════════
+     ROLL NUMBER ENTRY OVERLAY
+══════════════════════════════════════════ -->
+<div class="roll-overlay" id="rollOverlay" role="dialog" aria-modal="true" aria-labelledby="rollTitle">
+  <div class="roll-card">
+    <span class="roll-icon">🎓</span>
+    <h2 id="rollTitle">Enter Your Roll Number</h2>
+    <p>Your attendance is saved separately per roll number — multiple students can use this tracker on the same device.</p>
+
+    <label class="roll-input-label" for="rollSuffix">Roll Number &nbsp;<span style="color:var(--blue);font-weight:500;text-transform:none;letter-spacing:0;">( Format: 2473A31___ )</span></label>
+    <div class="roll-input-wrap">
+      <div class="roll-split" id="rollSplitBox">
+        <span class="roll-prefix">2473A31</span>
+        <input
+          class="roll-suffix"
+          id="rollSuffix"
+          type="text"
+          placeholder="___"
+          maxlength="3"
+          autocomplete="off"
+          spellcheck="false"
+          inputmode="numeric"
+        />
+      </div>
+    </div>
+    <p class="roll-error-msg" id="rollError">⚠️ Please enter exactly 3 digits (e.g. 001, 042).</p>
+
+    <button class="roll-submit-btn" id="rollSubmitBtn" type="button" onclick="submitRollNumber()">
+      Continue →
+    </button>
+
+    <!-- Previously used roll numbers -->
+    <div class="roll-saved-list" id="rollSavedList">
+      <p class="roll-saved-title">Previously Used</p>
+      <div class="roll-saved-chips" id="rollSavedChips"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM MODAL ── -->
+<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-icon">🔄</div>
+    <h3 id="modalTitle">Reset Attendance?</h3>
+    <p>This will permanently clear all attendance data for your roll number. This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-reset" id="confirmYes" type="button">Yes, Reset</button>
+      <button class="btn" id="confirmNo" type="button" style="background:var(--surface2);border:1.5px solid var(--border2);color:var(--text);">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROLL NUMBER BAR (shown after login) ── -->
+<div class="roll-display-bar" id="rollDisplayBar">
+  <div class="roll-display-text">
+    <span>👤 Logged in as</span>
+    <span class="roll-display-badge" id="rollDisplayBadge">—</span>
+  </div>
+  <button class="roll-switch-btn" type="button" onclick="switchRollNumber()">
+    🔄 Switch Roll Number
+  </button>
+</div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-badge">🎓 Live Attendance Tracker</div>
+  <h1>Attendance Tracker</h1>
+  <div class="header-meta">
+    <span class="header-pill">III B.Tech CSE – Artificial Intelligence</span>
+    <span class="header-pill">Academic Year: 2026‑27</span>
+    <span class="header-pill">I Semester</span>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main>
+  <section class="dashboard" aria-label="Attendance summary">
+    <div class="stat-card total"><div class="stat-icon">📊</div><p class="stat-label">Total Periods</p><p class="stat-value" id="totalPeriods">0</p></div>
+    <div class="stat-card present"><div class="stat-icon">✅</div><p class="stat-label">Present</p><p class="stat-value" id="totalPresent">0</p></div>
+    <div class="stat-card absent"><div class="stat-icon">❌</div><p class="stat-label">Absent</p><p class="stat-value" id="totalAbsent">0</p></div>
+    <div class="stat-card pct"><div class="stat-icon">📈</div><p class="stat-label">Overall Attendance</p><p class="stat-value" id="overallPercentage">0%</p></div>
+  </section>
+
+  <section class="progress-section" aria-label="Attendance progress">
+    <div class="progress-header">
+      <span class="progress-title">Attendance Progress</span>
+      <span class="progress-meta">75% required to avoid shortage</span>
+    </div>
+    <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+      <div id="progressBar" class="progress-fill"></div>
+    </div>
+    <p id="attendanceStatus"><span class="status-dot"></span><span id="statusText">Mark absent periods in the table below</span></p>
+  </section>
+
+  <section class="table-section" aria-label="Daily attendance table">
+    <div class="table-section-header">
+      <div>
+        <h2>📅 Daily &amp; Weekly Attendance</h2>
+        <p class="instruction">Click a period button to mark yourself <strong>absent</strong>. Future dates are excluded from calculations.</p>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Week</th><th>Day &amp; Date</th><th>Periods</th><th>Mark Absent</th><th>Absent</th><th>Present</th><th>Daily %</th><th>Overall %</th></tr>
+        </thead>
+        <tbody id="attendanceTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="btn btn-save"     type="button" onclick="saveAttendance()">💾 Save</button>
+    <button class="btn btn-download" type="button" onclick="downloadAttendance()">📥 Download JSON</button>
+    <button class="btn btn-csv"      type="button" onclick="downloadCSV()">📊 Download CSV</button>
+    <button class="btn btn-import"   type="button" onclick="document.getElementById('importFileInput').click()">📤 Import Backup</button>
+    <button class="btn btn-reset"    type="button" onclick="resetAttendance()">🔄 Reset</button>
+    <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importAttendance(event)" />
+  </div>
+</main>
+
+<footer>
+  <p>Attendance Tracker &nbsp;|&nbsp; <span>III B.Tech CSE-AI</span> &nbsp;|&nbsp; Academic Year 2026-27</p>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════
+   WEEKS DATA
+══════════════════════════════════════════════════ */
+const weeks=[
+  {week:"Week 1",date:"29 Jun - 03 Jul",days:[{day:"Monday",date:"29 Jun",fullDate:"2026-06-29",periods:4},{day:"Tuesday",date:"30 Jun",fullDate:"2026-06-30",periods:3},{day:"Wednesday",date:"01 Jul",fullDate:"2026-07-01",periods:3},{day:"Thursday",date:"02 Jul",fullDate:"2026-07-02",periods:4},{day:"Friday",date:"03 Jul",fullDate:"2026-07-03",periods:3}]},
+  {week:"Week 2",date:"06 Jul - 10 Jul",days:[{day:"Monday",date:"06 Jul",fullDate:"2026-07-06",periods:4},{day:"Tuesday",date:"07 Jul",fullDate:"2026-07-07",periods:3},{day:"Wednesday",date:"08 Jul",fullDate:"2026-07-08",periods:3},{day:"Thursday",date:"09 Jul",fullDate:"2026-07-09",periods:4},{day:"Friday",date:"10 Jul",fullDate:"2026-07-10",periods:3}]},
+  {week:"Week 3",date:"13 Jul - 17 Jul",days:[{day:"Monday",date:"13 Jul",fullDate:"2026-07-13",periods:4},{day:"Tuesday",date:"14 Jul",fullDate:"2026-07-14",periods:3},{day:"Wednesday",date:"15 Jul",fullDate:"2026-07-15",periods:3},{day:"Thursday",date:"16 Jul",fullDate:"2026-07-16",periods:4},{day:"Friday",date:"17 Jul",fullDate:"2026-07-17",periods:3}]},
+  {week:"Week 4",date:"20 Jul - 24 Jul",days:[{day:"Monday",date:"20 Jul",fullDate:"2026-07-20",periods:4},{day:"Tuesday",date:"21 Jul",fullDate:"2026-07-21",periods:3},{day:"Wednesday",date:"22 Jul",fullDate:"2026-07-22",periods:3},{day:"Thursday",date:"23 Jul",fullDate:"2026-07-23",periods:4},{day:"Friday",date:"24 Jul",fullDate:"2026-07-24",periods:3}]},
+  {week:"Week 5",date:"27 Jul - 31 Jul",days:[{day:"Monday",date:"27 Jul",fullDate:"2026-07-27",periods:4},{day:"Tuesday",date:"28 Jul",fullDate:"2026-07-28",periods:3},{day:"Wednesday",date:"29 Jul",fullDate:"2026-07-29",periods:3},{day:"Thursday",date:"30 Jul",fullDate:"2026-07-30",periods:4},{day:"Friday",date:"31 Jul",fullDate:"2026-07-31",periods:3}]},
+  {week:"Week 6",date:"03 Aug - 07 Aug",days:[{day:"Monday",date:"03 Aug",fullDate:"2026-08-03",periods:4},{day:"Tuesday",date:"04 Aug",fullDate:"2026-08-04",periods:3},{day:"Wednesday",date:"05 Aug",fullDate:"2026-08-05",periods:3},{day:"Thursday",date:"06 Aug",fullDate:"2026-08-06",periods:4},{day:"Friday",date:"07 Aug",fullDate:"2026-08-07",periods:3}]},
+  {week:"Week 7",date:"10 Aug - 11 Aug",days:[{day:"Monday",date:"10 Aug",fullDate:"2026-08-10",periods:4},{day:"Tuesday",date:"11 Aug",fullDate:"2026-08-11",periods:3}]},
+  {week:"I MID",date:"12 Aug - 14 Aug",days:[{day:"Wednesday",date:"12 Aug",fullDate:"2026-08-12",periods:2},{day:"Thursday",date:"13 Aug",fullDate:"2026-08-13",periods:2},{day:"Friday",date:"14 Aug",fullDate:"2026-08-14",periods:2}]},
+  {week:"Week 8",date:"17 Aug - 22 Aug",days:[{day:"Monday",date:"17 Aug",fullDate:"2026-08-17",periods:4},{day:"Tuesday",date:"18 Aug",fullDate:"2026-08-18",periods:3},{day:"Wednesday",date:"19 Aug",fullDate:"2026-08-19",periods:3},{day:"Thursday",date:"20 Aug",fullDate:"2026-08-20",periods:4},{day:"Friday",date:"21 Aug",fullDate:"2026-08-21",periods:3},{day:"Saturday (Wed TT)",date:"22 Aug",fullDate:"2026-08-22",periods:3}]},
+  {week:"Week 9",date:"24 Aug - 28 Aug",days:[{day:"Monday",date:"24 Aug",fullDate:"2026-08-24",periods:4},{day:"Tuesday",date:"25 Aug",fullDate:"2026-08-25",periods:3},{day:"Thursday",date:"27 Aug",fullDate:"2026-08-27",periods:4},{day:"Friday",date:"28 Aug",fullDate:"2026-08-28",periods:3}]},
+  {week:"Week 10",date:"31 Aug - 03 Sep",days:[{day:"Monday",date:"31 Aug",fullDate:"2026-08-31",periods:4},{day:"Tuesday",date:"01 Sep",fullDate:"2026-09-01",periods:3},{day:"Wednesday",date:"02 Sep",fullDate:"2026-09-02",periods:3},{day:"Thursday",date:"03 Sep",fullDate:"2026-09-03",periods:4}]},
+  {week:"Week 11",date:"07 Sep - 12 Sep",days:[{day:"Monday",date:"07 Sep",fullDate:"2026-09-07",periods:4},{day:"Tuesday",date:"08 Sep",fullDate:"2026-09-08",periods:3},{day:"Wednesday",date:"09 Sep",fullDate:"2026-09-09",periods:3},{day:"Thursday",date:"10 Sep",fullDate:"2026-09-10",periods:4},{day:"Friday",date:"11 Sep",fullDate:"2026-09-11",periods:3},{day:"Saturday (Fri TT)",date:"12 Sep",fullDate:"2026-09-12",periods:3}]},
+  {week:"Week 12",date:"15 Sep - 19 Sep",days:[{day:"Tuesday",date:"15 Sep",fullDate:"2026-09-15",periods:3},{day:"Wednesday",date:"16 Sep",fullDate:"2026-09-16",periods:3},{day:"Thursday",date:"17 Sep",fullDate:"2026-09-17",periods:4},{day:"Friday",date:"18 Sep",fullDate:"2026-09-18",periods:3},{day:"Saturday (Mon TT)",date:"19 Sep",fullDate:"2026-09-19",periods:4}]},
+  {week:"Week 13",date:"21 Sep - 25 Sep",days:[{day:"Monday",date:"21 Sep",fullDate:"2026-09-21",periods:4},{day:"Tuesday",date:"22 Sep",fullDate:"2026-09-22",periods:3},{day:"Wednesday",date:"23 Sep",fullDate:"2026-09-23",periods:3},{day:"Thursday",date:"24 Sep",fullDate:"2026-09-24",periods:4},{day:"Friday",date:"25 Sep",fullDate:"2026-09-25",periods:3}]},
+  {week:"Week 14",date:"28 Sep - 01 Oct",days:[{day:"Monday",date:"28 Sep",fullDate:"2026-09-28",periods:4},{day:"Tuesday",date:"29 Sep",fullDate:"2026-09-29",periods:3},{day:"Wednesday",date:"30 Sep",fullDate:"2026-09-30",periods:3},{day:"Thursday",date:"01 Oct",fullDate:"2026-10-01",periods:4}]},
+  {week:"Week 15",date:"05 Oct - 10 Oct",days:[{day:"Monday",date:"05 Oct",fullDate:"2026-10-05",periods:4},{day:"Tuesday",date:"06 Oct",fullDate:"2026-10-06",periods:3},{day:"Wednesday",date:"07 Oct",fullDate:"2026-10-07",periods:3},{day:"Thursday",date:"08 Oct",fullDate:"2026-10-08",periods:4},{day:"Friday",date:"09 Oct",fullDate:"2026-10-09",periods:3},{day:"Saturday (Fri TT)",date:"10 Oct",fullDate:"2026-10-10",periods:3}]},
+  {week:"Week 16",date:"12 Oct - 16 Oct",days:[{day:"Monday",date:"12 Oct",fullDate:"2026-10-12",periods:4},{day:"Tuesday",date:"13 Oct",fullDate:"2026-10-13",periods:3},{day:"Wednesday",date:"14 Oct",fullDate:"2026-10-14",periods:3},{day:"Thursday",date:"15 Oct",fullDate:"2026-10-15",periods:4},{day:"Friday",date:"16 Oct",fullDate:"2026-10-16",periods:3}]},
+  {week:"II MID",date:"22 Oct - 24 Oct",days:[{day:"Thursday",date:"22 Oct",fullDate:"2026-10-22",periods:2},{day:"Friday",date:"23 Oct",fullDate:"2026-10-23",periods:2},{day:"Saturday",date:"24 Oct",fullDate:"2026-10-24",periods:2}]}
+];
+
+/* ══════════════════════════════════════════════════
+   ROLL NUMBER STATE
+══════════════════════════════════════════════════ */
+let currentRollNumber = '';
+
+// Storage key changes per roll number
+function getStorageKey() {
+  return `attendance_${currentRollNumber.toUpperCase()}`;
+}
+
+// List of all roll numbers that have saved data
+function getSavedRollNumbers() {
+  const list = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
+  return list;
+}
+
+function addToRollList(roll) {
+  const list = getSavedRollNumbers();
+  const upper = roll.toUpperCase();
+  if (!list.includes(upper)) {
+    list.push(upper);
+    localStorage.setItem('roll_number_list', JSON.stringify(list));
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   ROLL NUMBER OVERLAY LOGIC
+══════════════════════════════════════════════════ */
+const ROLL_PREFIX = '2473A31';
+
+function showRollOverlay() {
+  const overlay = document.getElementById('rollOverlay');
+  overlay.classList.remove('hidden');
+
+  // Show previously saved roll numbers as quick-select chips
+  const saved = getSavedRollNumbers();
+  const listEl = document.getElementById('rollSavedList');
+  const chipsEl = document.getElementById('rollSavedChips');
+
+  if (saved.length > 0) {
+    listEl.classList.add('show');
+    chipsEl.innerHTML = saved.map(r => {
+      // Show only suffix digits in chip label for brevity
+      const suffix = r.replace(ROLL_PREFIX, '');
+      return `<span class="roll-chip" onclick="quickSelectRoll('${suffix}')">
+        <span style="opacity:.6;font-weight:500">${ROLL_PREFIX}</span>${suffix}
+      </span>`;
+    }).join('');
+  } else {
+    listEl.classList.remove('show');
+  }
+
+  // Focus suffix input
+  setTimeout(() => document.getElementById('rollSuffix').focus(), 100);
+}
+
+function hideRollOverlay() {
+  document.getElementById('rollOverlay').classList.add('hidden');
+}
+
+function quickSelectRoll(suffix) {
+  document.getElementById('rollSuffix').value = suffix;
+  submitRollNumber();
+}
+
+function submitRollNumber() {
+  const suffixEl  = document.getElementById('rollSuffix');
+  const splitBox  = document.getElementById('rollSplitBox');
+  const errorEl   = document.getElementById('rollError');
+  const suffix    = suffixEl.value.trim();
+
+  // Must be exactly 1–3 chars (digits preferred, but allow alphanumeric)
+  if (suffix.length < 1 || suffix.length > 3) {
+    splitBox.classList.add('error');
+    errorEl.classList.add('show');
+    setTimeout(() => splitBox.classList.remove('error'), 400);
+    suffixEl.focus();
+    return;
+  }
+
+  splitBox.classList.remove('error');
+  errorEl.classList.remove('show');
+
+  // Pad to 3 chars with leading zeros if pure digits
+  const paddedSuffix = /^\d+$/.test(suffix) ? suffix.padStart(3, '0') : suffix.toUpperCase();
+  currentRollNumber = (ROLL_PREFIX + paddedSuffix).toUpperCase();
+  addToRollList(currentRollNumber);
+
+  // Update header badge
+  document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
+
+  hideRollOverlay();
+  createTable();
+  showToast(`Loaded: Roll No ${currentRollNumber}`, 'info', '👤');
+}
+
+function switchRollNumber() {
+  currentRollNumber = '';
+  document.querySelectorAll('.absence-checkbox').forEach(cb => { cb.checked = false; });
+  calculateAttendance();
+  document.getElementById('rollSuffix').value = '';
+  showRollOverlay();
+}
+
+// Enter key on suffix input
+document.getElementById('rollSuffix').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitRollNumber();
+});
+
+// Only allow digits + letters, max 3 chars
+document.getElementById('rollSuffix').addEventListener('input', e => {
+  e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 3);
+});
+
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
+function isFutureDate(d){const t=new Date();t.setHours(23,59,59,999);return new Date(d+"T00:00:00")>t;}
+function getAllDays(){const a=[];weeks.forEach(w=>w.days.forEach(d=>a.push(d)));return a;}
+
+/* ══════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════ */
+function showToast(msg,type='info',icon='ℹ️'){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');t.className=`toast toast-${type}`;
+  t.innerHTML=`<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.classList.add('hide');t.addEventListener('animationend',()=>t.remove());},3500);
+}
+
+/* ══════════════════════════════════════════════════
+   CONFIRM MODAL
+══════════════════════════════════════════════════ */
+function showConfirm(cb){
+  const ov=document.getElementById('confirmModal');ov.classList.add('active');
+  document.getElementById('confirmYes').onclick=()=>{ov.classList.remove('active');cb();};
+  document.getElementById('confirmNo').onclick=()=>ov.classList.remove('active');
+  ov.onclick=e=>{if(e.target===ov)ov.classList.remove('active');};
+}
+
+/* ══════════════════════════════════════════════════
+   COUNT-UP ANIMATION
+══════════════════════════════════════════════════ */
+function animateCount(el,target){
+  const start=parseInt(el.textContent)||0,dur=500,t0=performance.now();
+  const step=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(start+(target-start)*e);if(p<1)requestAnimationFrame(step);};
+  requestAnimationFrame(step);
+}
+
+/* ══════════════════════════════════════════════════
+   CREATE PERIOD CHECKBOXES
+══════════════════════════════════════════════════ */
+function createPeriodCheckboxes(periods,dayIndex,fullDate){
+  const future=isFutureDate(fullDate);let html='';
+  for(let p=1;p<=periods;p++){html+=`<label class="period-box ${future?'future-period':''}"><input type="checkbox" class="absence-checkbox" data-day="${dayIndex}" data-period="${p}" ${future?'disabled':''}><span>P${p}</span></label>`;}
+  return html;
+}
+
+/* ══════════════════════════════════════════════════
+   BUILD TABLE
+══════════════════════════════════════════════════ */
+function createTable(){
+  const tbody=document.getElementById('attendanceTable');tbody.innerHTML='';let di=0;
+  weeks.forEach(week=>{
+    const wr=document.createElement('tr');
+    wr.className=week.week.includes('MID')?'week-heading-row mid-heading':'week-heading-row';
+    wr.innerHTML=`<td colspan="8">📅 &nbsp;${week.week} — ${week.date}</td>`;
+    tbody.appendChild(wr);
+    week.days.forEach(day=>{
+      const future=isFutureDate(day.fullDate);
+      const row=document.createElement('tr');row.className='day-row';
+      if(day.day.includes('Saturday'))row.classList.add('saturday-row');
+      if(future)row.classList.add('future-row');
+      row.innerHTML=`<td>${week.week}</td><td><span class="day-name">${day.day}</span><span class="day-date">${day.date}</span></td><td>${day.periods}</td><td><div class="period-checkboxes">${createPeriodCheckboxes(day.periods,di,day.fullDate)}</div></td><td id="absent-count-${di}">${future?'—':'0'}</td><td id="present-${di}">${future?'—':day.periods}</td><td id="daily-${di}" class="${future?'upcoming':'good'}">${future?'Upcoming':'100.00%'}</td><td id="overall-${di}">—</td>`;
+      tbody.appendChild(row);di++;
+    });
+  });
+  loadAttendance();
+  document.querySelectorAll('.absence-checkbox').forEach(cb=>cb.addEventListener('change',calculateAttendance));
+}
+
+/* ══════════════════════════════════════════════════
+   CALCULATE ATTENDANCE
+══════════════════════════════════════════════════ */
+function calculateAttendance(){
+  const days=getAllDays();let tp=0,ta=0,pr=0;
+  days.forEach((day,i)=>{
+    if(isFutureDate(day.fullDate)){
+      document.getElementById(`absent-count-${i}`).textContent='—';
+      document.getElementById(`present-${i}`).textContent='—';
+      const dc=document.getElementById(`daily-${i}`);dc.textContent='Upcoming';dc.className='upcoming';
+      document.getElementById(`overall-${i}`).textContent='—';return;
+    }
+    const cbs=document.querySelectorAll(`.absence-checkbox[data-day="${i}"]`);
+    let absent=0;cbs.forEach(cb=>{if(cb.checked)absent++;});
+    const present=day.periods-absent,dpct=(present/day.periods)*100;
+    tp+=day.periods;ta+=absent;pr+=present;
+    const opct=(pr/tp)*100;
+    document.getElementById(`absent-count-${i}`).textContent=absent;
+    document.getElementById(`present-${i}`).textContent=present;
+    const dc=document.getElementById(`daily-${i}`);dc.textContent=dpct.toFixed(2)+'%';setColor(dc,dpct);
+    const oc=document.getElementById(`overall-${i}`);oc.textContent=opct.toFixed(2)+'%';setColor(oc,opct);
+  });
+  animateCount(document.getElementById('totalPeriods'),tp);
+  animateCount(document.getElementById('totalPresent'),pr);
+  animateCount(document.getElementById('totalAbsent'),ta);
+  const fp=tp>0?(pr/tp)*100:0;
+  document.getElementById('overallPercentage').textContent=fp.toFixed(2)+'%';
+  updateProgress(fp);
+}
+
+function setColor(el,pct){el.className=pct>=75?'good':pct>=65?'warning':'danger';}
+
+/* ══════════════════════════════════════════════════
+   PROGRESS BAR
+══════════════════════════════════════════════════ */
+function updateProgress(pct){
+  const bar=document.getElementById('progressBar'),dot=document.querySelector('.status-dot'),txt=document.getElementById('statusText');
+  bar.style.width=pct+'%';bar.parentElement.setAttribute('aria-valuenow',Math.round(pct));
+  if(pct>=75){bar.style.background='linear-gradient(90deg,#16a34a,#4ade80)';dot.style.background='#22c55e';txt.textContent=`✅ You're good! ${pct.toFixed(2)}% — above the 75% requirement`;txt.style.color='#4ade80';}
+  else if(pct>0){bar.style.background='linear-gradient(90deg,#b45309,#f59e0b)';dot.style.background='#f59e0b';txt.textContent=`⚠️ Warning: ${pct.toFixed(2)}% — below 75% threshold`;txt.style.color='#fcd34d';}
+  else{bar.style.background='linear-gradient(90deg,#1d4ed8,#60a5fa)';dot.style.background='#3b82f6';txt.textContent='Mark absent periods in the table below';txt.style.color='var(--muted)';}
+}
+
+/* ══════════════════════════════════════════════════
+   SAVE / LOAD / RESET  (keyed by roll number)
+══════════════════════════════════════════════════ */
+function saveAttendance(){
+  if(!currentRollNumber){ showToast('No roll number set!','danger','⚠️'); return; }
+  const data={};
+  document.querySelectorAll('.absence-checkbox').forEach(cb=>{data[`${cb.dataset.day}-${cb.dataset.period}`]=cb.checked;});
+  localStorage.setItem(getStorageKey(), JSON.stringify(data));
+  showToast(`Saved for Roll No: ${currentRollNumber}`,'success','💾');
+}
+
+function loadAttendance(){
+  if(!currentRollNumber) return;
+  const saved=localStorage.getItem(getStorageKey());
+  if(saved){
+    const data=JSON.parse(saved);
+    document.querySelectorAll('.absence-checkbox').forEach(cb=>{cb.checked=data[`${cb.dataset.day}-${cb.dataset.period}`]===true;});
+  }
+  calculateAttendance();
+}
+
+function resetAttendance(){
+  if(!currentRollNumber){ showToast('No roll number set!','danger','⚠️'); return; }
+  showConfirm(()=>{
+    localStorage.removeItem(getStorageKey());
+    document.querySelectorAll('.absence-checkbox').forEach(cb=>{cb.checked=false;});
+    calculateAttendance();
+    showToast(`Attendance reset for ${currentRollNumber}`,'danger','🔄');
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   SHARED HELPER — build structured attendance snapshot
+══════════════════════════════════════════════════ */
+function buildSnapshot(){
+  // Collect raw checkbox data and save to localStorage
+  const raw = {};
+  document.querySelectorAll('.absence-checkbox').forEach(cb => {
+    raw[`${cb.dataset.day}-${cb.dataset.period}`] = cb.checked;
+  });
+  localStorage.setItem(getStorageKey(), JSON.stringify(raw));
+
+  // Build enriched weekly structure
+  let di = 0, cumTotal = 0, cumPresent = 0;
+  const weeklyBreakdown = [];
+
+  weeks.forEach(week => {
+    const weekEntry = { week: week.week, dateRange: week.date, days: [] };
+
+    week.days.forEach(day => {
+      const future = isFutureDate(day.fullDate);
+      const absentPeriods = [];
+      const presentPeriods = [];
+
+      for (let p = 1; p <= day.periods; p++) {
+        const key = `${di}-${p}`;
+        if (!future && raw[key] === true) absentPeriods.push(p);
+        else if (!future) presentPeriods.push(p);
+      }
+
+      if (!future) {
+        cumTotal   += day.periods;
+        cumPresent += presentPeriods.length;
+      }
+
+      const dailyPct  = future ? null : ((presentPeriods.length / day.periods) * 100).toFixed(2);
+      const overallPct= future ? null : ((cumPresent / cumTotal) * 100).toFixed(2);
+
+      weekEntry.days.push({
+        day          : day.day,
+        date         : day.date,
+        fullDate     : day.fullDate,
+        status       : future ? 'upcoming' : 'completed',
+        totalPeriods : day.periods,
+        absentPeriods: future ? [] : absentPeriods,
+        presentPeriods: future ? [] : presentPeriods,
+        absentCount  : future ? '-' : absentPeriods.length,
+        presentCount : future ? '-' : presentPeriods.length,
+        dailyAttendance : future ? '-' : dailyPct + '%',
+        overallAttendance: future ? '-' : overallPct + '%'
+      });
+      di++;
+    });
+    weeklyBreakdown.push(weekEntry);
+  });
+
+  const overallPct = cumTotal > 0 ? ((cumPresent / cumTotal) * 100).toFixed(2) : '0.00';
+  const status = cumTotal === 0 ? 'No data yet'
+    : parseFloat(overallPct) >= 75 ? '✅ Good — Above 75%'
+    : parseFloat(overallPct) >= 65 ? '⚠️ Warning — Below 75%'
+    : '❌ Shortage — Below 65%';
+
+  return { raw, weeklyBreakdown, cumTotal, cumPresent, overallPct, status };
+}
+
+/* ══════════════════════════════════════════════════
+   DOWNLOAD RICH JSON BACKUP
+══════════════════════════════════════════════════ */
+function downloadAttendance(){
+  if(!currentRollNumber){ showToast('No roll number set!','danger','⚠️'); return; }
+
+  const { raw, weeklyBreakdown, cumTotal, cumPresent, overallPct, status } = buildSnapshot();
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+  const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+
+  const backup = {
+    "_info": "Attendance Tracker Backup — III B.Tech CSE-AI",
+    "rollNumber"    : currentRollNumber,
+    "class"         : "III B.Tech CSE – Artificial Intelligence",
+    "academicYear"  : "2026-27",
+    "semester"      : "I Semester",
+    "exportedOn"    : `${dateStr} at ${timeStr}`,
+    "summary": {
+      "totalPeriods"        : cumTotal,
+      "periodsPresent"      : cumPresent,
+      "periodsAbsent"       : cumTotal - cumPresent,
+      "attendancePercentage": overallPct + '%',
+      "attendanceStatus"    : status,
+      "requiredMinimum"     : "75.00%"
+    },
+    "weeklyBreakdown": weeklyBreakdown,
+    "_rawData": raw
+  };
+
+  triggerDownload(
+    JSON.stringify(backup, null, 2),
+    'application/json',
+    `attendance_${currentRollNumber}_${now.toLocaleDateString('en-GB').replace(/\//g,'-')}.json`
+  );
+  showToast(`JSON backup downloaded for ${currentRollNumber}`, 'success', '📥');
+}
+
+/* ══════════════════════════════════════════════════
+   DOWNLOAD CSV (Excel-friendly)
+══════════════════════════════════════════════════ */
+function downloadCSV(){
+  if(!currentRollNumber){ showToast('No roll number set!','danger','⚠️'); return; }
+
+  const { weeklyBreakdown, cumTotal, cumPresent, overallPct, status } = buildSnapshot();
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+
+  const lines = [];
+
+  // === FILE HEADER ===
+  lines.push(`Attendance Report`);
+  lines.push(`Roll Number,${currentRollNumber}`);
+  lines.push(`Class,III B.Tech CSE - Artificial Intelligence`);
+  lines.push(`Academic Year,2026-27 | I Semester`);
+  lines.push(`Exported On,${dateStr}`);
+  lines.push(''); // blank row
+
+  // === SUMMARY BLOCK ===
+  lines.push('SUMMARY');
+  lines.push(`Total Periods,${cumTotal}`);
+  lines.push(`Periods Present,${cumPresent}`);
+  lines.push(`Periods Absent,${cumTotal - cumPresent}`);
+  lines.push(`Overall Attendance,${overallPct}%`);
+  lines.push(`Status,${status}`);
+  lines.push(`Required Minimum,75.00%`);
+  lines.push(''); // blank row
+
+  // === DAILY DETAIL TABLE ===
+  lines.push('DAILY ATTENDANCE DETAIL');
+  // Column headers
+  lines.push([
+    'Week','Day','Date','Full Date','Status',
+    'Total Periods','Absent Count','Present Count',
+    'Absent Period Nos.','Present Period Nos.',
+    'Daily Attendance %','Overall Attendance %'
+  ].join(','));
+
+  weeklyBreakdown.forEach(week => {
+    week.days.forEach(day => {
+      lines.push([
+        `"${week.week}"`,
+        `"${day.day}"`,
+        `"${day.date}"`,
+        day.fullDate,
+        day.status,
+        day.totalPeriods,
+        day.absentCount,
+        day.presentCount,
+        day.absentPeriods.length  ? `"P${day.absentPeriods.join(', P')}"` : '"-"',
+        day.presentPeriods.length ? `"P${day.presentPeriods.join(', P')}"` : '"-"',
+        `"${day.dailyAttendance}"`,
+        `"${day.overallAttendance}"`
+      ].join(','));
+    });
+    lines.push(''); // blank row between weeks
+  });
+
+  triggerDownload(
+    lines.join('\r\n'),
+    'text/csv;charset=utf-8;',
+    `attendance_${currentRollNumber}_${now.toLocaleDateString('en-GB').replace(/\//g,'-')}.csv`
+  );
+  showToast(`CSV report downloaded for ${currentRollNumber}`, 'success', '📊');
+}
+
+/* helper: create and click a download link */
+function triggerDownload(content, mimeType, filename){
+  const blob = new Blob([content], {type: mimeType});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+/* ══════════════════════════════════════════════════
+   IMPORT BACKUP
+══════════════════════════════════════════════════ */
+function importAttendance(event){
+  const file = event.target.files[0];
+  if(!file){ return; }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const backup = JSON.parse(e.target.result);
+
+      // Validate structure
+      if(!backup.attendance || typeof backup.attendance !== 'object'){
+        showToast('Invalid backup file format!','danger','❌');
+        return;
+      }
+
+      // If roll number in file differs from current, warn and still import
+      const fromRoll = backup.rollNumber || 'Unknown';
+      if(fromRoll !== currentRollNumber){
+        showToast(`Imported from ${fromRoll} → applied to ${currentRollNumber}`,'info','ℹ️');
+      }
+
+      // Apply to checkboxes
+      document.querySelectorAll('.absence-checkbox').forEach(cb=>{
+        cb.checked = backup.attendance[`${cb.dataset.day}-${cb.dataset.period}`] === true;
+      });
+
+      // Save into current roll's localStorage slot
+      localStorage.setItem(getStorageKey(), JSON.stringify(backup.attendance));
+      calculateAttendance();
+      showToast(`Backup imported successfully for ${currentRollNumber}`,'success','📤');
+
+    } catch(err){
+      showToast('Failed to read file — make sure it\'s a valid JSON backup.','danger','❌');
+    }
+    // Reset file input so same file can be re-imported
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+/* ══════════════════════════════════════════════════
+   BOOT — Show roll number screen first
+══════════════════════════════════════════════════ */
+// Build empty table on startup (no data yet)
+createTable();
+// Show roll number entry screen
+showRollOverlay();
+</script>
+</body>
+</html>
