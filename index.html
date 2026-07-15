@@ -116,6 +116,32 @@
     .roll-suffix::placeholder{color:var(--muted);font-size:1rem;font-weight:400;letter-spacing:.02em;}
     @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
 
+    /* Prefix toggle options styling */
+    .prefix-options-wrap {
+      display: flex; gap: 10px; margin-bottom: 24px; justify-content: center;
+    }
+    .prefix-option {
+      display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+      font-size: 0.85rem; font-weight: 700; background: rgba(255,255,255,0.03);
+      padding: 10px 16px; border-radius: 30px; border: 1.5px solid var(--border);
+      transition: all 0.2s ease; color: var(--muted); user-select: none;
+    }
+    .prefix-option:hover {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: var(--text);
+    }
+    .prefix-option:has(input:checked) {
+      border-color: var(--blue);
+      background: rgba(59,130,246,0.15);
+      color: #93c5fd;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+    }
+    .prefix-option input {
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+
     /* legacy .roll-input kept for chips input if needed */
     .roll-input{
       width:100%;padding:14px 18px;
@@ -486,10 +512,21 @@
     <h2 id="rollTitle">Enter Your Roll Number</h2>
     <p>Your attendance is saved separately per roll number — multiple students can use this tracker on the same device.</p>
 
-    <label class="roll-input-label" for="rollSuffix">Roll Number &nbsp;<span style="color:var(--blue);font-weight:500;text-transform:none;letter-spacing:0;">( Format: 2473A31___ )</span></label>
+    <div class="prefix-options-wrap">
+      <label class="prefix-option">
+        <input type="radio" name="rollPrefix" value="2473A31" checked onchange="updatePrefixSelection('2473A31')">
+        2473A31___ (Reg)
+      </label>
+      <label class="prefix-option">
+        <input type="radio" name="rollPrefix" value="2573A31L" onchange="updatePrefixSelection('2573A31L')">
+        2573A31L__ (Lat)
+      </label>
+    </div>
+
+    <label class="roll-input-label" for="rollSuffix">Enter Roll Suffix</label>
     <div class="roll-input-wrap">
       <div class="roll-split" id="rollSplitBox">
-        <span class="roll-prefix">2473A31</span>
+        <span class="roll-prefix" id="rollPrefixText">2473A31</span>
         <input
           class="roll-suffix"
           id="rollSuffix"
@@ -701,6 +738,28 @@ function addToRollList(roll) {
    ROLL NUMBER OVERLAY LOGIC
 ══════════════════════════════════════════════════ */
 const ROLL_PREFIX = '2473A31';
+const LATERAL_PREFIX = '2573A31L';
+let selectedPrefix = '2473A31';
+
+function updatePrefixSelection(val) {
+  selectedPrefix = val;
+  document.getElementById('rollPrefixText').textContent = val;
+  const suffixEl = document.getElementById('rollSuffix');
+  const errorEl = document.getElementById('rollError');
+  
+  if (val === LATERAL_PREFIX) {
+    suffixEl.placeholder = '__';
+    suffixEl.maxLength = 2;
+    errorEl.innerHTML = '⚠️ Please enter exactly 2 digits (e.g. 01, 15).';
+  } else {
+    suffixEl.placeholder = '___';
+    suffixEl.maxLength = 3;
+    errorEl.innerHTML = '⚠️ Please enter exactly 3 digits (e.g. 001, 042).';
+  }
+  
+  suffixEl.value = suffixEl.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, suffixEl.maxLength);
+  suffixEl.focus();
+}
 
 function showRollOverlay() {
   const overlay = document.getElementById('rollOverlay');
@@ -714,10 +773,11 @@ function showRollOverlay() {
   if (saved.length > 0) {
     listEl.classList.add('show');
     chipsEl.innerHTML = saved.map(r => {
-      // Show only suffix digits in chip label for brevity
-      const suffix = r.replace(ROLL_PREFIX, '');
-      return `<span class="roll-chip" onclick="quickSelectRoll('${suffix}')">
-        <span style="opacity:.6;font-weight:500">${ROLL_PREFIX}</span>${suffix}
+      const isLat = r.startsWith(LATERAL_PREFIX);
+      const prefix = isLat ? LATERAL_PREFIX : ROLL_PREFIX;
+      const suffix = r.replace(prefix, '');
+      return `<span class="roll-chip" onclick="quickSelectRoll('${prefix}', '${suffix}')">
+        <span style="opacity:.6;font-weight:500">${prefix}</span>${suffix}
       </span>`;
     }).join('');
   } else {
@@ -732,7 +792,10 @@ function hideRollOverlay() {
   document.getElementById('rollOverlay').classList.add('hidden');
 }
 
-function quickSelectRoll(suffix) {
+function quickSelectRoll(prefix, suffix) {
+  const radio = document.querySelector(`input[name="rollPrefix"][value="${prefix}"]`);
+  if (radio) radio.checked = true;
+  updatePrefixSelection(prefix);
   document.getElementById('rollSuffix').value = suffix;
   submitRollNumber();
 }
@@ -743,8 +806,9 @@ function submitRollNumber() {
   const errorEl   = document.getElementById('rollError');
   const suffix    = suffixEl.value.trim();
 
-  // Must be exactly 1–3 chars (digits preferred, but allow alphanumeric)
-  if (suffix.length < 1 || suffix.length > 3) {
+  const requiredLen = selectedPrefix === LATERAL_PREFIX ? 2 : 3;
+
+  if (suffix.length < 1 || suffix.length > requiredLen) {
     splitBox.classList.add('error');
     errorEl.classList.add('show');
     setTimeout(() => splitBox.classList.remove('error'), 400);
@@ -755,9 +819,9 @@ function submitRollNumber() {
   splitBox.classList.remove('error');
   errorEl.classList.remove('show');
 
-  // Pad to 3 chars with leading zeros if pure digits
-  const paddedSuffix = /^\d+$/.test(suffix) ? suffix.padStart(3, '0') : suffix.toUpperCase();
-  currentRollNumber = (ROLL_PREFIX + paddedSuffix).toUpperCase();
+  // Pad suffix with leading zeros if numeric
+  const paddedSuffix = /^\d+$/.test(suffix) ? suffix.padStart(requiredLen, '0') : suffix.toUpperCase();
+  currentRollNumber = (selectedPrefix + paddedSuffix).toUpperCase();
   addToRollList(currentRollNumber);
 
   // Update header badge
@@ -778,6 +842,12 @@ function switchRollNumber() {
   document.getElementById('simAbsentVal').textContent = 0;
 
   calculateAttendance();
+  
+  // Reset to default regular prefix
+  const radioReg = document.querySelector(`input[name="rollPrefix"][value="${ROLL_PREFIX}"]`);
+  if (radioReg) radioReg.checked = true;
+  updatePrefixSelection(ROLL_PREFIX);
+
   document.getElementById('rollSuffix').value = '';
   showRollOverlay();
 }
@@ -787,9 +857,10 @@ document.getElementById('rollSuffix').addEventListener('keydown', e => {
   if (e.key === 'Enter') submitRollNumber();
 });
 
-// Only allow digits + letters, max 3 chars
+// Dynamic validation slice
 document.getElementById('rollSuffix').addEventListener('input', e => {
-  e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 3);
+  const maxLen = selectedPrefix === LATERAL_PREFIX ? 2 : 3;
+  e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, maxLen);
 });
 
 /* ══════════════════════════════════════════════════
