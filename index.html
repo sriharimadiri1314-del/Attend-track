@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no" />
   <title>Attendance Tracker | III B.Tech CSE-AI</title>
   <meta name="description" content="Daily & Weekly Attendance Tracker for III B.Tech CSE – AI, 2026-27." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -10,523 +10,1321 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:#060b18; --bg2:#0b1225;
-      --surface:rgba(255,255,255,0.045); --surface2:rgba(255,255,255,0.07);
-      --border:rgba(255,255,255,0.09); --border2:rgba(255,255,255,0.14);
-      --text:#e8edf8; --muted:#7b88b0;
-      --blue:#3b82f6; --blue-soft:rgba(59,130,246,0.15);
-      --green:#22c55e; --green-soft:rgba(34,197,94,0.15);
-      --red:#ef4444; --red-soft:rgba(239,68,68,0.15);
-      --amber:#f59e0b; --purple:#a855f7;
-      --radius:16px; --font:'Outfit',sans-serif;
-      --shadow:0 8px 32px rgba(0,0,0,0.4);
-      --shadow-lg:0 24px 60px rgba(0,0,0,0.5);
+      --bg: #f6f5fb;
+      --card-bg: #ffffff;
+      --surface: rgba(255, 255, 255, 0.7);
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.15);
+      --border: #eaebf0;
+      --border-dark: #d2d4df;
+      --text: #1f2937;
+      --muted: #6b7280;
+      
+      --green: #10b981;
+      --green-bg: #d1fae5;
+      --green-text: #065f46;
+      
+      --red: #ef4444;
+      --red-bg: #fee2e2;
+      --red-text: #991b1b;
+      
+      --blue: #3b82f6;
+      --blue-bg: #dbeafe;
+      --blue-text: #1e40af;
+      
+      --orange: #f97316;
+      --orange-bg: #ffedd5;
+      --orange-text: #9a3412;
+      
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      
+      --font: 'Outfit', sans-serif;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 30px rgba(99, 102, 241, 0.08);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-    /* BG */
-    .bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
-    .bg-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.35;animation:orbDrift 18s ease-in-out infinite;}
-    .bg-orb-1{width:600px;height:600px;background:#1d4ed8;top:-200px;left:-150px;animation-delay:0s;}
-    .bg-orb-2{width:500px;height:500px;background:#7c3aed;bottom:-200px;right:-150px;animation-delay:-6s;}
-    .bg-orb-3{width:400px;height:400px;background:#0e7490;top:40%;left:50%;animation-delay:-12s;}
-    @keyframes orbDrift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(40px,-50px) scale(1.08);}66%{transform:translate(-30px,40px) scale(0.92);}}
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Container for centering layout on desktops to look like an app */
+    .app-container {
+      width: 100%;
+      max-width: 540px;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding-bottom: 90px; /* Space for bottom nav */
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Background Orbs */
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-orb-1 { width: 300px; height: 300px; background: #6366f1; top: -50px; left: -50px; }
+    .bg-orb-2 { width: 250px; height: 250px; background: #a855f7; bottom: 100px; right: -50px; }
+
+    /* Toast Notification Container */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 90%;
+      max-width: 400px;
+      pointer-events: none;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      backdrop-filter: blur(10px);
+      animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      pointer-events: auto;
+    }
+    .toast.hide {
+      animation: toastOut 0.3s ease forwards;
+    }
+    .toast-success { border-left: 4px solid var(--green); }
+    .toast-danger { border-left: 4px solid var(--red); }
+    .toast-info { border-left: 4px solid var(--blue); }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    
+    .modal h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .modal p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .modal-form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+    .modal-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .modal-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      outline: none;
+      background: #fbfbfe;
+      transition: var(--transition);
+    }
+    .modal-input:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #4f46e5;
+    }
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+    .btn-danger {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
 
     /* ══════════════════════════════════
        ROLL NUMBER ENTRY OVERLAY
     ══════════════════════════════════ */
-    .roll-overlay{
-      position:fixed;inset:0;z-index:99999;
-      background:rgba(6,11,24,0.97);
-      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      display:flex;align-items:center;justify-content:center;
-      animation:mfadeIn .3s ease;
+    .roll-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .roll-overlay.hidden{display:none;}
-
-    .roll-card{
-      background:rgba(255,255,255,0.05);
-      border:1px solid var(--border2);
-      border-radius:24px;
-      padding:48px 40px;
-      max-width:420px;width:90%;
-      text-align:center;
-      box-shadow:var(--shadow-lg);
-      animation:modalPop .4s cubic-bezier(.34,1.56,.64,1);
-      position:relative;
-      overflow:hidden;
+    .roll-overlay.hidden {
+      display: none;
     }
-    .roll-card::before{
-      content:'';position:absolute;top:0;left:0;right:0;height:3px;
-      background:linear-gradient(90deg,var(--blue),var(--purple),var(--green));
+    .roll-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: var(--shadow);
     }
-
-    .roll-icon{font-size:3rem;margin-bottom:16px;display:block;}
-    .roll-card h2{font-size:1.6rem;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;}
-    .roll-card p{font-size:.88rem;color:var(--muted);margin-bottom:28px;line-height:1.6;}
-
-    .roll-input-wrap{
-      position:relative;
-      margin-bottom:20px;
+    .roll-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      display: block;
     }
-    .roll-input-label{
-      display:block;text-align:left;
-      font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-      color:var(--muted);margin-bottom:8px;
+    .roll-card h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 8px;
     }
-
-    /* Split roll number input: prefix + suffix */
-    .roll-split{
-      display:flex;align-items:center;
-      background:rgba(255,255,255,0.06);
-      border:1.5px solid var(--border2);
-      border-radius:12px;
-      overflow:hidden;
-      transition:border-color .2s ease,box-shadow .2s ease;
-      font-family:var(--font);
+    .roll-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
     }
-    .roll-split:focus-within{
-      border-color:var(--blue);
-      box-shadow:0 0 0 3px rgba(59,130,246,.18);
-    }
-    .roll-split.error{
-      border-color:var(--red);
-      box-shadow:0 0 0 3px rgba(239,68,68,.18);
-      animation:shake .3s ease;
-    }
-    .roll-prefix{
-      padding:14px 16px;
-      background:rgba(59,130,246,0.12);
-      border-right:1.5px solid rgba(59,130,246,.25);
-      font-size:1.1rem;font-weight:800;
-      color:#93c5fd;letter-spacing:.06em;
-      white-space:nowrap;user-select:none;
-      flex-shrink:0;
-    }
-    .roll-suffix{
-      flex:1;padding:14px 16px;
-      background:transparent;border:none;
-      font-family:var(--font);font-size:1.3rem;font-weight:800;
-      color:var(--text);letter-spacing:.18em;
-      outline:none;text-align:center;
-      width:80px;
-    }
-    .roll-suffix::placeholder{color:var(--muted);font-size:1rem;font-weight:400;letter-spacing:.02em;}
-    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
-
-    /* Prefix toggle options styling */
     .prefix-options-wrap {
-      display: flex; gap: 10px; margin-bottom: 24px; justify-content: center;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      justify-content: center;
     }
     .prefix-option {
-      display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
-      font-size: 0.85rem; font-weight: 700; background: rgba(255,255,255,0.03);
-      padding: 10px 16px; border-radius: 30px; border: 1.5px solid var(--border);
-      transition: all 0.2s ease; color: var(--muted); user-select: none;
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: #fafafc;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      transition: var(--transition);
+      color: var(--muted);
     }
     .prefix-option:hover {
-      border-color: var(--blue);
-      background: var(--blue-soft);
+      border-color: var(--primary);
       color: var(--text);
     }
     .prefix-option:has(input:checked) {
-      border-color: var(--blue);
-      background: rgba(59,130,246,0.15);
-      color: #93c5fd;
-      box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+      border-color: var(--primary);
+      background: var(--primary-glow);
+      color: var(--primary);
     }
     .prefix-option input {
-      accent-color: var(--blue);
-      cursor: pointer;
+      accent-color: var(--primary);
     }
-
-    /* legacy .roll-input kept for chips input if needed */
-    .roll-input{
-      width:100%;padding:14px 18px;
-      background:rgba(255,255,255,0.06);
-      border:1.5px solid var(--border2);
-      border-radius:12px;
-      font-family:var(--font);font-size:1.1rem;font-weight:700;
-      color:var(--text);letter-spacing:.08em;text-transform:uppercase;
-      outline:none;transition:border-color .2s ease,box-shadow .2s ease;
-      text-align:center;display:none;
+    .roll-input-wrap {
+      margin-bottom: 16px;
     }
-
-    .roll-error-msg{
-      font-size:.78rem;color:var(--red);margin-bottom:16px;
-      display:none;text-align:left;
-    }
-    .roll-error-msg.show{display:block;}
-
-    .roll-submit-btn{
-      width:100%;padding:14px;
-      background:linear-gradient(135deg,var(--blue),var(--purple));
-      border:none;border-radius:12px;
-      font-family:var(--font);font-size:1rem;font-weight:700;
-      color:#fff;cursor:pointer;
-      transition:transform .2s ease,box-shadow .2s ease;
-      box-shadow:0 4px 20px rgba(59,130,246,.35);
-      position:relative;overflow:hidden;
-    }
-    .roll-submit-btn::after{
-      content:'';position:absolute;top:-50%;left:-75%;width:50%;height:200%;
-      background:linear-gradient(to right,transparent,rgba(255,255,255,.2),transparent);
-      transform:skewX(-20deg);transition:left .5s ease;
-    }
-    .roll-submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(59,130,246,.45);}
-    .roll-submit-btn:hover::after{left:125%;}
-
-    .roll-saved-list{
-      margin-top:24px;
-      border-top:1px solid var(--border);
-      padding-top:20px;
-      text-align:left;
-      display:none;
-    }
-    .roll-saved-list.show{display:block;}
-    .roll-saved-title{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
-    .roll-saved-chips{display:flex;flex-wrap:wrap;gap:8px;}
-    .roll-chip{
-      display:inline-flex;align-items:center;gap:6px;
-      background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);
-      border-radius:50px;padding:6px 14px;
-      font-size:.82rem;font-weight:700;color:#93c5fd;
-      cursor:pointer;transition:all .2s ease;
-    }
-    .roll-chip:hover{background:rgba(59,130,246,.25);transform:scale(1.05);}
-
-    /* ══════════════════════════════════
-       ROLL NUMBER DISPLAY IN HEADER
-    ══════════════════════════════════ */
-    .roll-display-bar{
-      position:relative;z-index:10;
-      background:rgba(59,130,246,0.08);
-      border-bottom:1px solid rgba(59,130,246,0.15);
-      padding:10px 24px;
-      display:flex;align-items:center;justify-content:center;gap:16px;
-      flex-wrap:wrap;
-    }
-    .roll-display-text{
-      display:flex;align-items:center;gap:10px;
-      font-size:.88rem;font-weight:600;color:#93c5fd;
-    }
-    .roll-display-badge{
-      display:inline-flex;align-items:center;gap:6px;
-      background:rgba(59,130,246,.18);border:1px solid rgba(59,130,246,.35);
-      border-radius:50px;padding:4px 14px;
-      font-size:.92rem;font-weight:800;letter-spacing:.06em;color:#bfdbfe;
-    }
-    .roll-switch-btn{
-      display:inline-flex;align-items:center;gap:6px;
-      background:rgba(255,255,255,.06);border:1px solid var(--border2);
-      border-radius:50px;padding:5px 14px;
-      font-family:var(--font);font-size:.78rem;font-weight:700;
-      color:var(--muted);cursor:pointer;transition:all .2s ease;
-    }
-    .roll-switch-btn:hover{background:rgba(255,255,255,.1);color:var(--text);border-color:var(--border2);}
-
-    /* HEADER */
-    header{position:relative;z-index:10;background:linear-gradient(135deg,rgba(29,78,216,.55),rgba(124,58,237,.35));backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border2);padding:52px 24px 44px;text-align:center;overflow:hidden;}
-    header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(59,130,246,.18),transparent 65%);pointer-events:none;}
-    .header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,.18);border:1px solid rgba(59,130,246,.35);border-radius:50px;padding:6px 18px;font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#93c5fd;margin-bottom:20px;animation:fadeDown .7s ease both;}
-    .header-badge::before{content:'●';font-size:8px;color:#22c55e;animation:blink 2s ease infinite;}
-    @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-    header h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:14px;background:linear-gradient(135deg,#fff 30%,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeDown .7s .1s ease both;}
-    .header-meta{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;animation:fadeDown .7s .2s ease both;}
-    .header-pill{background:rgba(255,255,255,.08);border:1px solid var(--border2);border-radius:50px;padding:6px 16px;font-size:.85rem;color:#bfdbfe;font-weight:500;}
-    @keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
-
-    /* MAIN */
-    main{position:relative;z-index:5;width:95%;max-width:1500px;margin:36px auto 60px;display:flex;flex-direction:column;gap:28px;}
-
-    /* DASHBOARD */
-    .dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
-    .stat-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;animation:cardPop .6s ease both;}
-    .stat-card:nth-child(1){animation-delay:.05s;} .stat-card:nth-child(2){animation-delay:.12s;} .stat-card:nth-child(3){animation-delay:.19s;} .stat-card:nth-child(4){animation-delay:.26s;}
-    @keyframes cardPop{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
-    .stat-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--border2);}
-    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius) var(--radius) 0 0;}
-    .stat-card.total::before{background:linear-gradient(90deg,var(--blue),var(--purple));}
-    .stat-card.present::before{background:linear-gradient(90deg,var(--green),#4ade80);}
-    .stat-card.absent::before{background:linear-gradient(90deg,var(--red),#f87171);}
-    .stat-card.pct::before{background:linear-gradient(90deg,var(--blue),var(--green));}
-    .stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px;}
-    .stat-card.total .stat-icon{background:var(--blue-soft);}
-    .stat-card.present .stat-icon{background:var(--green-soft);}
-    .stat-card.absent .stat-icon{background:var(--red-soft);}
-    .stat-card.pct .stat-icon{background:var(--blue-soft);}
-    .stat-label{font-size:.8rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-    .stat-value{font-size:2.6rem;font-weight:800;line-height:1;letter-spacing:-.03em;}
-    .stat-card.total .stat-value{color:var(--blue);}
-    .stat-card.present .stat-value{color:var(--green);}
-    .stat-card.absent .stat-value{color:var(--red);}
-    .stat-card.pct .stat-value{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-
-    /* PROGRESS */
-    .progress-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 30px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:cardPop .6s .3s ease both;}
-    .progress-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
-    .progress-title{font-size:1rem;font-weight:700;color:var(--text);}
-    .progress-meta{font-size:.82rem;color:var(--muted);font-weight:500;}
-    .progress-track{width:100%;height:14px;background:rgba(255,255,255,.06);border-radius:50px;overflow:hidden;border:1px solid var(--border);}
-    .progress-fill{height:100%;width:0%;border-radius:50px;background:linear-gradient(90deg,#22c55e,#4ade80);transition:width .8s cubic-bezier(.4,0,.2,1),background .5s ease;position:relative;overflow:hidden;}
-    .progress-fill::after{content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmerSlide 2.5s ease-in-out infinite;}
-    @keyframes shimmerSlide{0%{left:-60%;}100%{left:120%;}}
-    #attendanceStatus{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:.92rem;font-weight:600;color:var(--muted);}
-    .status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;background:var(--muted);transition:background .4s ease;}
-
-    /* TABLE */
-    .table-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:cardPop .6s .38s ease both;overflow:hidden;}
-    .table-section-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
-    .table-section-header h2{font-size:1.25rem;font-weight:700;}
-    .instruction{font-size:.82rem;color:var(--muted);line-height:1.6;max-width:480px;}
-    .table-scroll{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
-    .table-scroll::-webkit-scrollbar{height:6px;} .table-scroll::-webkit-scrollbar-track{background:transparent;} .table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-    table{width:100%;min-width:1060px;border-collapse:collapse;}
-    thead{background:rgba(59,130,246,.12);border-bottom:1px solid rgba(59,130,246,.25);}
-    thead th{padding:14px 12px;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#93c5fd;white-space:nowrap;}
-    td{padding:11px 12px;text-align:center;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
-    tbody tr.day-row{transition:background .2s ease;}
-    tbody tr.day-row:hover{background:rgba(59,130,246,.07);}
-    tbody tr.day-row:last-child td{border-bottom:none;}
-    .week-heading-row td{background:rgba(59,130,246,.1);color:#93c5fd;font-size:.82rem;font-weight:700;letter-spacing:.06em;text-align:left;padding:10px 20px;border-bottom:1px solid rgba(59,130,246,.2);border-left:3px solid var(--blue);}
-    .mid-heading td{background:rgba(245,158,11,.1);color:#fcd34d;border-left-color:var(--amber);border-bottom-color:rgba(245,158,11,.25);}
-    .day-name{display:block;font-weight:700;color:var(--text);font-size:.9rem;}
-    .day-date{display:block;margin-top:3px;color:var(--muted);font-size:.78rem;}
-    .saturday-row{background:rgba(245,158,11,.04);}
-    .future-row{opacity:.45;}
-    .future-row:hover{background:transparent !important;}
-
-    /* PERIOD BTNS */
-    .period-checkboxes{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;}
-    .period-box{position:relative;}
-    .period-box input{position:absolute;opacity:0;pointer-events:none;}
-    .period-box span{display:inline-flex;align-items:center;justify-content:center;width:38px;height:34px;background:rgba(255,255,255,.06);color:var(--muted);border:1.5px solid var(--border2);border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s ease;user-select:none;}
-    .period-box span:hover{border-color:var(--blue);background:var(--blue-soft);color:#93c5fd;transform:scale(1.08);}
-    .period-box input:checked + span{background:var(--red-soft);color:#fca5a5;border-color:rgba(239,68,68,.5);box-shadow:0 0 0 2px rgba(239,68,68,.15);transform:scale(1.05);}
-    .future-period span{background:rgba(255,255,255,.025) !important;color:rgba(255,255,255,.15) !important;border-color:rgba(255,255,255,.07) !important;cursor:not-allowed !important;transform:none !important;}
-
-    /* COLORS */
-    .good{color:var(--green);font-weight:700;} .warning{color:var(--amber);font-weight:700;} .danger{color:var(--red);font-weight:700;} .upcoming{color:var(--muted);font-weight:500;font-style:italic;}
-
-    /* ACTIONS */
-    .actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;animation:cardPop .6s .44s ease both;}
-    .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border:none;border-radius:12px;font-family:var(--font);font-size:.95rem;font-weight:700;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden;}
-    .btn::after{content:'';position:absolute;top:-50%;left:-75%;width:50%;height:200%;background:linear-gradient(to right,transparent,rgba(255,255,255,.18),transparent);transform:skewX(-20deg);transition:left .5s ease;}
-    .btn:hover::after{left:125%;}
-    .btn-save{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;box-shadow:0 4px 20px rgba(34,197,94,.3);}
-    .btn-save:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(34,197,94,.4);}
-    .btn-reset{background:rgba(239,68,68,.12);color:#fca5a5;border:1.5px solid rgba(239,68,68,.3);}
-    .btn-reset:hover{transform:translateY(-3px);background:rgba(239,68,68,.2);box-shadow:0 8px 24px rgba(239,68,68,.2);}
-    .btn-download{background:rgba(59,130,246,.12);color:#93c5fd;border:1.5px solid rgba(59,130,246,.3);}
-    .btn-download:hover{transform:translateY(-3px);background:rgba(59,130,246,.22);box-shadow:0 8px 24px rgba(59,130,246,.2);}
-    .btn-import{background:rgba(168,85,247,.12);color:#d8b4fe;border:1.5px solid rgba(168,85,247,.3);}
-    .btn-import:hover{transform:translateY(-3px);background:rgba(168,85,247,.22);box-shadow:0 8px 24px rgba(168,85,247,.2);}
-    .btn-csv{background:rgba(34,197,94,.1);color:#86efac;border:1.5px solid rgba(34,197,94,.3);}
-    .btn-csv:hover{transform:translateY(-3px);background:rgba(34,197,94,.2);box-shadow:0 8px 24px rgba(34,197,94,.18);}
-
-    /* ══════════════════════════════════
-       PREDICTOR SECTION
-    ══════════════════════════════════ */
-    .predictor-section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 30px;
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      animation: cardPop .6s 0.34s ease both;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-    }
-    .predictor-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .predictor-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 12px;
+    .roll-split {
       display: flex;
       align-items: center;
+      background: #fbfbfe;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .roll-split:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .roll-split.error {
+      border-color: var(--red);
+      animation: shake 0.3s ease;
+    }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+    
+    .roll-prefix {
+      padding: 14px 16px;
+      background: #f3f4f6;
+      border-right: 1.5px solid var(--border);
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+    .roll-suffix {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: var(--font);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+    .roll-suffix::placeholder {
+      color: #cbd5e1;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+    }
+    .roll-error-msg {
+      font-size: 0.78rem;
+      color: var(--red);
+      margin-bottom: 18px;
+      display: none;
+    }
+    .roll-error-msg.show {
+      display: block;
+    }
+    .roll-submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .roll-submit-btn:hover {
+      background: #4f46e5;
+      transform: translateY(-1px);
+    }
+    .roll-saved-list {
+      margin-top: 24px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      text-align: left;
+      display: none;
+    }
+    .roll-saved-list.show {
+      display: block;
+    }
+    .roll-saved-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .roll-saved-chips {
+      display: flex;
+      flex-wrap: wrap;
       gap: 8px;
     }
-    .predictor-desc {
-      font-size: 0.85rem;
+    .roll-chip {
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .roll-chip:hover {
+      background: var(--primary-glow);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ══════════════════════════════════
+       APP HEADERS & TOP BAR
+    ══════════════════════════════════ */
+    .app-header {
+      padding: 24px;
+      z-index: 10;
+    }
+    .app-header-title-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .app-title {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .app-subtitle {
+      font-size: 0.88rem;
       color: var(--muted);
-      margin-bottom: 16px;
-      line-height: 1.4;
+      font-weight: 500;
     }
-    .target-highlight {
-      font-size: 1.05rem;
+    .header-badge {
+      background: #e0e7ff;
+      color: var(--primary);
+      border-radius: 30px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .roll-display-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+    }
+    .roll-display-info {
+      font-size: 0.85rem;
       font-weight: 600;
-      color: #fff;
-      padding: 16px;
-      background: rgba(59, 130, 246, 0.08);
-      border-left: 4px solid var(--blue);
-      border-radius: 4px 8px 8px 4px;
-      line-height: 1.5;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .target-highlight.success {
-      border-left-color: var(--green);
-      background: rgba(34, 197, 94, 0.08);
+    .roll-display-badge {
+      background: var(--primary-glow);
+      color: var(--primary);
+      border-radius: 30px;
+      padding: 3px 10px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
     }
-    .target-highlight.warning {
-      border-left-color: var(--red);
-      background: rgba(239, 68, 68, 0.08);
+    .roll-switch-btn {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-family: var(--font);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
-    .simulator-controls {
+
+    /* ══════════════════════════════════
+       MAIN CONTENT AND SCROLLING
+    ══════════════════════════════════ */
+    .tab-content {
+      padding: 0 24px;
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    .tab-content.active {
+      display: flex;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    /* ══════════════════════════════════
+       DASHBOARD TAB
+    ══════════════════════════════════ */
+    .overall-attendance-card {
+      background: linear-gradient(135deg, #ffffff, #fafaff);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .overall-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .overall-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #312e81;
+    }
+    .overall-mini-pills {
+      display: flex;
+      gap: 10px;
+    }
+    .mini-pill {
+      flex: 1;
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      text-align: center;
+    }
+    .mini-pill.present { background: var(--green-bg); color: var(--green-text); }
+    .mini-pill.absent { background: var(--red-bg); color: var(--red-text); }
+    .mini-pill-val { font-size: 1.25rem; font-weight: 800; }
+    .mini-pill-lbl { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; opacity: 0.8; }
+    .overall-sub { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+
+    .overall-right {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ring-chart {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .ring-circle-bg {
+      fill: none;
+      stroke: #f3f4f6;
+      stroke-width: 8;
+    }
+    .ring-circle-fill {
+      fill: none;
+      stroke: var(--red);
+      stroke-width: 8;
+      stroke-dasharray: 251.2;
+      stroke-dashoffset: 251.2;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.8s ease-in-out, stroke 0.4s ease;
+    }
+    .ring-center-text {
+      position: absolute;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+    .ring-pct-val {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+    }
+    .ring-pct-lbl {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Half Cards Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .grid-card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .grid-card-value {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .grid-card-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* Breakdown Pie Chart Card */
+    .breakdown-card {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
-    .sim-row {
+    .breakdown-title {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+    .breakdown-body {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    .donut-chart-wrap {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      flex-shrink: 0;
+    }
+    .donut-chart {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(#f3f4f6 0% 100%);
+      transition: background 0.5s ease;
+      mask-image: radial-gradient(circle, transparent 55%, black 56%);
+      -webkit-mask-image: -webkit-radial-gradient(circle, transparent 55%, black 56%);
+    }
+    .breakdown-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .legend-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-    }
-    .sim-label {
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      color: var(--text);
     }
-    .sim-input-group {
+    .legend-left {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .sim-btn-step {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--border2);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      font-size: 1.1rem;
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .legend-dot.present { background: var(--green); }
+    .legend-dot.absent { background: var(--red); }
+    .legend-dot.holiday { background: var(--blue); }
+    .legend-dot.cancelled { background: var(--orange); }
+    .legend-val {
       font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Monthly trend card */
+    .trend-card {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .trend-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .trend-title {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+    .trend-chart {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      height: 140px;
+      padding-top: 20px;
+      border-bottom: 2px solid var(--border);
+      position: relative;
+    }
+    .trend-bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 40px;
+    }
+    .trend-bar {
+      width: 16px;
+      background: var(--primary-glow);
+      border-radius: 6px 6px 0 0;
+      height: 0%;
+      min-height: 4px;
+      transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .trend-bar.active {
+      background: var(--primary);
+    }
+    .trend-bar-tooltip {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      font-weight: 800;
+      background: var(--text);
+      color: white;
+      padding: 2px 4px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .trend-bar:hover .trend-bar-tooltip {
+      opacity: 1;
+    }
+    .trend-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    /* ══════════════════════════════════
+       DAILY ATTENDANCE TAB
+    ══════════════════════════════════ */
+    .datepicker-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      box-shadow: var(--shadow);
+    }
+    .datepicker-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.15s ease;
-      user-select: none;
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--text);
+      transition: var(--transition);
     }
-    .sim-btn-step:hover {
-      background: rgba(255,255,255,0.12);
-      border-color: var(--blue);
-      transform: scale(1.05);
+    .datepicker-btn:hover {
+      background: var(--border);
     }
-    .sim-num-display {
-      font-size: 1.1rem;
+    .datepicker-info-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .datepicker-icon {
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+    .datepicker-text {
+      text-align: left;
+    }
+    .datepicker-val {
+      font-size: 0.95rem;
       font-weight: 800;
       color: var(--text);
-      min-width: 30px;
-      text-align: center;
     }
-    .sim-result {
-      margin-top: 16px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-      text-align: center;
+    .datepicker-day {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
     }
-    .sim-result-pct {
-      font-size: 1.8rem;
-      font-weight: 900;
-      margin-top: 4px;
-      letter-spacing: -0.02em;
+    #nativeDatePicker {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
     }
-    .sim-result-diff {
-      font-size: 0.8rem;
-      font-weight: 700;
+
+    .periods-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .period-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--shadow);
+    }
+    .period-top-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .period-num-box {
+      width: 38px;
+      height: 38px;
+      background: #f0effc;
+      color: var(--primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+    .period-meta-wrap {
+      flex: 1;
+      text-align: left;
+    }
+    .period-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .subject-select-wrap {
+      position: relative;
       margin-top: 2px;
     }
-
-    /* TOAST */
-    #toast-container{position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
-    .toast{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:14px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border2);font-size:.88rem;font-weight:600;min-width:260px;max-width:360px;box-shadow:var(--shadow-lg);animation:toastIn .4s cubic-bezier(.34,1.56,.64,1) both;pointer-events:auto;}
-    .toast.hide{animation:toastOut .35s ease forwards;}
-    .toast-success{background:rgba(17,33,18,.9);color:#86efac;border-color:rgba(34,197,94,.3);}
-    .toast-danger{background:rgba(33,17,17,.9);color:#fca5a5;border-color:rgba(239,68,68,.3);}
-    .toast-info{background:rgba(17,24,39,.9);color:#bfdbfe;border-color:rgba(59,130,246,.3);}
-    .toast-icon{font-size:1.1rem;}
-    @keyframes toastIn{from{opacity:0;transform:translateX(50px) scale(.9);}to{opacity:1;transform:none;}}
-    @keyframes toastOut{from{opacity:1;transform:none;}to{opacity:0;transform:translateX(50px) scale(.9);}}
-
-    /* MODAL */
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:9998;display:none;align-items:center;justify-content:center;}
-    .modal-overlay.active{display:flex;animation:mfadeIn .25s ease;}
-    @keyframes mfadeIn{from{opacity:0;}to{opacity:1;}}
-    .modal{background:#101829;border:1px solid var(--border2);border-radius:20px;padding:36px 32px;max-width:400px;width:90%;text-align:center;box-shadow:var(--shadow-lg);animation:modalPop .35s cubic-bezier(.34,1.56,.64,1);}
-    @keyframes modalPop{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:none;}}
-    .modal-icon{font-size:2.5rem;margin-bottom:16px;}
-    .modal h3{font-size:1.2rem;font-weight:700;margin-bottom:10px;}
-    .modal p{font-size:.88rem;color:var(--muted);line-height:1.6;margin-bottom:28px;}
-    .modal-actions{display:flex;gap:12px;justify-content:center;}
-    .modal-actions .btn{min-width:120px;justify-content:center;}
-
-    /* FOOTER */
-    footer{position:relative;z-index:5;background:rgba(11,18,37,.85);border-top:1px solid var(--border);text-align:center;padding:24px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
-    footer p{font-size:.85rem;color:var(--muted);font-weight:500;}
-    footer span{color:var(--blue);}
-
-    @media(max-width:900px){
-      .dashboard{grid-template-columns:repeat(2,1fr); gap:16px;}
-      .predictor-section{grid-template-columns:1fr; gap:20px;}
+    .subject-select {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-family: var(--font);
+      font-size: 0.8rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      padding-right: 12px;
     }
-    @media(max-width:520px){
-      header{padding:32px 16px 28px;}
-      header h1{font-size:1.8rem; margin-bottom:10px;}
-      .header-meta{gap:8px;}
-      .header-pill{padding:5px 12px; font-size:0.75rem;}
-      
-      main{width:96%; margin:16px auto 40px; gap:20px;}
-      
-      .dashboard{grid-template-columns:1fr; gap:12px;}
-      .stat-card{padding:20px 18px;}
-      .stat-value{font-size:2.2rem;}
-      
-      .progress-section{padding:20px 18px;}
-      .predictor-section{padding:20px 18px;}
-      .table-section{padding:18px;}
-      
-      .actions{gap:12px;}
-      .actions .btn{width:100%; justify-content:center; padding:12px 20px; font-size:0.88rem;}
-      
-      .roll-card{padding:32px 20px; border-radius:20px;}
-      .roll-card h2{font-size:1.35rem;}
-      .roll-prefix, .roll-suffix{font-size:1.1rem; padding:12px;}
-      .prefix-options-wrap{flex-direction:column; gap:8px;}
-      .prefix-option{width:100%; justify-content:center;}
-      
-      .roll-display-bar{flex-direction:column; gap:8px; padding:10px 16px;}
-      .roll-display-badge{font-size:0.85rem; padding:3px 10px;}
+
+    .status-pills-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
     }
+    .status-pill {
+      border: 1.5px solid transparent;
+      border-radius: 30px;
+      padding: 10px 4px;
+      font-family: var(--font);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: #f9fbfd;
+      color: var(--muted);
+      border-color: var(--border);
+      text-align: center;
+      transition: var(--transition);
+      user-select: none;
+    }
+    .status-pill:hover {
+      border-color: var(--border-dark);
+    }
+    .status-pill.active.present { background: var(--green-bg); color: var(--green-text); border-color: var(--green); }
+    .status-pill.active.absent { background: var(--red-bg); color: var(--red-text); border-color: var(--red); }
+    .status-pill.active.holiday { background: var(--blue-bg); color: var(--blue-text); border-color: var(--blue); }
+    .status-pill.active.cancelled { background: var(--orange-bg); color: var(--orange-text); border-color: var(--orange); }
+
+    /* ══════════════════════════════════
+       SUBJECTS TAB
+    ══════════════════════════════════ */
+    .subjects-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+    .subjects-header-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+    .subjects-header-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .subjects-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .subject-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .subject-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .subject-info-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .subject-initials-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+    .badge-0 { background: #fdf2f8; color: #db2777; }
+    .badge-1 { background: #ecfdf5; color: #059669; }
+    .badge-2 { background: #eff6ff; color: #2563eb; }
+    .badge-3 { background: #fef3c7; color: #d97706; }
+    .badge-4 { background: #faf5ff; color: #7c3aed; }
+    .badge-5 { background: #f0fdf4; color: #16a34a; }
+
+    .subject-name-lbl {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .subject-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .subj-action-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      opacity: 0.6;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .subj-action-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    .subj-action-btn.edit { color: var(--primary); }
+    .subj-action-btn.delete { color: var(--red); }
+
+    .subject-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+      text-align: center;
+    }
+    .subject-stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .subj-stat-val {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .subj-stat-lbl {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .subject-progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .subj-progressbar-track {
+      width: 100%;
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .subj-progressbar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .subj-progressbar-fill.good { background: var(--green); }
+    .subj-progressbar-fill.warning { background: var(--orange); }
+    .subj-progressbar-fill.danger { background: var(--red); }
+
+    .subject-target-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    .subject-target-alert.danger { color: var(--red-text); }
+    .subject-target-alert.warning { color: var(--orange-text); }
+    .subject-target-alert.success { color: var(--green-text); }
+
+    .add-subject-btn {
+      position: fixed;
+      bottom: 110px;
+      right: calc(50% - 240px);
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 14px 22px;
+      font-family: var(--font);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+      z-index: 100;
+      transition: var(--transition);
+    }
+    @media(max-width: 540px) {
+      .add-subject-btn {
+        right: 20px;
+      }
+    }
+    .add-subject-btn:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+    }
+
+    /* ══════════════════════════════════
+       REPORTS TAB (Combined semester table)
+    ══════════════════════════════════ */
+    .reports-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .reports-action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .reports-table-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .reports-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: left;
+    }
+    .reports-table th {
+      background: #fafafc;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      color: var(--muted);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .reports-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      font-weight: 600;
+    }
+    .reports-table tr:hover td {
+      background: #fafafc;
+    }
+    .reports-table tr.mid-row td {
+      background: rgba(245, 158, 11, 0.05);
+      color: var(--orange-text);
+      font-weight: 700;
+    }
+    .reports-table tr.clickable {
+      cursor: pointer;
+    }
+    .reports-table tr.clickable:hover td {
+      background: var(--primary-glow);
+    }
+
+    /* ══════════════════════════════════
+       SETTINGS TAB
+    ══════════════════════════════════ */
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .setting-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .setting-item:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .setting-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+    }
+    .setting-icon {
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+    .setting-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .setting-desc {
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 1px;
+    }
+    .setting-right-text {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    /* ══════════════════════════════════
+       BOTTOM NAVIGATION BAR
+    ══════════════════════════════════ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 540px;
+      height: 76px;
+      background: rgba(255, 255, 255, 0.9);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.02);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+      padding: 0 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-decoration: none;
+      color: var(--muted);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      flex: 1;
+      height: 100%;
+    }
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--muted);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .nav-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    
+    .nav-item.active {
+      color: var(--primary);
+    }
+    .nav-item.active .nav-icon {
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      width: 44px;
+      height: 28px;
+      background: var(--primary-glow);
+      border-radius: 16px;
+      z-index: -1;
+      animation: bubblePop 0.25s ease-out;
+    }
+    @keyframes bubblePop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
   </style>
 </head>
 <body>
 
-<!-- ── BG ── -->
-<div class="bg-canvas" aria-hidden="true">
+<!-- Background blobs -->
+<div class="bg-canvas" aria-hidden="true" style="position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;">
   <div class="bg-orb bg-orb-1"></div>
   <div class="bg-orb bg-orb-2"></div>
-  <div class="bg-orb bg-orb-3"></div>
 </div>
 
-<!-- ── TOAST ── -->
 <div id="toast-container" role="status" aria-live="polite"></div>
 
 <!-- ══════════════════════════════════════════
-     ROLL NUMBER ENTRY OVERLAY
+     MODAL — ADD / EDIT SUBJECT
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="subjectModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <h3 id="subjectModalTitle">Add Subject</h3>
+    <p id="subjectModalDesc">Create a new subject to track individual attendance.</p>
+    
+    <div class="modal-form-group">
+      <label class="modal-label" for="modalSubjectName">Subject Name</label>
+      <input type="text" id="modalSubjectName" class="modal-input" placeholder="e.g. COMPUTER VISION" autocomplete="off" />
+    </div>
+
+    <div class="modal-form-group">
+      <label class="modal-label" for="modalSubjectCode">Initials Badge (1 Letter)</label>
+      <input type="text" id="modalSubjectCode" class="modal-input" placeholder="e.g. C" maxlength="2" style="width: 80px; text-align: center; text-transform: uppercase;" autocomplete="off" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeSubjectModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSubjectFromModal()">Save Subject</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CONFIRM DIALOG MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modal" style="text-align: center;">
+    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🔄</span>
+    <h3 id="confirmTitle">Reset Data?</h3>
+    <p id="confirmDesc">This will delete all saved attendance records. This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="confirmNo">Cancel</button>
+      <button class="btn btn-primary btn-danger" id="confirmYes" style="background: var(--red-bg); color: var(--red-text);">Yes, Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ROLL NUMBER OVERLAY
 ══════════════════════════════════════════ -->
 <div class="roll-overlay" id="rollOverlay" role="dialog" aria-modal="true" aria-labelledby="rollTitle">
   <div class="roll-card">
@@ -575,142 +1373,304 @@
   </div>
 </div>
 
-<!-- ── CONFIRM MODAL ── -->
-<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal">
-    <div class="modal-icon">🔄</div>
-    <h3 id="modalTitle">Reset Attendance?</h3>
-    <p>This will permanently clear all attendance data for your roll number. This action cannot be undone.</p>
-    <div class="modal-actions">
-      <button class="btn btn-reset" id="confirmYes" type="button">Yes, Reset</button>
-      <button class="btn" id="confirmNo" type="button" style="background:var(--surface2);border:1.5px solid var(--border2);color:var(--text);">Cancel</button>
+
+<!-- ══════════════════════════════════════════
+     MAIN CONTAINER LAYOUT
+══════════════════════════════════════════ -->
+<div class="app-container">
+  
+  <!-- Logged in status display -->
+  <div class="roll-display-bar" id="rollDisplayBar">
+    <div class="roll-display-info">
+      <span>👤 Student ID:</span>
+      <span class="roll-display-badge" id="rollDisplayBadge">—</span>
     </div>
+    <button class="roll-switch-btn" type="button" onclick="switchRollNumber()">
+      <svg style="width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.5;" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      Switch ID
+    </button>
   </div>
-</div>
 
-<!-- ── ROLL NUMBER BAR (shown after login) ── -->
-<div class="roll-display-bar" id="rollDisplayBar">
-  <div class="roll-display-text">
-    <span>👤 Logged in as</span>
-    <span class="roll-display-badge" id="rollDisplayBadge">—</span>
-  </div>
-  <button class="roll-switch-btn" type="button" onclick="switchRollNumber()">
-    🔄 Switch Roll Number
-  </button>
-</div>
-
-<!-- ── HEADER ── -->
-<header>
-  <div class="header-badge">🎓 Live Attendance Tracker</div>
-  <h1>Attendance Tracker</h1>
-  <div class="header-meta">
-    <span class="header-pill">III B.Tech CSE – Artificial Intelligence</span>
-    <span class="header-pill">Academic Year: 2026‑27</span>
-    <span class="header-pill">I Semester</span>
-  </div>
-</header>
-
-<!-- ── MAIN ── -->
-<main>
-  <section class="dashboard" aria-label="Attendance summary">
-    <div class="stat-card total"><div class="stat-icon">📊</div><p class="stat-label">Total Periods</p><p class="stat-value" id="totalPeriods">0</p></div>
-    <div class="stat-card present"><div class="stat-icon">✅</div><p class="stat-label">Present</p><p class="stat-value" id="totalPresent">0</p></div>
-    <div class="stat-card absent"><div class="stat-icon">❌</div><p class="stat-label">Absent</p><p class="stat-value" id="totalAbsent">0</p></div>
-    <div class="stat-card pct"><div class="stat-icon">📈</div><p class="stat-label">Overall Attendance</p><p class="stat-value" id="overallPercentage">0%</p></div>
-  </section>
-
-  <section class="progress-section" aria-label="Attendance progress">
-    <div class="progress-header">
-      <span class="progress-title">Attendance Progress</span>
-      <span class="progress-meta">75% required to avoid shortage</span>
+  <!-- Dynamic Header -->
+  <header class="app-header">
+    <div class="app-header-title-wrap">
+      <h1 class="app-title" id="appHeaderTitle">Dashboard</h1>
+      <span class="header-badge" id="appHeaderBadge">Semester 1</span>
     </div>
-    <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-      <div id="progressBar" class="progress-fill"></div>
-    </div>
-    <p id="attendanceStatus"><span class="status-dot"></span><span id="statusText">Mark absent periods in the table below</span></p>
-  </section>
+    <p class="app-subtitle" id="appHeaderSubtitle">Loading tracker...</p>
+  </header>
 
   <!-- ══════════════════════════════════════════
-       ATTENDANCE PREDICTOR & SIMULATOR
+       TAB CONTENT: DASHBOARD
   ══════════════════════════════════════════ -->
-  <section class="predictor-section" aria-label="Attendance predictor and simulator">
-    <div class="predictor-card">
-      <div>
-        <h3 class="predictor-title">🔮 Attendance Target Planner</h3>
-        <p class="predictor-desc">Find out how many consecutive periods you must attend or can afford to miss to stay above the 75% threshold.</p>
-      </div>
-      <div id="targetPlannerOutput" class="target-highlight">
-        Mark periods below to view attendance goals.
-      </div>
-    </div>
-
-    <div class="predictor-card">
-      <div>
-        <h3 class="predictor-title">🧪 What-If Simulator</h3>
-        <p class="predictor-desc">Simulate how your overall percentage will increase or decrease if you attend or miss upcoming periods.</p>
-      </div>
-      <div class="simulator-controls">
-        <div class="sim-row">
-          <span class="sim-label">Attending next periods:</span>
-          <div class="sim-input-group">
-            <button class="sim-btn-step" type="button" onclick="adjustSim('attend', -1)">-</button>
-            <span id="simAttendVal" class="sim-num-display">0</span>
-            <button class="sim-btn-step" type="button" onclick="adjustSim('attend', 1)">+</button>
+  <div class="tab-content active" id="tabContent_dashboard">
+    
+    <!-- Circular Ring Overall Card -->
+    <div class="card overall-attendance-card">
+      <div class="overall-left">
+        <h3 class="overall-title">Overall Attendance</h3>
+        <div class="overall-sub" id="overallTotalLabel">0 effective periods</div>
+        <div class="overall-mini-pills">
+          <div class="mini-pill present">
+            <div class="mini-pill-val" id="overallPresentCount">0</div>
+            <div class="mini-pill-lbl">Present</div>
           </div>
-        </div>
-        <div class="sim-row">
-          <span class="sim-label">Missing next periods:</span>
-          <div class="sim-input-group">
-            <button class="sim-btn-step" type="button" onclick="adjustSim('absent', -1)">-</button>
-            <span id="simAbsentVal" class="sim-num-display">0</span>
-            <button class="sim-btn-step" type="button" onclick="adjustSim('absent', 1)">+</button>
+          <div class="mini-pill absent">
+            <div class="mini-pill-val" id="overallAbsentCount">0</div>
+            <div class="mini-pill-lbl">Absent</div>
           </div>
         </div>
       </div>
-      <div class="sim-result">
-        <span class="sim-label" style="font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)">Simulated Attendance</span>
-        <div id="simResultPct" class="sim-result-pct">0%</div>
-        <div id="simResultDiff" class="sim-result-diff">No change</div>
+      <div class="overall-right">
+        <svg viewBox="0 0 100 100" class="ring-chart">
+          <circle cx="50" cy="50" r="40" class="ring-circle-bg"/>
+          <circle cx="50" cy="50" r="40" class="ring-circle-fill" id="overallRingCircle"/>
+        </svg>
+        <div class="ring-center-text">
+          <span class="ring-pct-val" id="overallPctValue">0%</span>
+          <span class="ring-pct-lbl">Overall</span>
+        </div>
       </div>
     </div>
-  </section>
 
-  <section class="table-section" aria-label="Daily attendance table">
-    <div class="table-section-header">
-      <div>
-        <h2>📅 Daily &amp; Weekly Attendance</h2>
-        <p class="instruction">Click a period button to mark yourself <strong>absent</strong>. Future dates are excluded from calculations.</p>
+    <!-- Mini stats card grid -->
+    <div class="stats-grid">
+      <div class="card grid-card">
+        <div class="grid-card-title">
+          <span>📅</span> Today
+        </div>
+        <div class="grid-card-value" id="todayPresentCount">0/0</div>
+        <div class="grid-card-sub">periods present</div>
+      </div>
+      <div class="card grid-card">
+        <div class="grid-card-title">
+          <span>🗓️</span> This Month
+        </div>
+        <div class="grid-card-value" id="monthPresentPct">0%</div>
+        <div class="grid-card-sub" id="monthPresentRatio">0/0 periods</div>
       </div>
     </div>
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr><th>Week</th><th>Day &amp; Date</th><th>Periods</th><th>Mark Absent</th><th>Absent</th><th>Present</th><th>Daily %</th><th>Overall %</th></tr>
-        </thead>
-        <tbody id="attendanceTable"></tbody>
-      </table>
-    </div>
-  </section>
 
-  <div class="actions">
-    <button class="btn btn-save"     type="button" onclick="saveAttendance()">💾 Save</button>
-    <button class="btn btn-download" type="button" onclick="downloadAttendance()">📥 Download JSON</button>
-    <button class="btn btn-csv"      type="button" onclick="downloadCSV()">📊 Download CSV</button>
-    <button class="btn btn-import"   type="button" onclick="document.getElementById('importFileInput').click()">📤 Import Backup</button>
-    <button class="btn btn-reset"    type="button" onclick="resetAttendance()">🔄 Reset</button>
-    <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importAttendance(event)" />
+    <!-- Breakdown pie donut chart -->
+    <div class="card breakdown-card">
+      <h3 class="breakdown-title">Attendance Breakdown</h3>
+      <div class="breakdown-body">
+        <div class="donut-chart-wrap">
+          <div class="donut-chart" id="breakdownPieChart"></div>
+        </div>
+        <div class="breakdown-legend">
+          <div class="legend-item">
+            <div class="legend-left">
+              <span class="legend-dot present"></span> Present
+            </div>
+            <span class="legend-val" id="breakdownVal_present">0</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left">
+              <span class="legend-dot absent"></span> Absent
+            </div>
+            <span class="legend-val" id="breakdownVal_absent">0</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left">
+              <span class="legend-dot holiday"></span> Holiday
+            </div>
+            <span class="legend-val" id="breakdownVal_holiday">0</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left">
+              <span class="legend-dot cancelled"></span> Cancelled
+            </div>
+            <span class="legend-val" id="breakdownVal_cancelled">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly trend bar chart -->
+    <div class="card trend-card">
+      <h3 class="trend-title">Monthly Attendance</h3>
+      <div class="trend-chart" id="trendChartContainer">
+        <!-- Monthly columns rendered via JS -->
+      </div>
+    </div>
+
   </div>
-</main>
 
-<footer>
-  <p>Attendance Tracker &nbsp;|&nbsp; <span>III B.Tech CSE-AI</span> &nbsp;|&nbsp; Academic Year 2026-27</p>
-</footer>
+  <!-- ══════════════════════════════════════════
+       TAB CONTENT: DAILY ATTENDANCE
+  ══════════════════════════════════════════ -->
+  <div class="tab-content" id="tabContent_daily">
+    
+    <!-- Custom date picker card -->
+    <div class="datepicker-card">
+      <button class="datepicker-btn" onclick="offsetSelectedDate(-1)">❮</button>
+      <div class="datepicker-info-wrap" onclick="triggerNativeDatePicker()">
+        <span class="datepicker-icon">📅</span>
+        <div class="datepicker-text">
+          <div class="datepicker-val" id="selectedDateDisplay">—</div>
+          <div class="datepicker-day" id="selectedDateDayDisplay">—</div>
+        </div>
+        <input type="date" id="nativeDatePicker" onchange="onNativeDateChanged(event)" min="2026-06-29" max="2026-10-24" />
+      </div>
+      <button class="datepicker-btn" onclick="offsetSelectedDate(1)">❯</button>
+    </div>
+
+    <!-- Period items container -->
+    <div class="periods-list" id="dailyPeriodsList">
+      <!-- Generated dynamically by JS -->
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB CONTENT: SUBJECTS
+  ══════════════════════════════════════════ -->
+  <div class="tab-content" id="tabContent_subjects">
+    
+    <div class="subjects-header-bar">
+      <h3 class="subjects-header-title">Subjects</h3>
+      <span class="subjects-header-meta" id="subjectsHeaderMeta">0 subjects • 0 total periods</span>
+    </div>
+
+    <div class="subjects-list-container" id="subjectsListContainer">
+      <!-- Generated dynamically by JS -->
+    </div>
+
+    <!-- Floating Action Button inside subjects tab scroll window -->
+    <button class="add-subject-btn" onclick="openAddSubjectModal()">
+      <span style="font-size: 1.2rem; font-weight: bold; line-height: 1;">+</span> Add Subject
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB CONTENT: REPORTS
+  ══════════════════════════════════════════ -->
+  <div class="tab-content" id="tabContent_reports">
+    <div class="card reports-card">
+      <h3 class="breakdown-title">Semester Schedule Overview</h3>
+      <p class="predictor-desc" style="margin-bottom: 4px;">Click any class day in the list below to jump to that date in the **Daily Attendance Logger** tab.</p>
+      
+      <div class="reports-table-wrap">
+        <table class="reports-table">
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Day &amp; Date</th>
+              <th>Periods</th>
+              <th>Present</th>
+              <th>Absent</th>
+              <th>Overall %</th>
+            </tr>
+          </thead>
+          <tbody id="semesterReportsTableBody">
+            <!-- Full semester list generated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Exporters -->
+    <div class="card reports-card">
+      <h3 class="breakdown-title">Backup &amp; Data Options</h3>
+      <p class="predictor-desc">Download a backup report to keep your attendance data safe or transfer it to another browser.</p>
+      
+      <div class="reports-action-row">
+        <button class="btn btn-secondary" onclick="downloadAttendanceJSON()" style="flex:1;">📥 Download JSON</button>
+        <button class="btn btn-secondary" onclick="downloadAttendanceCSV()" style="flex:1;">📊 Download CSV</button>
+      </div>
+      <button class="btn btn-primary" onclick="document.getElementById('importFileInput').click()" style="width: 100%;">📤 Upload / Import Backup</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importAttendanceJSON(event)" />
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB CONTENT: SETTINGS
+  ══════════════════════════════════════════ -->
+  <div class="tab-content" id="tabContent_settings">
+    
+    <div class="settings-list">
+      <div class="setting-item" onclick="switchRollNumber()">
+        <div class="setting-left">
+          <span class="setting-icon">👤</span>
+          <div>
+            <div class="setting-title">Change Roll Number</div>
+            <div class="setting-desc">Switch to a different student profile</div>
+          </div>
+        </div>
+        <div class="setting-right-text" id="settingsCurrentRollBadge">—</div>
+      </div>
+
+      <div class="setting-item" onclick="document.getElementById('importFileInput').click()">
+        <div class="setting-left">
+          <span class="setting-icon">📤</span>
+          <div>
+            <div class="setting-title">Import Backup</div>
+            <div class="setting-desc">Restore state from a JSON file</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-item" onclick="triggerSemesterReset()">
+        <div class="setting-left">
+          <span class="setting-icon" style="color: var(--red);">🔄</span>
+          <div>
+            <div class="setting-title" style="color: var(--red-text);">Reset Attendance</div>
+            <div class="setting-desc">Clear all logs for the current profile</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       BOTTOM NAVIGATION BAR
+  ══════════════════════════════════════════ -->
+  <nav class="bottom-nav" aria-label="Bottom Navigation">
+    <div class="nav-item active" onclick="switchTab('dashboard')">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </span>
+      <span class="nav-label">Dashboard</span>
+    </div>
+    
+    <div class="nav-item" onclick="switchTab('daily')">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </span>
+      <span class="nav-label">Daily</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('subjects')">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
+      </span>
+      <span class="nav-label">Subjects</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('reports')">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </span>
+      <span class="nav-label">Reports</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('settings')">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </span>
+      <span class="nav-label">Settings</span>
+    </div>
+  </nav>
+
+</div>
 
 <script>
 /* ══════════════════════════════════════════════════
-   WEEKS DATA
+   ACADEMIC SEMESTER CALENDAR DATA (Preserved)
 ══════════════════════════════════════════════════ */
-const weeks=[
+const weeks = [
   {week:"Week 1",date:"29 Jun - 03 Jul",days:[{day:"Monday",date:"29 Jun",fullDate:"2026-06-29",periods:4},{day:"Tuesday",date:"30 Jun",fullDate:"2026-06-30",periods:3},{day:"Wednesday",date:"01 Jul",fullDate:"2026-07-01",periods:3},{day:"Thursday",date:"02 Jul",fullDate:"2026-07-02",periods:4},{day:"Friday",date:"03 Jul",fullDate:"2026-07-03",periods:3}]},
   {week:"Week 2",date:"06 Jul - 10 Jul",days:[{day:"Monday",date:"06 Jul",fullDate:"2026-07-06",periods:4},{day:"Tuesday",date:"07 Jul",fullDate:"2026-07-07",periods:3},{day:"Wednesday",date:"08 Jul",fullDate:"2026-07-08",periods:3},{day:"Thursday",date:"09 Jul",fullDate:"2026-07-09",periods:4},{day:"Friday",date:"10 Jul",fullDate:"2026-07-10",periods:3}]},
   {week:"Week 3",date:"13 Jul - 17 Jul",days:[{day:"Monday",date:"13 Jul",fullDate:"2026-07-13",periods:4},{day:"Tuesday",date:"14 Jul",fullDate:"2026-07-14",periods:3},{day:"Wednesday",date:"15 Jul",fullDate:"2026-07-15",periods:3},{day:"Thursday",date:"16 Jul",fullDate:"2026-07-16",periods:4},{day:"Friday",date:"17 Jul",fullDate:"2026-07-17",periods:3}]},
@@ -731,38 +1691,91 @@ const weeks=[
   {week:"II MID",date:"22 Oct - 24 Oct",days:[{day:"Thursday",date:"22 Oct",fullDate:"2026-10-22",periods:2},{day:"Friday",date:"23 Oct",fullDate:"2026-10-23",periods:2},{day:"Saturday",date:"24 Oct",fullDate:"2026-10-24",periods:2}]}
 ];
 
+const allDays = [];
+weeks.forEach(w => w.days.forEach(d => allDays.push({ ...d, weekName: w.week })));
+
 /* ══════════════════════════════════════════════════
-   ROLL NUMBER STATE
+   DEFAULT CONFIGURED SUBJECTS
+══════════════════════════════════════════════════ */
+const defaultSubjects = [
+  { id: 'subj_aisp_lab', name: 'AISP (LAB)', code: 'A' },
+  { id: 'subj_cv', name: 'COMPUTER VISION', code: 'C' },
+  { id: 'subj_dv', name: 'DATA VISUALIZATION', code: 'D' },
+  { id: 'subj_essp', name: 'ESSP', code: 'E' },
+  { id: 'subj_aisp', name: 'AISP', code: 'S' },
+  { id: 'subj_cv_lab', name: 'CV (LAB)', code: 'V' },
+  { id: 'subj_dv_lab', name: 'DV (LAB)', code: 'L' }
+];
+
+const weekdayDefaultSubjects = {
+  1: ['subj_aisp', 'subj_cv', 'subj_dv', 'subj_essp', 'subj_aisp', 'subj_cv'],
+  2: ['subj_cv', 'subj_dv', 'subj_essp', 'subj_aisp', 'subj_cv', 'subj_dv'],
+  3: ['subj_dv', 'subj_essp', 'subj_aisp', 'subj_cv', 'subj_dv', 'subj_essp'],
+  4: ['subj_essp', 'subj_aisp', 'subj_cv', 'subj_dv', 'subj_essp', 'subj_aisp'],
+  5: ['subj_aisp_lab', 'subj_aisp_lab', 'subj_cv_lab', 'subj_dv_lab', 'subj_aisp', 'subj_cv'],
+  6: ['subj_dv', 'subj_cv', 'subj_essp', 'subj_aisp', 'subj_cv', 'subj_dv']
+};
+
+/* ══════════════════════════════════════════════════
+   STATE VARIABLES
 ══════════════════════════════════════════════════ */
 let currentRollNumber = '';
+let selectedDateStr = '2026-07-15';
+let subjects = [];
+let dailyRecords = {};
+let editSubjectId = null;
 
-// Storage key changes per roll number
-function getStorageKey() {
-  return `attendance_${currentRollNumber.toUpperCase()}`;
-}
-
-// List of all roll numbers that have saved data
-function getSavedRollNumbers() {
-  const list = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
-  return list;
-}
-
-function addToRollList(roll) {
-  const list = getSavedRollNumbers();
-  const upper = roll.toUpperCase();
-  if (!list.includes(upper)) {
-    list.push(upper);
-    localStorage.setItem('roll_number_list', JSON.stringify(list));
-  }
-}
-
-/* ══════════════════════════════════════════════════
-   ROLL NUMBER OVERLAY LOGIC
-══════════════════════════════════════════════════ */
 const ROLL_PREFIX = '2473A31';
 const LATERAL_PREFIX = '2573A31L';
 let selectedPrefix = '2473A31';
 
+/* ══════════════════════════════════════════════════
+   TAB CONTROLLER
+══════════════════════════════════════════════════ */
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.getElementById(`tabContent_${tabId}`).classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navItems = document.querySelectorAll('.nav-item');
+  const index = ['dashboard', 'daily', 'subjects', 'reports', 'settings'].indexOf(tabId);
+  if (index !== -1 && navItems[index]) {
+    navItems[index].classList.add('active');
+  }
+
+  const title = document.getElementById('appHeaderTitle');
+  const subtitle = document.getElementById('appHeaderSubtitle');
+  const badge = document.getElementById('appHeaderBadge');
+
+  badge.textContent = currentRollNumber ? currentRollNumber : 'No Profile';
+
+  if (tabId === 'dashboard') {
+    title.textContent = 'Dashboard';
+    const d = new Date(selectedDateStr + "T00:00:00");
+    subtitle.textContent = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    renderDashboard();
+  } else if (tabId === 'daily') {
+    title.textContent = 'Daily Attendance';
+    subtitle.textContent = 'Mark daily presence, absence or holiday states';
+    renderDailyTab();
+  } else if (tabId === 'subjects') {
+    title.textContent = 'Subjects Summary';
+    subtitle.textContent = 'Manage class modules and verify attendance safety';
+    renderSubjectsTab();
+  } else if (tabId === 'reports') {
+    title.textContent = 'Semester Reports';
+    subtitle.textContent = 'Overview logs grid and download backup exports';
+    renderReportsTab();
+  } else if (tabId === 'settings') {
+    title.textContent = 'App Settings';
+    subtitle.textContent = 'Configure student ID and clean database state';
+    renderSettingsTab();
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   ROLL NUMBER & INITIALIZATION
+══════════════════════════════════════════════════ */
 function updatePrefixSelection(val) {
   selectedPrefix = val;
   document.getElementById('rollPrefixText').textContent = val;
@@ -787,8 +1800,7 @@ function showRollOverlay() {
   const overlay = document.getElementById('rollOverlay');
   overlay.classList.remove('hidden');
 
-  // Show previously saved roll numbers as quick-select chips
-  const saved = getSavedRollNumbers();
+  const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
   const listEl = document.getElementById('rollSavedList');
   const chipsEl = document.getElementById('rollSavedChips');
 
@@ -798,20 +1810,12 @@ function showRollOverlay() {
       const isLat = r.startsWith(LATERAL_PREFIX);
       const prefix = isLat ? LATERAL_PREFIX : ROLL_PREFIX;
       const suffix = r.replace(prefix, '');
-      return `<span class="roll-chip" onclick="quickSelectRoll('${prefix}', '${suffix}')">
-        <span style="opacity:.6;font-weight:500">${prefix}</span>${suffix}
-      </span>`;
+      return `<span class="roll-chip" onclick="quickSelectRoll('${prefix}', '${suffix}')">${r}</span>`;
     }).join('');
   } else {
     listEl.classList.remove('show');
   }
-
-  // Focus suffix input
   setTimeout(() => document.getElementById('rollSuffix').focus(), 100);
-}
-
-function hideRollOverlay() {
-  document.getElementById('rollOverlay').classList.add('hidden');
 }
 
 function quickSelectRoll(prefix, suffix) {
@@ -823,10 +1827,10 @@ function quickSelectRoll(prefix, suffix) {
 }
 
 function submitRollNumber() {
-  const suffixEl  = document.getElementById('rollSuffix');
-  const splitBox  = document.getElementById('rollSplitBox');
-  const errorEl   = document.getElementById('rollError');
-  const suffix    = suffixEl.value.trim();
+  const suffixEl = document.getElementById('rollSuffix');
+  const splitBox = document.getElementById('rollSplitBox');
+  const errorEl = document.getElementById('rollError');
+  const suffix = suffixEl.value.trim();
 
   const requiredLen = selectedPrefix === LATERAL_PREFIX ? 2 : 3;
 
@@ -841,515 +1845,791 @@ function submitRollNumber() {
   splitBox.classList.remove('error');
   errorEl.classList.remove('show');
 
-  // Pad suffix with leading zeros if numeric
   const paddedSuffix = /^\d+$/.test(suffix) ? suffix.padStart(requiredLen, '0') : suffix.toUpperCase();
   currentRollNumber = (selectedPrefix + paddedSuffix).toUpperCase();
-  addToRollList(currentRollNumber);
+  
+  const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
+  if (!saved.includes(currentRollNumber)) {
+    saved.push(currentRollNumber);
+    localStorage.setItem('roll_number_list', JSON.stringify(saved));
+  }
 
-  // Update header badge
+  localStorage.setItem('current_roll_number', currentRollNumber);
   document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
+  document.getElementById('rollOverlay').classList.add('hidden');
 
-  hideRollOverlay();
-  createTable();
-  showToast(`Loaded: Roll No ${currentRollNumber}`, 'info', '👤');
+  loadDataForProfile();
+  showToast(`Profile Loaded: ${currentRollNumber}`, 'success');
+  switchTab('dashboard');
 }
 
 function switchRollNumber() {
   currentRollNumber = '';
-  document.querySelectorAll('.absence-checkbox').forEach(cb => { cb.checked = false; });
-  // Reset simulator values on switch
-  simAttendCount = 0;
-  simAbsentCount = 0;
-  document.getElementById('simAttendVal').textContent = 0;
-  document.getElementById('simAbsentVal').textContent = 0;
-
-  calculateAttendance();
-  
-  // Reset to default regular prefix
-  const radioReg = document.querySelector(`input[name="rollPrefix"][value="${ROLL_PREFIX}"]`);
-  if (radioReg) radioReg.checked = true;
-  updatePrefixSelection(ROLL_PREFIX);
-
   document.getElementById('rollSuffix').value = '';
   showRollOverlay();
 }
 
-// Enter key on suffix input
-document.getElementById('rollSuffix').addEventListener('keydown', e => {
-  if (e.key === 'Enter') submitRollNumber();
-});
-
-// Dynamic validation slice
-document.getElementById('rollSuffix').addEventListener('input', e => {
-  const maxLen = selectedPrefix === LATERAL_PREFIX ? 2 : 3;
-  e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, maxLen);
-});
-
 /* ══════════════════════════════════════════════════
-   HELPERS
+   LOCALSTORAGE LOAD / SAVE
 ══════════════════════════════════════════════════ */
-function isFutureDate(d){const t=new Date();t.setHours(23,59,59,999);return new Date(d+"T00:00:00")>t;}
-function getAllDays(){const a=[];weeks.forEach(w=>w.days.forEach(d=>a.push(d)));return a;}
-
-/* ══════════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════════ */
-function showToast(msg,type='info',icon='ℹ️'){
-  const c=document.getElementById('toast-container');
-  const t=document.createElement('div');t.className=`toast toast-${type}`;
-  t.innerHTML=`<span class="toast-icon">${icon}</span><span>${msg}</span>`;
-  c.appendChild(t);
-  setTimeout(()=>{t.classList.add('hide');t.addEventListener('animationend',()=>t.remove());},3500);
-}
-
-/* ══════════════════════════════════════════════════
-   CONFIRM MODAL
-══════════════════════════════════════════════════ */
-function showConfirm(cb){
-  const ov=document.getElementById('confirmModal');ov.classList.add('active');
-  document.getElementById('confirmYes').onclick=()=>{ov.classList.remove('active');cb();};
-  document.getElementById('confirmNo').onclick=()=>ov.classList.remove('active');
-  ov.onclick=e=>{if(e.target===ov)ov.classList.remove('active');};
-}
-
-/* ══════════════════════════════════════════════════
-   COUNT-UP ANIMATION
-══════════════════════════════════════════════════ */
-function animateCount(el,target){
-  const start=parseInt(el.textContent)||0,dur=500,t0=performance.now();
-  const step=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(start+(target-start)*e);if(p<1)requestAnimationFrame(step);};
-  requestAnimationFrame(step);
-}
-
-/* ══════════════════════════════════════════════════
-   CREATE PERIOD CHECKBOXES
-══════════════════════════════════════════════════ */
-function createPeriodCheckboxes(periods,dayIndex,fullDate){
-  const future=isFutureDate(fullDate);let html='';
-  for(let p=1;p<=periods;p++){html+=`<label class="period-box ${future?'future-period':''}"><input type="checkbox" class="absence-checkbox" data-day="${dayIndex}" data-period="${p}" ${future?'disabled':''}><span>P${p}</span></label>`;}
-  return html;
-}
-
-/* ══════════════════════════════════════════════════
-   BUILD TABLE
-══════════════════════════════════════════════════ */
-function createTable(){
-  const tbody=document.getElementById('attendanceTable');tbody.innerHTML='';let di=0;
-  weeks.forEach(week=>{
-    const wr=document.createElement('tr');
-    wr.className=week.week.includes('MID')?'week-heading-row mid-heading':'week-heading-row';
-    wr.innerHTML=`<td colspan="8">📅 &nbsp;${week.week} — ${week.date}</td>`;
-    tbody.appendChild(wr);
-    week.days.forEach(day=>{
-      const future=isFutureDate(day.fullDate);
-      const row=document.createElement('tr');row.className='day-row';
-      if(day.day.includes('Saturday'))row.classList.add('saturday-row');
-      if(future)row.classList.add('future-row');
-      row.innerHTML=`<td>${week.week}</td><td><span class="day-name">${day.day}</span><span class="day-date">${day.date}</span></td><td>${day.periods}</td><td><div class="period-checkboxes">${createPeriodCheckboxes(day.periods,di,day.fullDate)}</div></td><td id="absent-count-${di}">${future?'—':'0'}</td><td id="present-${di}">${future?'—':day.periods}</td><td id="daily-${di}" class="${future?'upcoming':'good'}">${future?'Upcoming':'100.00%'}</td><td id="overall-${di}">—</td>`;
-      tbody.appendChild(row);di++;
-    });
-  });
-  loadAttendance();
-  document.querySelectorAll('.absence-checkbox').forEach(cb=>cb.addEventListener('change',calculateAttendance));
-}
-
-/* ══════════════════════════════════════════════════
-   CALCULATE ATTENDANCE
-══════════════════════════════════════════════════ */
-function calculateAttendance(){
-  const days=getAllDays();let tp=0,ta=0,pr=0;
-  days.forEach((day,i)=>{
-    if(isFutureDate(day.fullDate)){
-      document.getElementById(`absent-count-${i}`).textContent='—';
-      document.getElementById(`present-${i}`).textContent='—';
-      const dc=document.getElementById(`daily-${i}`);dc.textContent='Upcoming';dc.className='upcoming';
-      document.getElementById(`overall-${i}`).textContent='—';return;
-    }
-    const cbs=document.querySelectorAll(`.absence-checkbox[data-day="${i}"]`);
-    let absent=0;cbs.forEach(cb=>{if(cb.checked)absent++;});
-    const present=day.periods-absent,dpct=(present/day.periods)*100;
-    tp+=day.periods;ta+=absent;pr+=present;
-    const opct=(pr/tp)*100;
-    document.getElementById(`absent-count-${i}`).textContent=absent;
-    document.getElementById(`present-${i}`).textContent=present;
-    const dc=document.getElementById(`daily-${i}`);dc.textContent=dpct.toFixed(2)+'%';setColor(dc,dpct);
-    const oc=document.getElementById(`overall-${i}`);oc.textContent=opct.toFixed(2)+'%';setColor(oc,opct);
-  });
-  animateCount(document.getElementById('totalPeriods'),tp);
-  animateCount(document.getElementById('totalPresent'),pr);
-  animateCount(document.getElementById('totalAbsent'),ta);
-  const fp=tp>0?(pr/tp)*100:0;
-  document.getElementById('overallPercentage').textContent=fp.toFixed(2)+'%';
-  updateProgress(fp);
-
-  // Update Predictor State
-  currentTotalPeriods = tp;
-  currentPresentPeriods = pr;
-  updatePredictorOutput();
-}
-
-/* ══════════════════════════════════════════════════
-   PREDICTOR & SIMULATOR LOGIC
-══════════════════════════════════════════════════ */
-let currentTotalPeriods = 0;
-let currentPresentPeriods = 0;
-let simAttendCount = 0;
-let simAbsentCount = 0;
-
-function updatePredictorOutput() {
-  const targetEl = document.getElementById('targetPlannerOutput');
-  if (currentTotalPeriods === 0) {
-    targetEl.className = 'target-highlight';
-    targetEl.innerHTML = 'Enter your Roll Number and mark past periods to view your target goals.';
-    runSimulation();
-    return;
-  }
-
-  const pct = (currentPresentPeriods / currentTotalPeriods) * 100;
-
-  if (pct >= 75) {
-    const maxMiss = Math.floor((4 * currentPresentPeriods - 3 * currentTotalPeriods) / 3);
-    if (maxMiss <= 0) {
-      targetEl.className = 'target-highlight warning';
-      targetEl.innerHTML = `⚠️ <strong>Margin Warning:</strong> You are currently at <strong>${pct.toFixed(2)}%</strong>. If you miss even <strong>1 period</strong>, your attendance will fall below the required 75%!`;
-    } else {
-      targetEl.className = 'target-highlight success';
-      targetEl.innerHTML = `✅ <strong>Safe Zone:</strong> You are at <strong>${pct.toFixed(2)}%</strong>. You can afford to miss up to <strong>${maxMiss} consecutive period${maxMiss > 1 ? 's' : ''}</strong> without dropping below 75%.`;
-    }
+function loadDataForProfile() {
+  const storedSubjects = localStorage.getItem('att_subjects');
+  if (storedSubjects) {
+    subjects = JSON.parse(storedSubjects);
   } else {
-    const reqAttend = Math.max(0, Math.ceil(3 * currentTotalPeriods - 4 * currentPresentPeriods));
-    targetEl.className = 'target-highlight warning';
-    targetEl.innerHTML = `🚨 <strong>Shortage:</strong> You are currently at <strong>${pct.toFixed(2)}%</strong>. You need to attend the next <strong>${reqAttend} consecutive period${reqAttend > 1 ? 's' : ''}</strong> to bring your overall average up to 75%.`;
+    subjects = [...defaultSubjects];
+    localStorage.setItem('att_subjects', JSON.stringify(subjects));
   }
 
-  runSimulation();
-}
-
-function adjustSim(type, val) {
-  if (type === 'attend') {
-    simAttendCount = Math.max(0, simAttendCount + val);
-    document.getElementById('simAttendVal').textContent = simAttendCount;
+  const storedRecords = localStorage.getItem(`att_records_${currentRollNumber}`);
+  if (storedRecords) {
+    dailyRecords = JSON.parse(storedRecords);
   } else {
-    simAbsentCount = Math.max(0, simAbsentCount + val);
-    document.getElementById('simAbsentVal').textContent = simAbsentCount;
+    dailyRecords = {};
   }
-  runSimulation();
+
+  calculateStats();
+  renderDashboard();
 }
 
-function runSimulation() {
-  const simTotal = currentTotalPeriods + simAttendCount + simAbsentCount;
-  const simPresent = currentPresentPeriods + simAttendCount;
-  const resultPctEl = document.getElementById('simResultPct');
-  const resultDiffEl = document.getElementById('simResultDiff');
+function saveRecords() {
+  if (!currentRollNumber) return;
+  localStorage.setItem(`att_records_${currentRollNumber}`, JSON.stringify(dailyRecords));
+  calculateStats();
+}
 
-  if (simTotal === 0) {
-    resultPctEl.textContent = '0.00%';
-    resultPctEl.style.color = 'var(--muted)';
-    resultDiffEl.textContent = 'No change';
-    resultDiffEl.style.color = 'var(--muted)';
-    return;
-  }
+/* ══════════════════════════════════════════════════
+   ATTENDANCE STATS ENGINE
+══════════════════════════════════════════════════ */
+let globalStats = {
+  overallPct: 0,
+  totalConducted: 0,
+  totalPresent: 0,
+  totalAbsent: 0,
+  totalHoliday: 0,
+  totalCancelled: 0,
+  todayConducted: 0,
+  todayPresent: 0,
+  monthRatio: '0/0',
+  monthPct: '0%',
+  monthlyTrend: {},
+  subjectStats: {}
+};
 
-  const currentPct = currentTotalPeriods > 0 ? (currentPresentPeriods / currentTotalPeriods) * 100 : 0;
-  const simPct = (simPresent / simTotal) * 100;
-
-  resultPctEl.textContent = simPct.toFixed(2) + '%';
+function calculateStats() {
+  globalStats.totalConducted = 0;
+  globalStats.totalPresent = 0;
+  globalStats.totalAbsent = 0;
+  globalStats.totalHoliday = 0;
+  globalStats.totalCancelled = 0;
   
-  if (simPct >= 75) {
-    resultPctEl.style.color = 'var(--green)';
-  } else if (simPct >= 65) {
-    resultPctEl.style.color = 'var(--amber)';
-  } else {
-    resultPctEl.style.color = 'var(--red)';
-  }
+  globalStats.todayConducted = 0;
+  globalStats.todayPresent = 0;
+  
+  let monthConducted = 0;
+  let monthPresent = 0;
 
-  const diff = simPct - currentPct;
-  if (diff > 0) {
-    resultDiffEl.textContent = `📈 Increase of +${diff.toFixed(2)}%`;
-    resultDiffEl.style.color = 'var(--green)';
-  } else if (diff < 0) {
-    resultDiffEl.textContent = `📉 Decrease of ${diff.toFixed(2)}%`;
-    resultDiffEl.style.color = 'var(--red)';
-  } else {
-    resultDiffEl.textContent = 'No change';
-    resultDiffEl.style.color = 'var(--muted)';
-  }
-}
-
-function setColor(el,pct){el.className=pct>=75?'good':pct>=65?'warning':'danger';}
-
-/* ══════════════════════════════════════════════════
-   PROGRESS BAR
-══════════════════════════════════════════════════ */
-function updateProgress(pct){
-  const bar=document.getElementById('progressBar'),dot=document.querySelector('.status-dot'),txt=document.getElementById('statusText');
-  bar.style.width=pct+'%';bar.parentElement.setAttribute('aria-valuenow',Math.round(pct));
-  if(pct>=75){bar.style.background='linear-gradient(90deg,#16a34a,#4ade80)';dot.style.background='#22c55e';txt.textContent=`✅ You're good! ${pct.toFixed(2)}% — above the 75% requirement`;txt.style.color='#4ade80';}
-  else if(pct>0){bar.style.background='linear-gradient(90deg,#b45309,#f59e0b)';dot.style.background='#f59e0b';txt.textContent=`⚠️ Warning: ${pct.toFixed(2)}% — below 75% threshold`;txt.style.color='#fcd34d';}
-  else{bar.style.background='linear-gradient(90deg,#1d4ed8,#60a5fa)';dot.style.background='#3b82f6';txt.textContent='Mark absent periods in the table below';txt.style.color='var(--muted)';}
-}
-
-/* ══════════════════════════════════════════════════
-   SAVE / LOAD / RESET  (keyed by roll number)
-══════════════════════════════════════════════════ */
-function saveAttendance(){
-  if(!currentRollNumber){ showToast('No roll number set!','danger','⚠️'); return; }
-  const data={};
-  document.querySelectorAll('.absence-checkbox').forEach(cb=>{data[`${cb.dataset.day}-${cb.dataset.period}`]=cb.checked;});
-  localStorage.setItem(getStorageKey(), JSON.stringify(data));
-  showToast(`Saved for Roll No: ${currentRollNumber}`,'success','💾');
-}
-
-function loadAttendance(){
-  if(!currentRollNumber) return;
-  const saved=localStorage.getItem(getStorageKey());
-  if(saved){
-    const data=JSON.parse(saved);
-    document.querySelectorAll('.absence-checkbox').forEach(cb=>{cb.checked=data[`${cb.dataset.day}-${cb.dataset.period}`]===true;});
-  }
-  calculateAttendance();
-}
-
-function resetAttendance(){
-  if(!currentRollNumber){ showToast('No roll number set!','danger','⚠️'); return; }
-  showConfirm(()=>{
-    localStorage.removeItem(getStorageKey());
-    document.querySelectorAll('.absence-checkbox').forEach(cb=>{cb.checked=false;});
-    calculateAttendance();
-    showToast(`Attendance reset for ${currentRollNumber}`,'danger','🔄');
+  globalStats.subjectStats = {};
+  subjects.forEach(s => {
+    globalStats.subjectStats[s.id] = { conducted: 0, present: 0, absent: 0 };
   });
-}
 
-/* ══════════════════════════════════════════════════
-   SHARED HELPER — build structured attendance snapshot
-══════════════════════════════════════════════════ */
-function buildSnapshot(){
-  // Collect raw checkbox data and save to localStorage
-  const raw = {};
-  document.querySelectorAll('.absence-checkbox').forEach(cb => {
-    raw[`${cb.dataset.day}-${cb.dataset.period}`] = cb.checked;
-  });
-  localStorage.setItem(getStorageKey(), JSON.stringify(raw));
+  const todayDateStr = new Date().toISOString().split('T')[0];
+  const currentMonthStr = selectedDateStr.slice(0, 7);
 
-  // Build enriched weekly structure
-  let di = 0, cumTotal = 0, cumPresent = 0;
-  const weeklyBreakdown = [];
+  globalStats.monthlyTrend = {};
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  weeks.forEach(week => {
-    const weekEntry = { week: week.week, dateRange: week.date, days: [] };
+  allDays.forEach(day => {
+    const isFuture = isDayInFuture(day.fullDate);
+    const dateStr = day.fullDate;
+    const records = dailyRecords[dateStr] || {};
+    
+    const dObj = new Date(dateStr + "T00:00:00");
+    const mName = monthNames[dObj.getMonth()];
+    if (!globalStats.monthlyTrend[mName]) {
+      globalStats.monthlyTrend[mName] = { conducted: 0, present: 0 };
+    }
 
-    week.days.forEach(day => {
-      const future = isFutureDate(day.fullDate);
-      const absentPeriods = [];
-      const presentPeriods = [];
+    for (let p = 1; p <= day.periods; p++) {
+      const record = records[p];
+      
+      if (record && record.status) {
+        const sId = record.subjectId;
+        const stat = record.status;
 
-      for (let p = 1; p <= day.periods; p++) {
-        const key = `${di}-${p}`;
-        if (!future && raw[key] === true) absentPeriods.push(p);
-        else if (!future) presentPeriods.push(p);
+        if (stat === 'holiday') {
+          if (!isFuture) globalStats.totalHoliday++;
+          continue;
+        }
+        if (stat === 'cancelled') {
+          if (!isFuture) globalStats.totalCancelled++;
+          continue;
+        }
+
+        if (!isFuture) {
+          globalStats.totalConducted++;
+          if (globalStats.subjectStats[sId]) {
+            globalStats.subjectStats[sId].conducted++;
+          }
+          globalStats.monthlyTrend[mName].conducted++;
+          
+          if (dateStr.slice(0, 7) === currentMonthStr) {
+            monthConducted++;
+          }
+
+          if (dateStr === todayDateStr) {
+            globalStats.todayConducted++;
+          }
+
+          if (stat === 'present') {
+            globalStats.totalPresent++;
+            globalStats.monthlyTrend[mName].present++;
+            if (globalStats.subjectStats[sId]) {
+              globalStats.subjectStats[sId].present++;
+            }
+            if (dateStr.slice(0, 7) === currentMonthStr) {
+              monthPresent++;
+            }
+            if (dateStr === todayDateStr) {
+              globalStats.todayPresent++;
+            }
+          } else if (stat === 'absent') {
+            globalStats.totalAbsent++;
+            if (globalStats.subjectStats[sId]) {
+              globalStats.subjectStats[sId].absent++;
+            }
+          }
+        }
       }
-
-      if (!future) {
-        cumTotal   += day.periods;
-        cumPresent += presentPeriods.length;
-      }
-
-      const dailyPct  = future ? null : ((presentPeriods.length / day.periods) * 100).toFixed(2);
-      const overallPct= future ? null : ((cumPresent / cumTotal) * 100).toFixed(2);
-
-      weekEntry.days.push({
-        day          : day.day,
-        date         : day.date,
-        fullDate     : day.fullDate,
-        status       : future ? 'upcoming' : 'completed',
-        totalPeriods : day.periods,
-        absentPeriods: future ? [] : absentPeriods,
-        presentPeriods: future ? [] : presentPeriods,
-        absentCount  : future ? '-' : absentPeriods.length,
-        presentCount : future ? '-' : presentPeriods.length,
-        dailyAttendance : future ? '-' : dailyPct + '%',
-        overallAttendance: future ? '-' : overallPct + '%'
-      });
-      di++;
-    });
-    weeklyBreakdown.push(weekEntry);
+    }
   });
 
-  const overallPct = cumTotal > 0 ? ((cumPresent / cumTotal) * 100).toFixed(2) : '0.00';
-  const status = cumTotal === 0 ? 'No data yet'
-    : parseFloat(overallPct) >= 75 ? '✅ Good — Above 75%'
-    : parseFloat(overallPct) >= 65 ? '⚠️ Warning — Below 75%'
-    : '❌ Shortage — Below 65%';
+  globalStats.overallPct = globalStats.totalConducted > 0 
+    ? (globalStats.totalPresent / globalStats.totalConducted) * 100 
+    : 100;
 
-  return { raw, weeklyBreakdown, cumTotal, cumPresent, overallPct, status };
+  globalStats.monthRatio = `${monthPresent}/${monthConducted}`;
+  globalStats.monthPct = monthConducted > 0 
+    ? Math.round((monthPresent / monthConducted) * 100) + '%' 
+    : '100%';
+}
+
+function isDayInFuture(dateStr) {
+  const limit = new Date();
+  limit.setHours(23, 59, 59, 999);
+  return new Date(dateStr + "T00:00:00") > limit;
 }
 
 /* ══════════════════════════════════════════════════
-   DOWNLOAD RICH JSON BACKUP
+   TAB RENDERING: DASHBOARD
 ══════════════════════════════════════════════════ */
-function downloadAttendance(){
-  if(!currentRollNumber){ showToast('No roll number set!','danger','⚠️'); return; }
+function renderDashboard() {
+  calculateStats();
 
-  const { raw, weeklyBreakdown, cumTotal, cumPresent, overallPct, status } = buildSnapshot();
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
-  const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+  const pctStr = globalStats.overallPct.toFixed(0) + '%';
+  document.getElementById('overallPctValue').textContent = pctStr;
+  document.getElementById('overallTotalLabel').textContent = `${globalStats.totalConducted} effective periods`;
+  document.getElementById('overallPresentCount').textContent = globalStats.totalPresent;
+  document.getElementById('overallAbsentCount').textContent = globalStats.totalAbsent;
 
-  const backup = {
-    "_info": "Attendance Tracker Backup — III B.Tech CSE-AI",
-    "rollNumber"    : currentRollNumber,
-    "class"         : "III B.Tech CSE – Artificial Intelligence",
-    "academicYear"  : "2026-27",
-    "semester"      : "I Semester",
-    "exportedOn"    : `${dateStr} at ${timeStr}`,
-    "summary": {
-      "totalPeriods"        : cumTotal,
-      "periodsPresent"      : cumPresent,
-      "periodsAbsent"       : cumTotal - cumPresent,
-      "attendancePercentage": overallPct + '%',
-      "attendanceStatus"    : status,
-      "requiredMinimum"     : "75.00%"
-    },
-    "weeklyBreakdown": weeklyBreakdown,
-    "_rawData": raw
+  const ringCircle = document.getElementById('overallRingCircle');
+  const dashOffset = 251.2 * (1 - (globalStats.overallPct / 100));
+  ringCircle.style.strokeDashoffset = dashOffset;
+  
+  if (globalStats.overallPct >= 75) {
+    ringCircle.style.stroke = 'var(--green)';
+  } else if (globalStats.overallPct >= 65) {
+    ringCircle.style.stroke = 'var(--orange)';
+  } else {
+    ringCircle.style.stroke = 'var(--red)';
+  }
+
+  document.getElementById('todayPresentCount').textContent = `${globalStats.todayPresent}/${globalStats.todayConducted}`;
+  document.getElementById('monthPresentPct').textContent = globalStats.monthPct;
+  document.getElementById('monthPresentRatio').textContent = `${globalStats.monthRatio} periods`;
+
+  document.getElementById('breakdownVal_present').textContent = globalStats.totalPresent;
+  document.getElementById('breakdownVal_absent').textContent = globalStats.totalAbsent;
+  document.getElementById('breakdownVal_holiday').textContent = globalStats.totalHoliday;
+  document.getElementById('breakdownVal_cancelled').textContent = globalStats.totalCancelled;
+
+  const totalStates = globalStats.totalPresent + globalStats.totalAbsent + globalStats.totalHoliday + globalStats.totalCancelled;
+  const donut = document.getElementById('breakdownPieChart');
+  if (totalStates === 0) {
+    donut.style.background = '#f3f4f6';
+  } else {
+    const prPct = (globalStats.totalPresent / totalStates) * 100;
+    const abPct = (globalStats.totalAbsent / totalStates) * 100;
+    const hoPct = (globalStats.totalHoliday / totalStates) * 100;
+
+    const stop1 = prPct;
+    const stop2 = stop1 + abPct;
+    const stop3 = stop2 + hoPct;
+
+    donut.style.background = `conic-gradient(
+      var(--green) 0% ${stop1}%,
+      var(--red) ${stop1}% ${stop2}%,
+      var(--blue) ${stop2}% ${stop3}%,
+      var(--orange) ${stop3}% 100%
+    )`;
+  }
+
+  const trendContainer = document.getElementById('trendChartContainer');
+  trendContainer.innerHTML = '';
+  
+  const currentMonthIdx = new Date(selectedDateStr + "T00:00:00").getMonth();
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  
+  const semesterMonths = ["Jun", "Jul", "Aug", "Sep", "Oct"];
+  
+  semesterMonths.forEach(m => {
+    const data = globalStats.monthlyTrend[m] || { conducted: 0, present: 0 };
+    const pct = data.conducted > 0 ? (data.present / data.conducted) * 100 : 0;
+    
+    const mIdx = monthNames.indexOf(m);
+    const isActive = mIdx === currentMonthIdx;
+
+    const barWrap = document.createElement('div');
+    barWrap.className = 'trend-bar-wrapper';
+    barWrap.innerHTML = `
+      <div class="trend-bar ${isActive ? 'active' : ''}" style="height: ${Math.max(4, pct)}%;">
+        <span class="trend-bar-tooltip">${pct.toFixed(0)}% (${data.present}/${data.conducted})</span>
+      </div>
+      <span class="trend-label">${m}</span>
+    `;
+    trendContainer.appendChild(barWrap);
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   TAB RENDERING: DAILY LIST
+══════════════════════════════════════════════════ */
+function renderDailyTab() {
+  const dObj = new Date(selectedDateStr + "T00:00:00");
+  
+  document.getElementById('selectedDateDisplay').textContent = dObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  document.getElementById('selectedDateDayDisplay').textContent = dObj.toLocaleDateString('en-GB', { weekday: 'long' });
+  document.getElementById('nativeDatePicker').value = selectedDateStr;
+
+  const currentDayInfo = allDays.find(d => d.fullDate === selectedDateStr);
+  const container = document.getElementById('dailyPeriodsList');
+  container.innerHTML = '';
+
+  if (!currentDayInfo) {
+    container.innerHTML = `
+      <div class="card" style="text-align: center; color: var(--muted); padding: 40px 20px;">
+        <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🏖️</span>
+        <h3>Holiday / No Class Day</h3>
+        <p style="margin-top: 6px; font-size: 0.82rem;">There are no schedules defined for this day in the semester calendar.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const isFuture = isDayInFuture(selectedDateStr);
+  const dayOfWeekIdx = dObj.getDay();
+  const defaultList = weekdayDefaultSubjects[dayOfWeekIdx] || [];
+  const records = dailyRecords[selectedDateStr] || {};
+
+  for (let p = 1; p <= currentDayInfo.periods; p++) {
+    const record = records[p] || {};
+    const activeSubjectId = record.subjectId || defaultList[p - 1] || (subjects[0] ? subjects[0].id : '');
+    const activeStatus = record.status || '';
+
+    const pCard = document.createElement('div');
+    pCard.className = 'period-card';
+    
+    let selectOptions = subjects.map(s => 
+      `<option value="${s.id}" ${s.id === activeSubjectId ? 'selected' : ''}>${s.name}</option>`
+    ).join('');
+
+    pCard.innerHTML = `
+      <div class="period-top-row">
+        <div class="period-num-box">${p}</div>
+        <div class="period-meta-wrap">
+          <div class="period-title">Period ${p}</div>
+          <div class="subject-select-wrap">
+            <select class="subject-select" id="subjSelect_${p}" onchange="changePeriodSubject(${p}, this.value)" ${isFuture ? 'disabled' : ''}>
+              ${selectOptions}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="status-pills-row">
+        <button class="status-pill present ${activeStatus === 'present' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'present')" ${isFuture ? 'disabled' : ''}>Present</button>
+        <button class="status-pill absent ${activeStatus === 'absent' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'absent')" ${isFuture ? 'disabled' : ''}>Absent</button>
+        <button class="status-pill holiday ${activeStatus === 'holiday' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'holiday')" ${isFuture ? 'disabled' : ''}>Holiday</button>
+        <button class="status-pill cancelled ${activeStatus === 'cancelled' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'cancelled')" ${isFuture ? 'disabled' : ''}>Cancelled</button>
+      </div>
+    `;
+
+    container.appendChild(pCard);
+  }
+}
+
+function offsetSelectedDate(days) {
+  const d = new Date(selectedDateStr + "T00:00:00");
+  d.setDate(d.getDate() + days);
+  
+  const limitMin = new Date("2026-06-29T00:00:00");
+  const limitMax = new Date("2026-10-24T00:00:00");
+  
+  if (d < limitMin) d.setTime(limitMin.getTime());
+  if (d > limitMax) d.setTime(limitMax.getTime());
+
+  selectedDateStr = d.toISOString().split('T')[0];
+  renderDailyTab();
+}
+
+function triggerNativeDatePicker() {
+  document.getElementById('nativeDatePicker').showPicker();
+}
+
+function onNativeDateChanged(e) {
+  if (e.target.value) {
+    selectedDateStr = e.target.value;
+    renderDailyTab();
+  }
+}
+
+function changePeriodSubject(periodNum, val) {
+  if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
+  if (!dailyRecords[selectedDateStr][periodNum]) dailyRecords[selectedDateStr][periodNum] = { status: '' };
+  
+  dailyRecords[selectedDateStr][periodNum].subjectId = val;
+  saveRecords();
+}
+
+function setPeriodStatus(periodNum, status) {
+  if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
+  if (!dailyRecords[selectedDateStr][periodNum]) {
+    const selVal = document.getElementById(`subjSelect_${periodNum}`).value;
+    dailyRecords[selectedDateStr][periodNum] = { subjectId: selVal, status: '' };
+  }
+
+  if (dailyRecords[selectedDateStr][periodNum].status === status) {
+    dailyRecords[selectedDateStr][periodNum].status = '';
+    showToast(`Cleared Period ${periodNum}`, 'info');
+  } else {
+    dailyRecords[selectedDateStr][periodNum].status = status;
+    showToast(`Period ${periodNum} marked as ${status.toUpperCase()}`, 'success');
+  }
+
+  saveRecords();
+  renderDailyTab();
+}
+
+/* ══════════════════════════════════════════════════
+   TAB RENDERING: SUBJECTS LIST
+══════════════════════════════════════════════════ */
+function renderSubjectsTab() {
+  calculateStats();
+  
+  document.getElementById('subjectsHeaderMeta').textContent = `${subjects.length} subjects • ${globalStats.totalConducted} total periods`;
+
+  const container = document.getElementById('subjectsListContainer');
+  container.innerHTML = '';
+
+  if (subjects.length === 0) {
+    container.innerHTML = `
+      <div class="card" style="text-align: center; color: var(--muted); padding: 40px 20px;">
+        <h3>No subjects added</h3>
+        <p style="margin-top: 6px; font-size: 0.82rem;">Add modules using the button below to track percentages separately.</p>
+      </div>
+    `;
+    return;
+  }
+
+  subjects.forEach((subj, idx) => {
+    const stats = globalStats.subjectStats[subj.id] || { conducted: 0, present: 0, absent: 0 };
+    const pct = stats.conducted > 0 ? (stats.present / stats.conducted) * 100 : 100;
+    
+    let statusClass = 'good';
+    if (pct < 65) statusClass = 'danger';
+    else if (pct < 75) statusClass = 'warning';
+
+    let targetAlertHtml = '';
+    if (stats.conducted === 0) {
+      targetAlertHtml = `<span class="subject-target-alert success">✅ No classes conducted yet. Perfect score!</span>`;
+    } else if (pct >= 75) {
+      const maxMiss = Math.floor((4 * stats.present - 3 * stats.conducted) / 3);
+      if (maxMiss <= 0) {
+        targetAlertHtml = `<span class="subject-target-alert warning">⚠️ <strong>Margin Warning:</strong> Missing next class drops you below 75%!</span>`;
+      } else {
+        targetAlertHtml = `<span class="subject-target-alert success">✅ <strong>Safe:</strong> Can miss next <strong>${maxMiss}</strong> class${maxMiss > 1 ? 'es' : ''} consecutively.</span>`;
+      }
+    } else {
+      const reqAttend = Math.ceil(3 * stats.conducted - 4 * stats.present);
+      targetAlertHtml = `<span class="subject-target-alert danger">⚠️ Attend <strong>${reqAttend}</strong> more consecutive classes to reach 75%.</span>`;
+    }
+
+    const sCard = document.createElement('div');
+    sCard.className = 'subject-card';
+    sCard.innerHTML = `
+      <div class="subject-top-bar">
+        <div class="subject-info-block">
+          <div class="subject-initials-badge badge-${idx % 6}">${subj.code}</div>
+          <div class="subject-name-lbl">${subj.name}</div>
+        </div>
+        <div class="subject-actions">
+          <button class="subj-action-btn edit" onclick="openEditSubjectModal('${subj.id}')" title="Edit Subject">✏️</button>
+          <button class="subj-action-btn delete" onclick="triggerDeleteSubject('${subj.id}', '${subj.name}')" title="Delete Subject">🗑️</button>
+        </div>
+      </div>
+
+      <div class="subject-stats-grid">
+        <div class="subject-stat-item">
+          <span class="subj-stat-val">${stats.conducted}</span>
+          <span class="subj-stat-lbl">Conducted</span>
+        </div>
+        <div class="subject-stat-item">
+          <span class="subj-stat-val" style="color: var(--green);">${stats.present}</span>
+          <span class="subj-stat-lbl">Present</span>
+        </div>
+        <div class="subject-stat-item">
+          <span class="subj-stat-val" style="color: var(--red);">${stats.absent}</span>
+          <span class="subj-stat-lbl">Absent</span>
+        </div>
+        <div class="subject-stat-item">
+          <span class="subj-stat-val ${statusClass}">${pct.toFixed(0)}%</span>
+          <span class="subj-stat-lbl">Percent</span>
+        </div>
+      </div>
+
+      <div class="subject-progress-container">
+        <div class="subj-progressbar-track">
+          <div class="subj-progressbar-fill ${statusClass}" style="width: ${pct}%;"></div>
+        </div>
+        ${targetAlertHtml}
+      </div>
+    `;
+
+    container.appendChild(sCard);
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   TAB RENDERING: REPORTS & FULL LOGS
+══════════════════════════════════════════════════ */
+function renderReportsTab() {
+  calculateStats();
+
+  const tbody = document.getElementById('semesterReportsTableBody');
+  tbody.innerHTML = '';
+
+  let activeWeek = "";
+  let cumTotal = 0;
+  let cumPresent = 0;
+
+  allDays.forEach(day => {
+    const isFuture = isDayInFuture(day.fullDate);
+    
+    if (day.weekName !== activeWeek) {
+      activeWeek = day.weekName;
+      const wHeader = document.createElement('tr');
+      wHeader.className = activeWeek.includes('MID') ? 'mid-row' : '';
+      wHeader.innerHTML = `<td colspan="6" style="background:#fafafc; font-weight:800; border-left:3.5px solid var(--primary); padding: 8px 12px; font-size: 0.72rem; letter-spacing:0.04em;">🗓️ ${activeWeek}</td>`;
+      tbody.appendChild(wHeader);
+    }
+
+    const dayRecords = dailyRecords[day.fullDate] || {};
+    let absent = 0;
+    let present = 0;
+    let holiday = false;
+
+    for (let p = 1; p <= day.periods; p++) {
+      const rec = dayRecords[p];
+      if (rec && rec.status) {
+        if (rec.status === 'present') present++;
+        else if (rec.status === 'absent') absent++;
+        else if (rec.status === 'holiday') holiday = true;
+      }
+    }
+
+    if (!isFuture && !holiday) {
+      cumTotal += (present + absent);
+      cumPresent += present;
+    }
+
+    const overallPct = cumTotal > 0 ? ((cumPresent / cumTotal) * 100).toFixed(0) : '100';
+
+    const row = document.createElement('tr');
+    row.className = 'clickable';
+    row.onclick = () => {
+      selectedDateStr = day.fullDate;
+      switchTab('daily');
+    };
+
+    let dailyPctText = '-';
+    if (!isFuture) {
+      const conducted = present + absent;
+      dailyPctText = conducted > 0 ? ((present / conducted) * 100).toFixed(0) + '%' : '100%';
+    }
+
+    row.innerHTML = `
+      <td style="color: var(--muted); font-size:0.75rem;">${day.weekName}</td>
+      <td>
+        <span style="display:block; font-weight:700; color:var(--text);">${day.day}</span>
+        <span style="display:block; font-size:0.7rem; color:var(--muted); margin-top:2px;">${day.date}</span>
+      </td>
+      <td>${day.periods}</td>
+      <td style="color:var(--green); font-weight:700;">${isFuture ? '—' : present}</td>
+      <td style="color:var(--red); font-weight:700;">${isFuture ? '—' : absent}</td>
+      <td style="font-weight:800;">${isFuture ? '—' : overallPct + '%'}</td>
+    `;
+
+    tbody.appendChild(row);
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   TAB RENDERING: SETTINGS
+══════════════════════════════════════════════════ */
+function renderSettingsTab() {
+  document.getElementById('settingsCurrentRollBadge').textContent = currentRollNumber ? currentRollNumber : 'None';
+}
+
+/* ══════════════════════════════════════════════════
+   SUBJECT MODALS
+══════════════════════════════════════════════════ */
+function openAddSubjectModal() {
+  editSubjectId = null;
+  document.getElementById('subjectModalTitle').textContent = 'Add Subject';
+  document.getElementById('subjectModalDesc').textContent = 'Create a new subject to track individual attendance.';
+  document.getElementById('modalSubjectName').value = '';
+  document.getElementById('modalSubjectCode').value = '';
+  document.getElementById('subjectModal').classList.add('active');
+  document.getElementById('modalSubjectName').focus();
+}
+
+function openEditSubjectModal(id) {
+  const subj = subjects.find(s => s.id === id);
+  if (!subj) return;
+
+  editSubjectId = id;
+  document.getElementById('subjectModalTitle').textContent = 'Edit Subject';
+  document.getElementById('subjectModalDesc').textContent = 'Change the name or initial badge of your subject.';
+  document.getElementById('modalSubjectName').value = subj.name;
+  document.getElementById('modalSubjectCode').value = subj.code;
+  document.getElementById('subjectModal').classList.add('active');
+  document.getElementById('modalSubjectName').focus();
+}
+
+function closeSubjectModal() {
+  document.getElementById('subjectModal').classList.remove('active');
+}
+
+function saveSubjectFromModal() {
+  const nameInput = document.getElementById('modalSubjectName');
+  const codeInput = document.getElementById('modalSubjectCode');
+
+  const name = nameInput.value.trim();
+  const code = codeInput.value.trim().toUpperCase().slice(0, 2);
+
+  if (!name) {
+    showToast('Please enter a subject name!', 'danger');
+    nameInput.focus();
+    return;
+  }
+  if (!code) {
+    showToast('Please enter a badge letter!', 'danger');
+    codeInput.focus();
+    return;
+  }
+
+  if (editSubjectId) {
+    const subj = subjects.find(s => s.id === editSubjectId);
+    if (subj) {
+      subj.name = name;
+      subj.code = code;
+      showToast('Subject updated successfully', 'success');
+    }
+  } else {
+    const newId = 'subj_' + Date.now();
+    subjects.push({ id: newId, name: name, code: code });
+    showToast('Subject added successfully', 'success');
+  }
+
+  localStorage.setItem('att_subjects', JSON.stringify(subjects));
+  closeSubjectModal();
+  renderSubjectsTab();
+}
+
+function triggerDeleteSubject(id, name) {
+  showConfirm(`Delete ${name}?`, 'This will permanently remove the subject from your list. Logged attendance data will remain mapped to its ID but won\'t display in the Subject view.', () => {
+    subjects = subjects.filter(s => s.id !== id);
+    localStorage.setItem('att_subjects', JSON.stringify(subjects));
+    showToast('Subject deleted', 'danger');
+    renderSubjectsTab();
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   RESET ACTIONS
+══════════════════════════════════════════════════ */
+function triggerSemesterReset() {
+  showConfirm('Reset Semester Data?', 'This will permanently clear all marked attendance records for this student profile. This action cannot be undone.', () => {
+    dailyRecords = {};
+    saveRecords();
+    showToast('Data has been reset.', 'danger');
+    renderSettingsTab();
+    if (document.getElementById('tabContent_dashboard').classList.contains('active')) {
+      renderDashboard();
+    }
+  });
+}
+
+function showConfirm(title, desc, onYes) {
+  const overlay = document.getElementById('confirmModal');
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmDesc').textContent = desc;
+  overlay.classList.add('active');
+
+  document.getElementById('confirmYes').onclick = () => {
+    overlay.classList.remove('active');
+    onYes();
+  };
+  document.getElementById('confirmNo').onclick = () => {
+    overlay.classList.remove('active');
+  };
+}
+
+/* ══════════════════════════════════════════════════
+   BACKUP & EXPORTS
+══════════════════════════════════════════════════ */
+function downloadAttendanceJSON() {
+  if (!currentRollNumber) return;
+
+  const dataSnapshot = {
+    app: "Attendance Tracker III B.Tech CSE-AI",
+    rollNumber: currentRollNumber,
+    exportedAt: new Date().toISOString(),
+    subjects: subjects,
+    records: dailyRecords
   };
 
-  triggerDownload(
-    JSON.stringify(backup, null, 2),
-    'application/json',
-    `attendance_${currentRollNumber}_${now.toLocaleDateString('en-GB').replace(/\//g,'-')}.json`
-  );
-  showToast(`JSON backup downloaded for ${currentRollNumber}`, 'success', '📥');
+  const blob = new Blob([JSON.stringify(dataSnapshot, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `attendance_backup_${currentRollNumber}_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('JSON backup downloaded', 'success');
 }
 
-/* ══════════════════════════════════════════════════
-   DOWNLOAD CSV (Excel-friendly)
-══════════════════════════════════════════════════ */
-function downloadCSV(){
-  if(!currentRollNumber){ showToast('No roll number set!','danger','⚠️'); return; }
-
-  const { weeklyBreakdown, cumTotal, cumPresent, overallPct, status } = buildSnapshot();
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+function downloadAttendanceCSV() {
+  if (!currentRollNumber) return;
 
   const lines = [];
-
-  // === FILE HEADER ===
-  lines.push(`Attendance Report`);
-  lines.push(`Roll Number,${currentRollNumber}`);
-  lines.push(`Class,III B.Tech CSE - Artificial Intelligence`);
-  lines.push(`Academic Year,2026-27 | I Semester`);
-  lines.push(`Exported On,${dateStr}`);
-  lines.push(''); // blank row
-
-  // === SUMMARY BLOCK ===
-  lines.push('SUMMARY');
-  lines.push(`Total Periods,${cumTotal}`);
-  lines.push(`Periods Present,${cumPresent}`);
-  lines.push(`Periods Absent,${cumTotal - cumPresent}`);
-  lines.push(`Overall Attendance,${overallPct}%`);
-  lines.push(`Status,${status}`);
-  lines.push(`Required Minimum,75.00%`);
-  lines.push(''); // blank row
-
-  // === DAILY DETAIL TABLE ===
-  lines.push('DAILY ATTENDANCE DETAIL');
-  // Column headers
-  lines.push([
-    'Week','Day','Date','Full Date','Status',
-    'Total Periods','Absent Count','Present Count',
-    'Absent Period Nos.','Present Period Nos.',
-    'Daily Attendance %','Overall Attendance %'
-  ].join(','));
-
-  weeklyBreakdown.forEach(week => {
-    week.days.forEach(day => {
-      lines.push([
-        `"${week.week}"`,
-        `"${day.day}"`,
-        `"${day.date}"`,
-        day.fullDate,
-        day.status,
-        day.totalPeriods,
-        day.absentCount,
-        day.presentCount,
-        day.absentPeriods.length  ? `"P${day.absentPeriods.join(', P')}"` : '"-"',
-        day.presentPeriods.length ? `"P${day.presentPeriods.join(', P')}"` : '"-"',
-        `"${day.dailyAttendance}"`,
-        `"${day.overallAttendance}"`
-      ].join(','));
-    });
-    lines.push(''); // blank row between weeks
+  lines.push(`Attendance Report,Roll Number: ${currentRollNumber},Export Date: ${new Date().toLocaleDateString()}`);
+  lines.push('');
+  lines.push('SUBJECTS SUMMARY');
+  lines.push('Subject Name,Badge,Conducted Classes,Classes Present,Classes Absent,Attendance %');
+  
+  subjects.forEach(s => {
+    const stat = globalStats.subjectStats[s.id] || { conducted: 0, present: 0, absent: 0 };
+    const pct = stat.conducted > 0 ? ((stat.present / stat.conducted) * 100).toFixed(0) : '100';
+    lines.push(`"${s.name}",${s.code},${stat.conducted},${stat.present},${stat.absent},${pct}%`);
   });
 
-  triggerDownload(
-    lines.join('\r\n'),
-    'text/csv;charset=utf-8;',
-    `attendance_${currentRollNumber}_${now.toLocaleDateString('en-GB').replace(/\//g,'-')}.csv`
-  );
-  showToast(`CSV report downloaded for ${currentRollNumber}`, 'success', '📊');
+  lines.push('');
+  lines.push('DAILY LOGS DETAIL');
+  lines.push('Date,Week,Day,Period,Subject Name,Status');
+
+  allDays.forEach(day => {
+    const records = dailyRecords[day.fullDate] || {};
+    for (let p = 1; p <= day.periods; p++) {
+      const rec = records[p];
+      if (rec && rec.status) {
+        const subj = subjects.find(s => s.id === rec.subjectId) || { name: 'Unknown' };
+        lines.push(`${day.fullDate},${day.weekName},${day.day},Period ${p},"${subj.name}",${rec.status}`);
+      }
+    }
+  });
+
+  const blob = new Blob([lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `attendance_report_${currentRollNumber}_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('CSV report downloaded', 'success');
 }
 
-/* helper: create and click a download link */
-function triggerDownload(content, mimeType, filename){
-  const blob = new Blob([content], {type: mimeType});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
-}
-
-/* ══════════════════════════════════════════════════
-   IMPORT BACKUP
-══════════════════════════════════════════════════ */
-function importAttendance(event){
-  const file = event.target.files[0];
-  if(!file){ return; }
+function importAttendanceJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function(e){
-    try{
-      const backup = JSON.parse(e.target.result);
-
-      // Validate structure
-      if(!backup.attendance || typeof backup.attendance !== 'object'){
-        showToast('Invalid backup file format!','danger','❌');
+  reader.onload = function(evt) {
+    try {
+      const parsed = JSON.parse(evt.target.result);
+      if (!parsed.records || !parsed.subjects) {
+        showToast('Invalid backup file structure!', 'danger');
         return;
       }
 
-      // If roll number in file differs from current, warn and still import
-      const fromRoll = backup.rollNumber || 'Unknown';
-      if(fromRoll !== currentRollNumber){
-        showToast(`Imported from ${fromRoll} → applied to ${currentRollNumber}`,'info','ℹ️');
+      if (parsed.rollNumber && parsed.rollNumber !== currentRollNumber) {
+        showToast(`Imported data from profile ${parsed.rollNumber}`, 'info');
       }
 
-      // Apply to checkboxes
-      document.querySelectorAll('.absence-checkbox').forEach(cb=>{
-        cb.checked = backup.attendance[`${cb.dataset.day}-${cb.dataset.period}`] === true;
-      });
+      subjects = parsed.subjects;
+      dailyRecords = parsed.records;
 
-      // Save into current roll's localStorage slot
-      localStorage.setItem(getStorageKey(), JSON.stringify(backup.attendance));
-      calculateAttendance();
-      showToast(`Backup imported successfully for ${currentRollNumber}`,'success','📤');
+      localStorage.setItem('att_subjects', JSON.stringify(subjects));
+      saveRecords();
 
-    } catch(err){
-      showToast('Failed to read file — make sure it\'s a valid JSON backup.','danger','❌');
+      showToast('Import completed successfully', 'success');
+      switchTab('dashboard');
+    } catch(err) {
+      showToast('Failed to parse JSON file.', 'danger');
     }
-    // Reset file input so same file can be re-imported
-    event.target.value = '';
+    e.target.value = '';
   };
   reader.readAsText(file);
 }
 
 /* ══════════════════════════════════════════════════
-   BOOT — Show roll number screen first
+   TOAST HELPER
 ══════════════════════════════════════════════════ */
-// Build empty table on startup (no data yet)
-createTable();
-// Show roll number entry screen
-showRollOverlay();
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  
+  let icon = 'ℹ️';
+  if (type === 'success') icon = '✅';
+  else if (type === 'danger') icon = '🚨';
+
+  t.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+  container.appendChild(t);
+  
+  setTimeout(() => {
+    t.classList.add('hide');
+    t.addEventListener('animationend', () => t.remove());
+  }, 3000);
+}
+
+/* ══════════════════════════════════════════════════
+   PAGE BOOT / STARTUP
+══════════════════════════════════════════════════ */
+const savedRoll = localStorage.getItem('current_roll_number');
+if (savedRoll) {
+  currentRollNumber = savedRoll;
+  document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
+  document.getElementById('rollOverlay').classList.add('hidden');
+  loadDataForProfile();
+  switchTab('dashboard');
+} else {
+  showRollOverlay();
+}
 </script>
 </body>
 </html>
