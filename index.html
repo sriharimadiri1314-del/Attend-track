@@ -1817,14 +1817,33 @@ function renderDailyTab() {
   }
 }
 
-function offsetSelectedDate(days) {
-  const d = new Date(selectedDateStr + "T00:00:00");
-  d.setDate(d.getDate() + days);
-  const limitMin = new Date("2026-06-29T00:00:00");
-  const limitMax = new Date("2026-10-24T00:00:00");
-  if (d < limitMin) d.setTime(limitMin.getTime());
-  if (d > limitMax) d.setTime(limitMax.getTime());
-  selectedDateStr = d.toISOString().split('T')[0];
+function offsetSelectedDate(direction) {
+  // Navigate only through actual class days in the semester (skip weekends/gaps)
+  const currentIdx = allDays.findIndex(d => d.fullDate === selectedDateStr);
+
+  if (direction > 0) {
+    // Next class day
+    if (currentIdx === -1) {
+      // Current date not in class days – jump to the next one after it
+      const next = allDays.find(d => d.fullDate > selectedDateStr);
+      if (next) selectedDateStr = next.fullDate;
+    } else if (currentIdx < allDays.length - 1) {
+      selectedDateStr = allDays[currentIdx + 1].fullDate;
+    } else {
+      showToast('Last day of semester reached!', 'info');
+    }
+  } else {
+    // Previous class day
+    if (currentIdx === -1) {
+      // Current date not in class days – jump to the previous one before it
+      const prev = [...allDays].reverse().find(d => d.fullDate < selectedDateStr);
+      if (prev) selectedDateStr = prev.fullDate;
+    } else if (currentIdx > 0) {
+      selectedDateStr = allDays[currentIdx - 1].fullDate;
+    } else {
+      showToast('First day of semester reached!', 'info');
+    }
+  }
   renderDailyTab();
 }
 
