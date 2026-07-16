@@ -1431,9 +1431,13 @@ function getDefaultSubjectsForDay(dayObj) {
    STATE
 ══════════════════════════════════════════════════ */
 let currentRollNumber = '';
+/* Default to TODAY clamped within semester; will be overridden to
+   the semester start (Jun 29) for fresh profiles with no records */
+const SEMESTER_START = '2026-06-29';
+const SEMESTER_END   = '2026-10-24';
 let selectedDateStr = new Date().toISOString().split('T')[0];
-if (selectedDateStr < '2026-06-29') selectedDateStr = '2026-06-29';
-if (selectedDateStr > '2026-10-24') selectedDateStr = '2026-10-24';
+if (selectedDateStr < SEMESTER_START) selectedDateStr = SEMESTER_START;
+if (selectedDateStr > SEMESTER_END)   selectedDateStr = SEMESTER_END;
 let subjects = [];
 let dailyRecords = {};
 let editSubjectId = null;
@@ -1567,6 +1571,13 @@ function loadDataForProfile() {
   const key = `att_records_${currentRollNumber}`;
   const storedRecords = localStorage.getItem(key);
   dailyRecords = storedRecords ? JSON.parse(storedRecords) : {};
+
+  // For fresh profiles (no records), start from 29 Jun so the user
+  // can fill in attendance from the very first day of college.
+  const hasAnyRecord = Object.keys(dailyRecords).length > 0;
+  if (!hasAnyRecord) {
+    selectedDateStr = SEMESTER_START; // 2026-06-29
+  }
 }
 
 function saveRecords() {
