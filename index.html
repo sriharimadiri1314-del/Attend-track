@@ -2907,11 +2907,11 @@
     const defaultSubjects = [
       { id: 'subj_nlp', name: 'NLP', code: 'N' },
       { id: 'subj_ossp', name: 'OSSP', code: 'O' },
-      { id: 'subj_cvip', name: 'COMPUTER VISION', code: 'C' },
-      { id: 'subj_dv', name: 'DATA VISUALIZATION', code: 'D' },
+      { id: 'subj_cvip', name: 'CVNLP', code: 'C' },
+      { id: 'subj_dv', name: 'DV', code: 'D' },
       { id: 'subj_esps', name: 'ESSP', code: 'E' },
       { id: 'subj_iqta', name: 'IQTA', code: 'Q' },
-      { id: 'subj_cvnlp_lab', name: 'CV & NLP (LAB)', code: 'L' },
+      { id: 'subj_cvnlp_lab', name: 'CVNLP LAB', code: 'L' },
       { id: 'subj_aisp_lab', name: 'AISP (LAB)', code: 'A' },
       { id: 'subj_fsd_lab', name: 'FSD (LAB)', code: 'F' },
       { id: 'subj_soft_skills', name: 'SOFT SKILLS', code: 'S' }
@@ -3093,13 +3093,16 @@
         const migrationMap = {
           'NATURAL LANGUAGE PROCESSING (NLP)': 'NLP',
           'OPERATING SYSTEMS & SYS PROG (OSSP)': 'OSSP',
-          'COMPUTER VISION & IMAGE PROC (CVIP)': 'COMPUTER VISION',
-          'DATA VISUALIZATION (DV)': 'DATA VISUALIZATION',
+          'COMPUTER VISION & IMAGE PROC (CVIP)': 'CVNLP',
+          'DATA VISUALIZATION (DV)': 'DV',
           'ELECTRICAL SAFETY & STANDARDS (ESPS)': 'ESSP',
           'QUANTUM TECHNOLOGY & APPS (IQTA)': 'IQTA',
-          'CV & NLP LAB': 'CV & NLP (LAB)',
+          'CV & NLP LAB': 'CVNLP LAB',
           'AI & SYS PROGRAMMING LAB': 'AISP (LAB)',
-          'FSD II SOC LAB': 'FSD (LAB)'
+          'FSD II SOC LAB': 'FSD (LAB)',
+          'COMPUTER VISION': 'CVNLP',
+          'DATA VISUALIZATION': 'DV',
+          'CV & NLP (LAB)': 'CVNLP LAB'
         };
         if (Array.isArray(subjects)) {
           subjects.forEach(s => {
