@@ -2220,9 +2220,12 @@
       font-size: 0.7rem;
       font-weight: 700;
       color: var(--subtext);
-      width: 44px;
+      width: 75px;
       flex-shrink: 0;
       text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .participation-bar-track {
@@ -3322,7 +3325,7 @@
         const row = document.createElement('div');
         row.className = 'participation-row';
         row.innerHTML = `
-      <div class="participation-label">${subj.code}</div>
+      <div class="participation-label" title="${subj.name}">${subj.name}</div>
       <div class="participation-bar-track">
         <div class="participation-bar-fill ${cls}" style="width:${Math.max(4, pct)}%;">
           ${st.conducted > 0 ? pct.toFixed(0) + '%' : ''}
