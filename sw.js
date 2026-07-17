@@ -4,7 +4,7 @@
    - Serves cached content when network is unavailable
 ══════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'attendtrack-v1';
+const CACHE_NAME = 'attendtrack-v2';
 const ASSETS = [
   '/attendance-tracker/',
   '/attendance-tracker/index.html',
