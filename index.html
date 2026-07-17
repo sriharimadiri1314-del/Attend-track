@@ -2914,7 +2914,8 @@
       { id: 'subj_cvnlp_lab', name: 'CVNLP LAB', code: 'L' },
       { id: 'subj_aisp_lab', name: 'AISP (LAB)', code: 'A' },
       { id: 'subj_fsd_lab', name: 'FSD (LAB)', code: 'F' },
-      { id: 'subj_soft_skills', name: 'SOFT SKILLS', code: 'S' }
+      { id: 'subj_tinkering_lab', name: 'TINKERING LAB', code: 'T' },
+      { id: 'subj_aptitude', name: 'APTITUDE', code: 'P' }
     ];
 
     /* Official timetable — 3–4 class slots per day (Association removed)
@@ -2923,11 +2924,11 @@
        Slot 3 (1:15–2:45):   MON:NLP   TUE:AISP LAB  WED:NLP          THU:ESPS       FRI:DV
        Slot 4 (2:55–4:25):   MON:SS    —             —                THU:DV         —  */
     const weekdayDefaultSubjects = {
-      1: ['subj_esps', 'subj_cvip', 'subj_nlp', 'subj_soft_skills'],   // Mon: 4 slots
-      2: ['subj_ossp', 'subj_iqta', 'subj_aisp_lab'],                 // Tue: 3 slots (assoc removed)
-      3: ['subj_soft_skills', 'subj_iqta', 'subj_nlp'],               // Wed: 3 slots (assoc removed)
-      4: ['subj_fsd_lab', 'subj_cvip', 'subj_esps', 'subj_dv'],        // Thu: 4 slots
-      5: ['subj_cvnlp_lab', 'subj_ossp', 'subj_dv'],                  // Fri: 3 slots (assoc removed)
+      1: ['subj_esps', 'subj_cvip', 'subj_nlp'],                 // Mon: 3 slots (Soft Skills removed)
+      2: ['subj_ossp', 'subj_iqta', 'subj_aisp_lab'],            // Tue: 3 slots (assoc removed)
+      3: ['subj_iqta', 'subj_nlp'],                              // Wed: 2 slots (Soft Skills & assoc removed)
+      4: ['subj_fsd_lab', 'subj_cvip', 'subj_esps', 'subj_dv'],  // Thu: 4 slots
+      5: ['subj_cvnlp_lab', 'subj_ossp', 'subj_dv'],             // Fri: 3 slots (assoc removed)
       6: []
     };
 
@@ -3093,11 +3094,11 @@
         const migrationMap = {
           'NATURAL LANGUAGE PROCESSING (NLP)': 'NLP',
           'OPERATING SYSTEMS & SYS PROG (OSSP)': 'OSSP',
-          'COMPUTER VISION & IMAGE PROC (CVIP)': 'CVNLP',
           'DATA VISUALIZATION (DV)': 'DV',
           'ELECTRICAL SAFETY & STANDARDS (ESPS)': 'ESSP',
           'QUANTUM TECHNOLOGY & APPS (IQTA)': 'IQTA',
-          'CV & NLP LAB': 'CVNLP LAB',
+          'CV & NLP LAB': 'CVNLP',
+          'COMPUTER VISION & IMAGE PROC LAB (CVIP)': 'CVNLP LAB',
           'AI & SYS PROGRAMMING LAB': 'AISP (LAB)',
           'FSD II SOC LAB': 'FSD (LAB)',
           'COMPUTER VISION': 'CVNLP',
