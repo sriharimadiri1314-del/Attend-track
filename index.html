@@ -299,7 +299,13 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--bg);
+      box-shadow: 0 0 30px rgba(0,0,0,0.05);
+      position: relative;
     }
+
 
     /* ══════════════════════════════
        HEADER
@@ -376,8 +382,10 @@
     .bottom-nav {
       position: fixed;
       bottom: 0;
-      left: 0;
-      right: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
       z-index: 200;
       height: var(--nav-h);
       background: #fff;
@@ -2427,7 +2435,8 @@ if (savedRoll) {
 
 <!-- ══ PWA: SERVICE WORKER + INSTALL BANNER ══ -->
 <div id="pwaInstallBanner" style="
-  display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;
+  display:none; position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:480px; z-index:9999;
   background:#fff; border-top:1px solid #e5e7eb;
   box-shadow:0 -4px 24px rgba(0,0,0,0.12);
   padding:16px 20px; align-items:center; gap:12px;
@@ -2449,7 +2458,10 @@ if (savedRoll) {
   ">✕</button>
 </div>
 <style>
-  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  @keyframes slideUp { 
+    from { transform: translate(-50%, 100%); } 
+    to { transform: translate(-50%, 0); } 
+  }
   #pwaInstallBanner { display:none; }
   #pwaInstallBanner.show { display:flex !important; }
 </style>
