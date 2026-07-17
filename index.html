@@ -1066,13 +1066,21 @@
     .month-chart-title { font-size:0.88rem; font-weight:800; color:var(--text); }
     .month-chart-sub   { font-size:0.68rem; color:var(--muted); font-weight:600; }
 
-    /* ══ CIRCULAR GAUGE RINGS (like the screenshot right column) ══ */
-    .gauge-grid {
+    /* ══════════════════════════════
+       SUBJECTS GRID LAYOUT
+    ══════════════════════════════ */
+    .subjects-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 14px;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      width: 100%;
     }
+    @media (min-width: 768px) {
+      .subjects-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
     .gauge-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -2369,9 +2377,9 @@ function renderSubjectsTab() {
     return;
   }
 
-  // Render as gauge-ring grid (2 columns, matching the screenshot right panel)
+  // Render as subject cards list grid
   const grid = document.createElement('div');
-  grid.className = 'gauge-grid';
+  grid.className = 'subjects-grid';
   container.appendChild(grid);
 
   subjects.forEach((subj, idx) => {
@@ -2382,60 +2390,58 @@ function renderSubjectsTab() {
 
     const stats = (globalStats.subjectStats && globalStats.subjectStats[sId]) || { conducted:0, present:0, absent:0 };
     const pct   = stats.conducted > 0 ? (stats.present / stats.conducted) * 100 : 100;
-    const gaugeClass = pct >= 75 ? 'high' : pct >= 65 ? 'medium' : 'low';
+    
+    let statusClass = 'good';
+    if (pct < 65) statusClass = 'danger';
+    else if (pct < 75) statusClass = 'warning';
 
     let alertHtml = '';
     if (stats.conducted === 0) {
-      alertHtml = `<div class="gauge-alert safe">No classes yet</div>`;
+      alertHtml = `<div class="target-alert safe">✅ No classes conducted yet.</div>`;
     } else if (pct >= 75) {
       const maxMiss = Math.floor((4 * stats.present - 3 * stats.conducted) / 3);
       alertHtml = maxMiss <= 0
-        ? `<div class="gauge-alert warn">⚠ Next miss risky!</div>`
-        : `<div class="gauge-alert safe">✓ Can miss ${maxMiss} more</div>`;
+        ? `<div class="target-alert warn">⚠️ Missing next class may drop you below 75%!</div>`
+        : `<div class="target-alert safe">✅ Safe — can miss <strong>${maxMiss}</strong> more class${maxMiss > 1 ? 'es' : ''}.</div>`;
     } else {
       const reqAttend = Math.ceil(3 * stats.conducted - 4 * stats.present);
-      alertHtml = `<div class="gauge-alert danger">⚠ Need ${reqAttend} more</div>`;
+      alertHtml = `<div class="target-alert danger">⚠️ Attend <strong>${reqAttend}</strong> more consecutive periods to reach 75%</div>`;
     }
 
-    // SVG ring: circumference = 2π*35 ≈ 220
-    const r   = 35, circ = 2 * Math.PI * r;
-    const pctVal = stats.conducted > 0 ? pct : 100;
-    const offset = circ - (pctVal / 100) * circ;
-
-    const displayName = sName.includes('(') ? sName.split('(')[0].trim() : sName;
-
+    const badgeColor = idx % 8;
     const card = document.createElement('div');
-    card.className = 'gauge-card';
+    card.className = 'subject-card';
     card.innerHTML = `
-      <div class="gauge-subj-name" title="${sName}">${displayName}</div>
-      <div class="gauge-svg-wrap">
-        <svg class="gauge-svg" viewBox="0 0 90 90">
-          <circle class="gauge-bg" cx="45" cy="45" r="${r}"/>
-          <circle class="gauge-fill ${gaugeClass}" cx="45" cy="45" r="${r}"
-            stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
-        </svg>
-        <div class="gauge-center-text">${pct.toFixed(0)}%</div>
+      <div class="subject-top-row">
+        <div class="subj-badge subj-badge-${badgeColor}">${sCode}</div>
+        <div class="subj-name" style="font-size:0.95rem; font-weight:800; color:var(--text);">${sName}</div>
+        <div class="subj-actions">
+          <button class="subj-action-btn" onclick="openEditSubjectModal('${sId}')" title="Edit">✏️</button>
+          <button class="subj-action-btn" onclick="triggerDeleteSubject('${sId}','${sName}')" title="Delete">🗑️</button>
+        </div>
       </div>
-      <div class="gauge-range"><span>0</span><span>100</span></div>
-      <div class="gauge-stats-row">
-        <div class="gauge-stat-item">
-          <span class="gauge-stat-num">${stats.present}</span>
-          <span class="gauge-stat-lbl">Present</span>
+      <div class="subj-stats-row">
+        <div class="subj-stat">
+          <span class="subj-stat-val">${stats.conducted}</span>
+          <span class="subj-stat-lbl">Conducted</span>
         </div>
-        <div class="gauge-stat-item">
-          <span class="gauge-stat-num">${stats.absent}</span>
-          <span class="gauge-stat-lbl">Absent</span>
+        <div class="subj-stat">
+          <span class="subj-stat-val" style="color:var(--green);">${stats.present}</span>
+          <span class="subj-stat-lbl">Present</span>
         </div>
-        <div class="gauge-stat-item">
-          <span class="gauge-stat-num">${stats.conducted}</span>
-          <span class="gauge-stat-lbl">Total</span>
+        <div class="subj-stat">
+          <span class="subj-stat-val" style="color:var(--red);">${stats.absent}</span>
+          <span class="subj-stat-lbl">Absent</span>
         </div>
+        <div class="subj-stat">
+          <span class="subj-stat-val ${statusClass}">${pct.toFixed(0)}%</span>
+          <span class="subj-stat-lbl">Percentage</span>
+        </div>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill ${statusClass}" style="width:${Math.min(100, pct)}%;"></div>
       </div>
       ${alertHtml}
-      <div style="display:flex; gap:6px; justify-content:center; margin-top:8px;">
-        <button class="subj-action-btn" onclick="openEditSubjectModal('${sId}')" title="Edit" style="font-size:0.75rem; padding:4px 8px;">✏️ Edit</button>
-        <button class="subj-action-btn" onclick="triggerDeleteSubject('${sId}','${sName}')" title="Delete" style="font-size:0.75rem; padding:4px 8px;">🗑️</button>
-      </div>
     `;
     grid.appendChild(card);
   });
