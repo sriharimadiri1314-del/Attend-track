@@ -2351,12 +2351,14 @@ function setPeriodStatus(periodNum, status) {
 ══════════════════════════════════════════════════ */
 function renderSubjectsTab() {
   calculateStats();
-  document.getElementById('subjectsHeaderMeta').textContent = `${subjects.length} subjects • ${globalStats.totalConducted} total periods`;
+  
+  const subjectsCount = Array.isArray(subjects) ? subjects.length : 0;
+  document.getElementById('subjectsHeaderMeta').textContent = `${subjectsCount} subjects • ${globalStats.totalConducted} total periods`;
 
   const container = document.getElementById('subjectsListContainer');
   container.innerHTML = '';
 
-  if (subjects.length === 0) {
+  if (subjectsCount === 0) {
     container.innerHTML = `
       <div class="card" style="text-align:center; color:var(--muted); padding:40px 20px;">
         <span style="font-size:2.5rem; display:block; margin-bottom:12px;">📚</span>
@@ -2373,7 +2375,12 @@ function renderSubjectsTab() {
   container.appendChild(grid);
 
   subjects.forEach((subj, idx) => {
-    const stats = globalStats.subjectStats[subj.id] || { conducted:0, present:0, absent:0 };
+    if (!subj) return;
+    const sId = subj.id || `subj_${idx}`;
+    const sName = subj.name || 'Untitled Subject';
+    const sCode = subj.code || '?';
+
+    const stats = (globalStats.subjectStats && globalStats.subjectStats[sId]) || { conducted:0, present:0, absent:0 };
     const pct   = stats.conducted > 0 ? (stats.present / stats.conducted) * 100 : 100;
     const gaugeClass = pct >= 75 ? 'high' : pct >= 65 ? 'medium' : 'low';
 
@@ -2395,10 +2402,12 @@ function renderSubjectsTab() {
     const pctVal = stats.conducted > 0 ? pct : 100;
     const offset = circ - (pctVal / 100) * circ;
 
+    const displayName = sName.includes('(') ? sName.split('(')[0].trim() : sName;
+
     const card = document.createElement('div');
     card.className = 'gauge-card';
     card.innerHTML = `
-      <div class="gauge-subj-name" title="${subj.name}">${subj.name.split('(')[0].trim()}</div>
+      <div class="gauge-subj-name" title="${sName}">${displayName}</div>
       <div class="gauge-svg-wrap">
         <svg class="gauge-svg" viewBox="0 0 90 90">
           <circle class="gauge-bg" cx="45" cy="45" r="${r}"/>
@@ -2424,8 +2433,8 @@ function renderSubjectsTab() {
       </div>
       ${alertHtml}
       <div style="display:flex; gap:6px; justify-content:center; margin-top:8px;">
-        <button class="subj-action-btn" onclick="openEditSubjectModal('${subj.id}')" title="Edit" style="font-size:0.75rem; padding:4px 8px;">✏️ Edit</button>
-        <button class="subj-action-btn" onclick="triggerDeleteSubject('${subj.id}','${subj.name}')" title="Delete" style="font-size:0.75rem; padding:4px 8px;">🗑️</button>
+        <button class="subj-action-btn" onclick="openEditSubjectModal('${sId}')" title="Edit" style="font-size:0.75rem; padding:4px 8px;">✏️ Edit</button>
+        <button class="subj-action-btn" onclick="triggerDeleteSubject('${sId}','${sName}')" title="Delete" style="font-size:0.75rem; padding:4px 8px;">🗑️</button>
       </div>
     `;
     grid.appendChild(card);
