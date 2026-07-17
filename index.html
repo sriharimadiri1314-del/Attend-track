@@ -1800,15 +1800,15 @@ weeks.forEach(w => w.days.forEach(d => allDays.push({ ...d, weekName: w.week }))
    DEFAULT CONFIGURED SUBJECTS (Official III B.Tech CSE-AI Timetable)
 ══════════════════════════════════════════════════ */
 const defaultSubjects = [
-  { id: 'subj_nlp',        name: 'NATURAL LANGUAGE PROCESSING (NLP)',      code: 'N' },
-  { id: 'subj_ossp',       name: 'OPERATING SYSTEMS & SYS PROG (OSSP)',    code: 'O' },
-  { id: 'subj_cvip',       name: 'COMPUTER VISION & IMAGE PROC (CVIP)',    code: 'C' },
-  { id: 'subj_dv',         name: 'DATA VISUALIZATION (DV)',                code: 'D' },
-  { id: 'subj_esps',       name: 'ELECTRICAL SAFETY & STANDARDS (ESPS)',   code: 'E' },
-  { id: 'subj_iqta',       name: 'QUANTUM TECHNOLOGY & APPS (IQTA)',       code: 'Q' },
-  { id: 'subj_cvnlp_lab',  name: 'CV & NLP LAB',                          code: 'L' },
-  { id: 'subj_aisp_lab',   name: 'AI & SYS PROGRAMMING LAB',              code: 'A' },
-  { id: 'subj_fsd_lab',    name: 'FSD II SOC LAB',                        code: 'F' },
+  { id: 'subj_nlp',        name: 'NLP',                                   code: 'N' },
+  { id: 'subj_ossp',       name: 'OSSP',                                  code: 'O' },
+  { id: 'subj_cvip',       name: 'COMPUTER VISION',                       code: 'C' },
+  { id: 'subj_dv',         name: 'DATA VISUALIZATION',                    code: 'D' },
+  { id: 'subj_esps',       name: 'ESSP',                                  code: 'E' },
+  { id: 'subj_iqta',       name: 'IQTA',                                  code: 'Q' },
+  { id: 'subj_cvnlp_lab',  name: 'CV & NLP (LAB)',                        code: 'L' },
+  { id: 'subj_aisp_lab',   name: 'AISP (LAB)',                            code: 'A' },
+  { id: 'subj_fsd_lab',    name: 'FSD (LAB)',                             code: 'F' },
   { id: 'subj_soft_skills',name: 'SOFT SKILLS',                           code: 'S' }
 ];
 
@@ -1982,6 +1982,31 @@ function loadDataForProfile() {
   const storedSubjects = localStorage.getItem('att_subjects');
   if (storedSubjects) {
     subjects = JSON.parse(storedSubjects);
+    
+    // Auto-migrate old long subject names to new short names
+    let modified = false;
+    const migrationMap = {
+      'NATURAL LANGUAGE PROCESSING (NLP)': 'NLP',
+      'OPERATING SYSTEMS & SYS PROG (OSSP)': 'OSSP',
+      'COMPUTER VISION & IMAGE PROC (CVIP)': 'COMPUTER VISION',
+      'DATA VISUALIZATION (DV)': 'DATA VISUALIZATION',
+      'ELECTRICAL SAFETY & STANDARDS (ESPS)': 'ESSP',
+      'QUANTUM TECHNOLOGY & APPS (IQTA)': 'IQTA',
+      'CV & NLP LAB': 'CV & NLP (LAB)',
+      'AI & SYS PROGRAMMING LAB': 'AISP (LAB)',
+      'FSD II SOC LAB': 'FSD (LAB)'
+    };
+    if (Array.isArray(subjects)) {
+      subjects.forEach(s => {
+        if (s && migrationMap[s.name]) {
+          s.name = migrationMap[s.name];
+          modified = true;
+        }
+      });
+      if (modified) {
+        localStorage.setItem('att_subjects', JSON.stringify(subjects));
+      }
+    }
   } else {
     subjects = [...defaultSubjects];
     localStorage.setItem('att_subjects', JSON.stringify(subjects));
