@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>AttendTrack | III B.Tech CSE-AI</title>
-  <meta name="description" content="Smart attendance tracker for III B.Tech CSE-AI — Visvodaya Institute of Technology &amp; Science" />
+  <meta name="description"
+    content="Smart attendance tracker for III B.Tech CSE-AI — Visvodaya Institute of Technology &amp; Science" />
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json" />
@@ -26,9 +28,17 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap"
+    rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --bg: #f0f4fb;
@@ -53,9 +63,9 @@
       --blue-text: #1d4ed8;
       --purple: #8b5cf6;
       --purple-bg: #f5f3ff;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-      --shadow: 0 4px 16px rgba(0,0,0,0.07);
-      --shadow-lg: 0 8px 30px rgba(0,0,0,0.10);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.10);
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
@@ -65,7 +75,11 @@
       --transition: all 0.22s ease;
     }
 
-    html, body { height: 100%; }
+    html,
+    body {
+      height: 100%;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg);
@@ -75,9 +89,22 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    button { border: none; background: none; cursor: pointer; font-family: inherit; }
-    input, select { font-family: inherit; }
-    select { appearance: none; -webkit-appearance: none; }
+    button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+    }
 
     /* ══════════════════════════════
        TOAST NOTIFICATIONS
@@ -94,6 +121,7 @@
       align-items: center;
       pointer-events: none;
     }
+
     .toast {
       display: flex;
       align-items: center;
@@ -108,12 +136,46 @@
       box-shadow: var(--shadow-lg);
       animation: toastIn 0.3s ease-out forwards;
     }
-    .toast.hide { animation: toastOut 0.3s ease-in forwards; }
-    .toast-success { background: var(--green); }
-    .toast-danger  { background: var(--red); }
-    .toast-info    { background: var(--primary); }
-    @keyframes toastIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-12px); } }
+
+    .toast.hide {
+      animation: toastOut 0.3s ease-in forwards;
+    }
+
+    .toast-success {
+      background: var(--green);
+    }
+
+    .toast-danger {
+      background: var(--red);
+    }
+
+    .toast-info {
+      background: var(--primary);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes toastOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+    }
 
     /* ══════════════════════════════
        MODAL OVERLAY
@@ -121,7 +183,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(4px);
       z-index: 800;
       display: flex;
@@ -131,10 +193,12 @@
       pointer-events: none;
       transition: opacity 0.25s ease;
     }
+
     .modal-overlay.active {
       opacity: 1;
-      pointer-events: all;
+      pointer-events: auto;
     }
+
     .modal {
       background: var(--card-bg);
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -144,11 +208,38 @@
       transform: translateY(40px);
       transition: transform 0.3s ease;
     }
-    .modal-overlay.active .modal { transform: translateY(0); }
-    .modal h3 { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
-    .modal p  { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; }
-    .modal-form-group { margin-bottom: 16px; }
-    .modal-label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--subtext); margin-bottom: 6px; letter-spacing: 0.02em; text-transform: uppercase; }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .modal p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .modal-form-group {
+      margin-bottom: 16px;
+    }
+
+    .modal-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--subtext);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
     .modal-input {
       width: 100%;
       padding: 11px 14px;
@@ -160,8 +251,17 @@
       outline: none;
       transition: var(--transition);
     }
-    .modal-input:focus { border-color: var(--primary); background: #fff; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+    .modal-input:focus {
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
 
     /* ══════════════════════════════
        BUTTONS
@@ -176,11 +276,30 @@
       border: none;
       font-family: inherit;
     }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-secondary { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border); }
-    .btn-secondary:hover { background: var(--border); }
-    .btn-danger { background: var(--red-bg); color: var(--red-text); }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--muted);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-danger {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
 
     /* ══════════════════════════════
        ROLL OVERLAY
@@ -196,20 +315,48 @@
       padding: 20px;
       transition: opacity 0.4s ease;
     }
-    .roll-overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .roll-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
     .roll-card {
       background: #ffffff;
       border-radius: 24px;
       padding: 36px 28px;
       width: 100%;
       max-width: 380px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
       text-align: center;
     }
-    .roll-icon { font-size: 3rem; display: block; margin-bottom: 14px; }
-    .roll-card h2 { font-size: 1.4rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
-    .roll-card p { font-size: 0.82rem; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
-    .prefix-options-wrap { display: flex; gap: 10px; margin-bottom: 18px; }
+
+    .roll-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .roll-card h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .roll-card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .prefix-options-wrap {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
     .prefix-option {
       flex: 1;
       display: flex;
@@ -224,8 +371,18 @@
       transition: var(--transition);
       color: var(--muted);
     }
-    .prefix-option:has(input:checked) { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
-    .prefix-option input[type="radio"] { width: 14px; height: 14px; accent-color: var(--primary); }
+
+    .prefix-option:has(input:checked) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .prefix-option input[type="radio"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--primary);
+    }
 
     .roll-split-box {
       display: flex;
@@ -237,8 +394,28 @@
       transition: var(--transition);
       background: var(--bg);
     }
-    .roll-split-box.error { border-color: var(--red); animation: shake 0.3s ease; }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+    .roll-split-box.error {
+      border-color: var(--red);
+      animation: shake 0.3s ease;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      25% {
+        transform: translateX(-6px)
+      }
+
+      75% {
+        transform: translateX(6px)
+      }
+    }
+
     .roll-prefix-display {
       background: var(--primary);
       color: #fff;
@@ -247,6 +424,7 @@
       font-size: 0.88rem;
       white-space: nowrap;
     }
+
     #rollSuffix {
       flex: 1;
       padding: 12px 10px;
@@ -259,12 +437,44 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
-    .roll-error { font-size: 0.75rem; color: var(--red); margin-bottom: 12px; display: none; text-align: left; }
-    .roll-error.show { display: block; }
-    .roll-saved-list { display: none; margin-bottom: 16px; }
-    .roll-saved-list.show { display: block; }
-    .roll-saved-list p { font-size: 0.72rem; color: var(--muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: left; }
-    .roll-chips-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .roll-error {
+      font-size: 0.75rem;
+      color: var(--red);
+      margin-bottom: 12px;
+      display: none;
+      text-align: left;
+    }
+
+    .roll-error.show {
+      display: block;
+    }
+
+    .roll-saved-list {
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .roll-saved-list.show {
+      display: block;
+    }
+
+    .roll-saved-list p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: left;
+    }
+
+    .roll-chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
     .roll-chip {
       background: var(--primary-light);
       color: var(--primary);
@@ -276,7 +486,12 @@
       border: 1.5px solid var(--primary);
       transition: var(--transition);
     }
-    .roll-chip:hover { background: var(--primary); color: #fff; }
+
+    .roll-chip:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
     .roll-submit-btn {
       width: 100%;
       background: var(--primary);
@@ -290,7 +505,11 @@
       transition: var(--transition);
       font-family: inherit;
     }
-    .roll-submit-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    .roll-submit-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
 
     /* ══════════════════════════════
        APP SHELL
@@ -302,7 +521,7 @@
       max-width: 480px;
       margin: 0 auto;
       background: var(--bg);
-      box-shadow: 0 0 30px rgba(0,0,0,0.05);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
       position: relative;
     }
 
@@ -322,12 +541,14 @@
       padding: 0 18px;
       gap: 12px;
     }
+
     .header-logo-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
       flex-shrink: 0;
     }
+
     .header-logo-icon {
       width: 32px;
       height: 32px;
@@ -338,18 +559,24 @@
       justify-content: center;
       font-size: 1rem;
     }
+
     .header-app-name {
       font-size: 0.88rem;
       font-weight: 800;
       color: var(--text);
       line-height: 1;
     }
+
     .header-app-sub {
       font-size: 0.65rem;
       color: var(--muted);
       font-weight: 500;
     }
-    .header-spacer { flex: 1; }
+
+    .header-spacer {
+      flex: 1;
+    }
+
     .header-roll-badge {
       background: var(--primary-light);
       color: var(--primary);
@@ -370,11 +597,15 @@
       overflow-x: hidden;
       padding-bottom: calc(var(--nav-h) + 16px);
     }
+
     .tab-content {
       display: none;
       padding: 18px 16px;
     }
-    .tab-content.active { display: block; }
+
+    .tab-content.active {
+      display: block;
+    }
 
     /* ══════════════════════════════
        BOTTOM NAVIGATION
@@ -395,6 +626,7 @@
       justify-content: space-around;
       padding: 6px 8px 10px;
     }
+
     .nav-btn {
       display: flex;
       flex-direction: column;
@@ -409,9 +641,29 @@
       color: var(--muted);
       position: relative;
     }
-    .nav-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: var(--transition); }
-    .nav-btn-label { font-size: 0.64rem; font-weight: 700; letter-spacing: -0.01em; transition: var(--transition); }
-    .nav-btn.active { color: var(--primary); }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: var(--transition);
+    }
+
+    .nav-btn-label {
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      transition: var(--transition);
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+    }
+
     .nav-btn.active .nav-btn-icon-wrap {
       background: var(--primary-light);
       border-radius: 12px;
@@ -457,6 +709,7 @@
       position: relative;
       overflow: hidden;
     }
+
     .profile-card::after {
       content: '';
       position: absolute;
@@ -464,9 +717,10 @@
       top: -24px;
       width: 120px;
       height: 120px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 50%;
     }
+
     .profile-card::before {
       content: '';
       position: absolute;
@@ -474,36 +728,76 @@
       bottom: -30px;
       width: 80px;
       height: 80px;
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       border-radius: 50%;
     }
-    .profile-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+
+    .profile-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
     .profile-avatar {
       width: 52px;
       height: 52px;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.4rem;
-      border: 2px solid rgba(255,255,255,0.4);
+      border: 2px solid rgba(255, 255, 255, 0.4);
       flex-shrink: 0;
     }
-    .profile-name { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
-    .profile-roll { font-size: 0.76rem; opacity: 0.85; margin-top: 2px; font-weight: 600; }
-    .profile-dept { font-size: 0.7rem; opacity: 0.7; margin-top: 1px; }
 
-    .profile-meta-row { display: flex; gap: 10px; }
+    .profile-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .profile-roll {
+      font-size: 0.76rem;
+      opacity: 0.85;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .profile-dept {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-top: 1px;
+    }
+
+    .profile-meta-row {
+      display: flex;
+      gap: 10px;
+    }
+
     .profile-meta-chip {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 8px;
       padding: 7px 12px;
       flex: 1;
       text-align: center;
     }
-    .pmc-val { font-size: 1.1rem; font-weight: 800; display: block; }
-    .pmc-lbl { font-size: 0.63rem; opacity: 0.8; font-weight: 600; letter-spacing: 0.03em; margin-top: 1px; display: block; }
+
+    .pmc-val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: block;
+    }
+
+    .pmc-lbl {
+      font-size: 0.63rem;
+      opacity: 0.8;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-top: 1px;
+      display: block;
+    }
 
     /* ══════════════════════════════
        DASHBOARD: STAT MINI CARDS ROW
@@ -514,6 +808,7 @@
       gap: 12px;
       margin-bottom: 14px;
     }
+
     .stat-card {
       background: var(--card-bg);
       border-radius: var(--radius-md);
@@ -524,6 +819,7 @@
       align-items: center;
       gap: 12px;
     }
+
     .stat-icon {
       width: 40px;
       height: 40px;
@@ -534,12 +830,37 @@
       font-size: 1.1rem;
       flex-shrink: 0;
     }
-    .stat-icon.blue   { background: var(--blue-bg); }
-    .stat-icon.green  { background: var(--green-bg); }
-    .stat-icon.orange { background: var(--orange-bg); }
-    .stat-icon.red    { background: var(--red-bg); }
-    .stat-val { font-size: 1.2rem; font-weight: 800; color: var(--text); display: block; }
-    .stat-lbl { font-size: 0.7rem; color: var(--muted); font-weight: 600; display: block; margin-top: 1px; }
+
+    .stat-icon.blue {
+      background: var(--blue-bg);
+    }
+
+    .stat-icon.green {
+      background: var(--green-bg);
+    }
+
+    .stat-icon.orange {
+      background: var(--orange-bg);
+    }
+
+    .stat-icon.red {
+      background: var(--red-bg);
+    }
+
+    .stat-val {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text);
+      display: block;
+    }
+
+    .stat-lbl {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 600;
+      display: block;
+      margin-top: 1px;
+    }
 
     /* ══════════════════════════════
        DASHBOARD: ATTENDANCE RATE ROW
@@ -550,6 +871,7 @@
       gap: 12px;
       margin-bottom: 14px;
     }
+
     .rate-card {
       background: var(--card-bg);
       border-radius: var(--radius-md);
@@ -557,14 +879,60 @@
       border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
     }
-    .rate-label { font-size: 0.72rem; color: var(--muted); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; margin-bottom: 4px; }
-    .rate-tag { display: inline-block; font-size: 0.62rem; font-weight: 800; padding: 2px 8px; border-radius: 50px; margin-bottom: 8px; }
-    .rate-tag.green { background: var(--green-bg); color: var(--green-text); }
-    .rate-tag.blue  { background: var(--blue-bg); color: var(--blue-text); }
-    .rate-tag.red   { background: var(--red-bg); color: var(--red-text); }
-    .rate-tag.orange{ background: var(--orange-bg); color: var(--orange-text); }
-    .rate-big { font-size: 1.8rem; font-weight: 800; color: var(--text); display: block; line-height: 1; }
-    .rate-sub { font-size: 0.7rem; color: var(--muted); margin-top: 4px; font-weight: 500; display: block; }
+
+    .rate-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .rate-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 50px;
+      margin-bottom: 8px;
+    }
+
+    .rate-tag.green {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .rate-tag.blue {
+      background: var(--blue-bg);
+      color: var(--blue-text);
+    }
+
+    .rate-tag.red {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
+
+    .rate-tag.orange {
+      background: var(--orange-bg);
+      color: var(--orange-text);
+    }
+
+    .rate-big {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text);
+      display: block;
+      line-height: 1;
+    }
+
+    .rate-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 4px;
+      font-weight: 500;
+      display: block;
+    }
 
     /* ══════════════════════════════
        DASHBOARD: MONTHLY BAR CHART (Oakridge style)
@@ -576,7 +944,11 @@
       padding-bottom: 4px;
       scrollbar-width: none;
     }
-    .month-chart-wrap::-webkit-scrollbar { display: none; }
+
+    .month-chart-wrap::-webkit-scrollbar {
+      display: none;
+    }
+
     .month-bar-item {
       display: flex;
       flex-direction: column;
@@ -585,6 +957,7 @@
       min-width: 56px;
       position: relative;
     }
+
     .month-bubble {
       border-radius: 14px;
       width: 56px;
@@ -597,19 +970,43 @@
       position: relative;
       transition: var(--transition);
     }
-    .month-bubble.inactive { background: #f1f5f9; }
-    .month-bubble.active   { background: var(--primary); }
-    .month-bubble.high     { background: var(--green); }
-    .month-bubble.medium   { background: var(--orange); }
-    .month-bubble.low      { background: var(--red); }
+
+    .month-bubble.inactive {
+      background: #f1f5f9;
+    }
+
+    .month-bubble.active {
+      background: var(--primary);
+    }
+
+    .month-bubble.high {
+      background: var(--green);
+    }
+
+    .month-bubble.medium {
+      background: var(--orange);
+    }
+
+    .month-bubble.low {
+      background: var(--red);
+    }
+
     .month-pct-label {
       font-size: 0.75rem;
       font-weight: 800;
       color: #fff;
       line-height: 1;
     }
-    .month-bubble.inactive .month-pct-label { color: var(--muted); }
-    .month-name-label { font-size: 0.68rem; color: var(--muted); font-weight: 700; }
+
+    .month-bubble.inactive .month-pct-label {
+      color: var(--muted);
+    }
+
+    .month-name-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
 
     /* ══════════════════════════════
        DASHBOARD: BREAKDOWN SUMMARY
@@ -619,6 +1016,7 @@
       gap: 10px;
       margin-top: 12px;
     }
+
     .bk-bar-wrap {
       flex: 1;
       display: flex;
@@ -626,6 +1024,7 @@
       align-items: center;
       gap: 6px;
     }
+
     .bk-bar-track {
       width: 100%;
       background: var(--bg);
@@ -636,18 +1035,42 @@
       flex-direction: column;
       justify-content: flex-end;
     }
+
     .bk-bar-fill {
       width: 100%;
       border-radius: 10px 10px 0 0;
       min-height: 4px;
       transition: height 0.5s ease;
     }
-    .bk-bar-fill.present  { background: var(--primary); }
-    .bk-bar-fill.absent   { background: var(--green); }
-    .bk-bar-fill.holiday  { background: var(--orange); }
-    .bk-bar-fill.cancelled{ background: var(--red); }
-    .bk-count { font-size: 1rem; font-weight: 800; color: var(--text); }
-    .bk-label { font-size: 0.62rem; color: var(--muted); font-weight: 700; text-align: center; }
+
+    .bk-bar-fill.present {
+      background: var(--primary);
+    }
+
+    .bk-bar-fill.absent {
+      background: var(--green);
+    }
+
+    .bk-bar-fill.holiday {
+      background: var(--orange);
+    }
+
+    .bk-bar-fill.cancelled {
+      background: var(--red);
+    }
+
+    .bk-count {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .bk-label {
+      font-size: 0.62rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-align: center;
+    }
 
     /* ══════════════════════════════
        DAILY TAB
@@ -663,6 +1086,7 @@
       margin-bottom: 16px;
       box-shadow: var(--shadow-sm);
     }
+
     .date-nav-btn {
       width: 36px;
       height: 36px;
@@ -678,11 +1102,39 @@
       flex-shrink: 0;
       transition: var(--transition);
     }
-    .date-nav-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
-    .date-center { flex: 1; cursor: pointer; position: relative; }
-    .date-val { font-size: 1rem; font-weight: 800; color: var(--text); }
-    .date-day { font-size: 0.75rem; color: var(--muted); font-weight: 600; margin-top: 1px; }
-    #nativeDatePicker { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; }
+
+    .date-nav-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .date-center {
+      flex: 1;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .date-val {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .date-day {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 1px;
+    }
+
+    #nativeDatePicker {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+    }
 
     .period-card {
       background: var(--card-bg);
@@ -692,12 +1144,14 @@
       margin-bottom: 10px;
       box-shadow: var(--shadow-sm);
     }
+
     .period-header {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 10px;
     }
+
     .period-num-badge {
       width: 34px;
       height: 34px;
@@ -711,9 +1165,25 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    .period-header-text { flex: 1; }
-    .period-num-label { font-size: 0.7rem; color: var(--muted); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
-    .period-time-label { font-size: 0.75rem; color: var(--subtext); font-weight: 600; margin-top: 1px; }
+
+    .period-header-text {
+      flex: 1;
+    }
+
+    .period-num-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .period-time-label {
+      font-size: 0.75rem;
+      color: var(--subtext);
+      font-weight: 600;
+      margin-top: 1px;
+    }
 
     .subject-select-wrap {
       position: relative;
@@ -724,7 +1194,12 @@
       margin-bottom: 10px;
       transition: var(--transition);
     }
-    .subject-select-wrap:focus-within { border-color: var(--primary); background: #fff; }
+
+    .subject-select-wrap:focus-within {
+      border-color: var(--primary);
+      background: #fff;
+    }
+
     .subject-select-wrap::after {
       content: '▾';
       position: absolute;
@@ -735,6 +1210,7 @@
       font-size: 0.8rem;
       pointer-events: none;
     }
+
     .subject-select {
       width: 100%;
       background: transparent;
@@ -751,6 +1227,7 @@
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 8px;
     }
+
     .status-pill {
       padding: 8px 4px;
       border-radius: var(--radius-sm);
@@ -763,14 +1240,46 @@
       background: var(--bg);
       color: var(--muted);
     }
-    .status-pill.present { border-color: #d1fae5; }
-    .status-pill.present.active { background: var(--green); color: #fff; border-color: var(--green); }
-    .status-pill.absent { border-color: #fee2e2; }
-    .status-pill.absent.active { background: var(--red); color: #fff; border-color: var(--red); }
-    .status-pill.holiday { border-color: #dbeafe; }
-    .status-pill.holiday.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-    .status-pill.cancelled { border-color: #fef3c7; }
-    .status-pill.cancelled.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+
+    .status-pill.present {
+      border-color: #d1fae5;
+    }
+
+    .status-pill.present.active {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+
+    .status-pill.absent {
+      border-color: #fee2e2;
+    }
+
+    .status-pill.absent.active {
+      background: var(--red);
+      color: #fff;
+      border-color: var(--red);
+    }
+
+    .status-pill.holiday {
+      border-color: #dbeafe;
+    }
+
+    .status-pill.holiday.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .status-pill.cancelled {
+      border-color: #fef3c7;
+    }
+
+    .status-pill.cancelled.active {
+      background: var(--orange);
+      color: #fff;
+      border-color: var(--orange);
+    }
 
     .no-class-card {
       background: var(--card-bg);
@@ -780,9 +1289,24 @@
       text-align: center;
       color: var(--muted);
     }
-    .no-class-card .nc-icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
-    .no-class-card h3 { font-size: 1rem; font-weight: 700; color: var(--subtext); margin-bottom: 6px; }
-    .no-class-card p { font-size: 0.8rem; line-height: 1.5; }
+
+    .no-class-card .nc-icon {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .no-class-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--subtext);
+      margin-bottom: 6px;
+    }
+
+    .no-class-card p {
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
 
     /* ══════════════════════════════
        SUBJECTS TAB
@@ -793,7 +1317,13 @@
       justify-content: space-between;
       margin-bottom: 14px;
     }
-    .subjects-meta { font-size: 0.76rem; color: var(--muted); font-weight: 600; }
+
+    .subjects-meta {
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
     .add-subj-btn {
       background: var(--primary);
       color: #fff;
@@ -808,7 +1338,10 @@
       gap: 5px;
       transition: var(--transition);
     }
-    .add-subj-btn:hover { background: var(--primary-dark); }
+
+    .add-subj-btn:hover {
+      background: var(--primary-dark);
+    }
 
     .subject-card {
       background: var(--card-bg);
@@ -818,12 +1351,14 @@
       margin-bottom: 10px;
       box-shadow: var(--shadow-sm);
     }
+
     .subject-top-row {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 12px;
     }
+
     .subj-badge {
       width: 40px;
       height: 40px;
@@ -836,17 +1371,52 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    .subj-badge-0 { background: var(--primary); }
-    .subj-badge-1 { background: var(--green); }
-    .subj-badge-2 { background: var(--orange); }
-    .subj-badge-3 { background: var(--red); }
-    .subj-badge-4 { background: var(--purple); }
-    .subj-badge-5 { background: #06b6d4; }
-    .subj-badge-6 { background: #ec4899; }
-    .subj-badge-7 { background: #14b8a6; }
 
-    .subj-name { font-size: 0.85rem; font-weight: 700; color: var(--text); line-height: 1.3; flex: 1; }
-    .subj-actions { display: flex; gap: 6px; }
+    .subj-badge-0 {
+      background: var(--primary);
+    }
+
+    .subj-badge-1 {
+      background: var(--green);
+    }
+
+    .subj-badge-2 {
+      background: var(--orange);
+    }
+
+    .subj-badge-3 {
+      background: var(--red);
+    }
+
+    .subj-badge-4 {
+      background: var(--purple);
+    }
+
+    .subj-badge-5 {
+      background: #06b6d4;
+    }
+
+    .subj-badge-6 {
+      background: #ec4899;
+    }
+
+    .subj-badge-7 {
+      background: #14b8a6;
+    }
+
+    .subj-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      flex: 1;
+    }
+
+    .subj-actions {
+      display: flex;
+      gap: 6px;
+    }
+
     .subj-action-btn {
       width: 30px;
       height: 30px;
@@ -860,7 +1430,10 @@
       justify-content: center;
       transition: var(--transition);
     }
-    .subj-action-btn:hover { background: var(--border); }
+
+    .subj-action-btn:hover {
+      background: var(--border);
+    }
 
     .subj-stats-row {
       display: grid;
@@ -868,14 +1441,28 @@
       gap: 8px;
       margin-bottom: 10px;
     }
+
     .subj-stat {
       background: var(--bg);
       border-radius: var(--radius-sm);
       padding: 8px;
       text-align: center;
     }
-    .subj-stat-val { display: block; font-size: 1rem; font-weight: 800; color: var(--text); }
-    .subj-stat-lbl { display: block; font-size: 0.62rem; color: var(--muted); font-weight: 700; margin-top: 2px; }
+
+    .subj-stat-val {
+      display: block;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .subj-stat-lbl {
+      display: block;
+      font-size: 0.62rem;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 2px;
+    }
 
     .progress-bar-track {
       background: #f1f5f9;
@@ -884,17 +1471,36 @@
       overflow: hidden;
       margin-bottom: 8px;
     }
+
     .progress-bar-fill {
       height: 100%;
       border-radius: 50px;
       transition: width 0.5s ease;
     }
-    .progress-bar-fill.good    { background: var(--green); }
-    .progress-bar-fill.warning { background: var(--orange); }
-    .progress-bar-fill.danger  { background: var(--red); }
-    .subj-stat-val.good    { color: var(--green-text); }
-    .subj-stat-val.warning { color: var(--orange-text); }
-    .subj-stat-val.danger  { color: var(--red-text); }
+
+    .progress-bar-fill.good {
+      background: var(--green);
+    }
+
+    .progress-bar-fill.warning {
+      background: var(--orange);
+    }
+
+    .progress-bar-fill.danger {
+      background: var(--red);
+    }
+
+    .subj-stat-val.good {
+      color: var(--green-text);
+    }
+
+    .subj-stat-val.warning {
+      color: var(--orange-text);
+    }
+
+    .subj-stat-val.danger {
+      color: var(--red-text);
+    }
 
     .target-alert {
       font-size: 0.76rem;
@@ -903,15 +1509,37 @@
       border-radius: var(--radius-sm);
       line-height: 1.4;
     }
-    .target-alert.safe    { background: var(--green-bg); color: var(--green-text); }
-    .target-alert.warn    { background: var(--orange-bg); color: var(--orange-text); }
-    .target-alert.danger  { background: var(--red-bg); color: var(--red-text); }
+
+    .target-alert.safe {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .target-alert.warn {
+      background: var(--orange-bg);
+      color: var(--orange-text);
+    }
+
+    .target-alert.danger {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
 
     /* ══════════════════════════════
        REPORTS TAB
     ══════════════════════════════ */
-    .reports-table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-    .reports-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .reports-table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .reports-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
     .reports-table thead th {
       background: var(--bg);
       padding: 10px 10px;
@@ -923,11 +1551,29 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-    .reports-table tbody tr { border-bottom: 1px solid var(--border); }
-    .reports-table tbody tr:last-child { border-bottom: none; }
-    .reports-table tbody tr.clickable { cursor: pointer; transition: var(--transition); }
-    .reports-table tbody tr.clickable:hover { background: var(--primary-light); }
-    .reports-table td { padding: 9px 10px; vertical-align: middle; }
+
+    .reports-table tbody tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .reports-table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .reports-table tbody tr.clickable {
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .reports-table tbody tr.clickable:hover {
+      background: var(--primary-light);
+    }
+
+    .reports-table td {
+      padding: 9px 10px;
+      vertical-align: middle;
+    }
+
     .reports-table tr.week-header td {
       background: #fafafa;
       font-weight: 800;
@@ -957,6 +1603,7 @@
       box-shadow: var(--shadow-sm);
       margin-bottom: 14px;
     }
+
     .settings-item {
       display: flex;
       align-items: center;
@@ -966,8 +1613,15 @@
       cursor: pointer;
       transition: var(--transition);
     }
-    .settings-item:last-child { border-bottom: none; }
-    .settings-item:hover { background: var(--bg); }
+
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+
+    .settings-item:hover {
+      background: var(--bg);
+    }
+
     .setting-icon-box {
       width: 38px;
       height: 38px;
@@ -978,13 +1632,39 @@
       font-size: 1.1rem;
       flex-shrink: 0;
     }
-    .setting-icon-box.blue   { background: var(--blue-bg); }
-    .setting-icon-box.green  { background: var(--green-bg); }
-    .setting-icon-box.red    { background: var(--red-bg); }
-    .setting-icon-box.purple { background: var(--purple-bg); }
-    .setting-text { flex: 1; }
-    .setting-title { font-size: 0.88rem; font-weight: 700; color: var(--text); }
-    .setting-desc  { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+
+    .setting-icon-box.blue {
+      background: var(--blue-bg);
+    }
+
+    .setting-icon-box.green {
+      background: var(--green-bg);
+    }
+
+    .setting-icon-box.red {
+      background: var(--red-bg);
+    }
+
+    .setting-icon-box.purple {
+      background: var(--purple-bg);
+    }
+
+    .setting-text {
+      flex: 1;
+    }
+
+    .setting-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .setting-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
     .setting-badge {
       background: var(--primary-light);
       color: var(--primary);
@@ -993,7 +1673,11 @@
       padding: 4px 10px;
       border-radius: 50px;
     }
-    .setting-chevron { color: var(--muted); font-size: 0.8rem; }
+
+    .setting-chevron {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
 
     .about-card {
       background: var(--primary);
@@ -1003,68 +1687,368 @@
       color: #fff;
       text-align: center;
     }
-    .about-card h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 4px; }
-    .about-card p  { font-size: 0.73rem; opacity: 0.8; line-height: 1.5; }
+
+    .about-card h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .about-card p {
+      font-size: 0.73rem;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
 
     /* STUDENT DETAILS CARD */
-    .student-details-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin-bottom:14px; box-shadow:var(--shadow-sm); }
-    .sd-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-    .sd-title { font-size:1rem; font-weight:800; color:var(--text); }
-    .sd-badge { background:var(--primary); color:#fff; font-size:0.68rem; font-weight:800; padding:4px 12px; border-radius:50px; }
-    .sd-profile-row { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
-    .sd-avatar { width:56px; height:56px; background:linear-gradient(135deg,#4476f5,#6356f5); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; box-shadow:0 4px 12px rgba(68,118,245,.3); }
-    .sd-name { font-size:1.1rem; font-weight:800; color:var(--text); margin-bottom:2px; }
-    .sd-roll { font-size:0.72rem; color:var(--primary); font-weight:700; }
-    .sd-dept { font-size:0.68rem; color:var(--muted); margin-top:1px; }
-    .sd-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .sd-info-item { background:var(--bg); border-radius:var(--radius-sm); padding:10px 12px; }
-    .sd-info-label { font-size:0.62rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px; }
-    .sd-info-val { font-size:0.82rem; font-weight:700; color:var(--text); }
+    .student-details-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sd-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .sd-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .sd-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 50px;
+    }
+
+    .sd-profile-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .sd-avatar {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #4476f5, #6356f5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(68, 118, 245, .3);
+    }
+
+    .sd-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .sd-roll {
+      font-size: 0.72rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .sd-dept {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .sd-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .sd-info-item {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .sd-info-label {
+      font-size: 0.62rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 3px;
+    }
+
+    .sd-info-val {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+    }
 
     /* HORIZONTAL STAT CHIPS */
-    .stat-chips-scroll { display:flex; gap:10px; overflow-x:auto; padding:2px 0 6px; scrollbar-width:none; margin-bottom:14px; }
-    .stat-chips-scroll::-webkit-scrollbar { display:none; }
-    .stat-chip { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; min-width:130px; display:flex; align-items:center; gap:12px; box-shadow:var(--shadow-sm); flex-shrink:0; }
-    .chip-icon-ring { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
-    .chip-icon-ring.blue   { background:#dbeafe; }
-    .chip-icon-ring.green  { background:#dcfce7; }
-    .chip-icon-ring.orange { background:#fef3c7; }
-    .chip-icon-ring.red    { background:#fee2e2; }
-    .chip-big { display:block; font-size:1.15rem; font-weight:800; color:var(--text); line-height:1.1; }
-    .chip-lbl { display:block; font-size:0.67rem; color:var(--muted); font-weight:600; margin-top:2px; line-height:1.3; }
+    .stat-chips-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 2px 0 6px;
+      scrollbar-width: none;
+      margin-bottom: 14px;
+    }
+
+    .stat-chips-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .stat-chip {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      min-width: 130px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
+    }
+
+    .chip-icon-ring {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .chip-icon-ring.blue {
+      background: #dbeafe;
+    }
+
+    .chip-icon-ring.green {
+      background: #dcfce7;
+    }
+
+    .chip-icon-ring.orange {
+      background: #fef3c7;
+    }
+
+    .chip-icon-ring.red {
+      background: #fee2e2;
+    }
+
+    .chip-big {
+      display: block;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .chip-lbl {
+      display: block;
+      font-size: 0.67rem;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
 
     /* TWO-COL LAYOUT */
-    .two-col-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
-    .two-col-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; box-shadow:var(--shadow-sm); }
-    .tc-label { font-size:0.72rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:2px; }
-    .tc-sub   { font-size:0.62rem; color:var(--muted); margin-bottom:8px; display:block; }
-    .tc-big   { font-size:1.6rem; font-weight:800; color:var(--text); display:block; line-height:1; }
-    .tc-unit  { font-size:0.7rem; color:var(--muted); font-weight:600; }
-    .tc-tag   { display:inline-block; font-size:0.6rem; font-weight:800; padding:3px 8px; border-radius:50px; margin-top:6px; }
-    .tc-tag.good   { background:var(--green-bg);  color:var(--green-text); }
-    .tc-tag.warn   { background:var(--orange-bg); color:var(--orange-text); }
-    .tc-tag.danger { background:var(--red-bg);    color:var(--red-text); }
-    .tc-tag.blue   { background:var(--blue-bg);   color:var(--blue-text); }
+    .two-col-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .two-col-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tc-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      margin-bottom: 2px;
+    }
+
+    .tc-sub {
+      font-size: 0.62rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .tc-big {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      display: block;
+      line-height: 1;
+    }
+
+    .tc-unit {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .tc-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 50px;
+      margin-top: 6px;
+    }
+
+    .tc-tag.good {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .tc-tag.warn {
+      background: var(--orange-bg);
+      color: var(--orange-text);
+    }
+
+    .tc-tag.danger {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
+
+    .tc-tag.blue {
+      background: var(--blue-bg);
+      color: var(--blue-text);
+    }
 
     /* SUMMARY BARS */
-    .summary-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; box-shadow:var(--shadow-sm); margin-bottom:14px; }
-    .summary-title { font-size:0.88rem; font-weight:800; color:var(--text); margin-bottom:14px; }
-    .summary-bars-row { display:flex; gap:12px; align-items:flex-end; height:130px; }
-    .summary-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; height:100%; }
-    .summary-bar-col  { flex:1; width:100%; display:flex; flex-direction:column; justify-content:flex-end; }
-    .summary-bar-fill { width:100%; border-radius:8px 8px 0 0; min-height:6px; transition:height .5s ease; }
-    .summary-bar-fill.present  { background:var(--primary); }
-    .summary-bar-fill.absent   { background:var(--green); }
-    .summary-bar-fill.holiday  { background:var(--orange); }
-    .summary-bar-fill.cancelled{ background:var(--red); }
-    .summary-bar-label { font-size:0.6rem; color:var(--muted); font-weight:700; text-align:center; }
-    .summary-bar-num   { font-size:1rem; font-weight:800; color:var(--text); }
+    .summary-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 14px;
+    }
+
+    .summary-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .summary-bars-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      height: 130px;
+    }
+
+    .summary-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      height: 100%;
+    }
+
+    .summary-bar-col {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .summary-bar-fill {
+      width: 100%;
+      border-radius: 8px 8px 0 0;
+      min-height: 6px;
+      transition: height .5s ease;
+    }
+
+    .summary-bar-fill.present {
+      background: var(--primary);
+    }
+
+    .summary-bar-fill.absent {
+      background: var(--green);
+    }
+
+    .summary-bar-fill.holiday {
+      background: var(--orange);
+    }
+
+    .summary-bar-fill.cancelled {
+      background: var(--red);
+    }
+
+    .summary-bar-label {
+      font-size: 0.6rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .summary-bar-num {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
 
     /* MONTHLY CHART CARD */
-    .month-chart-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; box-shadow:var(--shadow-sm); margin-bottom:14px; }
-    .month-chart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-    .month-chart-title { font-size:0.88rem; font-weight:800; color:var(--text); }
-    .month-chart-sub   { font-size:0.68rem; color:var(--muted); font-weight:600; }
+    .month-chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 14px;
+    }
+
+    .month-chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .month-chart-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .month-chart-sub {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
 
     /* ══════════════════════════════
        SUBJECTS GRID LAYOUT
@@ -1075,6 +2059,7 @@
       gap: 14px;
       width: 100%;
     }
+
     @media (min-width: 768px) {
       .subjects-grid {
         grid-template-columns: 1fr 1fr;
@@ -1089,6 +2074,7 @@
       box-shadow: var(--shadow-sm);
       text-align: center;
     }
+
     .gauge-subj-name {
       font-size: 0.72rem;
       font-weight: 800;
@@ -1098,18 +2084,45 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .gauge-svg-wrap {
       position: relative;
       width: 90px;
       height: 90px;
       margin: 0 auto 8px;
     }
-    .gauge-svg { width: 90px; height: 90px; transform: rotate(-90deg); }
-    .gauge-bg   { fill: none; stroke: #f0f4fb; stroke-width: 10; }
-    .gauge-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
-    .gauge-fill.high   { stroke: #4476f5; }
-    .gauge-fill.medium { stroke: #f59e0b; }
-    .gauge-fill.low    { stroke: #ef4444; }
+
+    .gauge-svg {
+      width: 90px;
+      height: 90px;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: #f0f4fb;
+      stroke-width: 10;
+    }
+
+    .gauge-fill {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+
+    .gauge-fill.high {
+      stroke: #4476f5;
+    }
+
+    .gauge-fill.medium {
+      stroke: #f59e0b;
+    }
+
+    .gauge-fill.low {
+      stroke: #ef4444;
+    }
+
     .gauge-center-text {
       position: absolute;
       top: 50%;
@@ -1120,6 +2133,7 @@
       color: var(--text);
       line-height: 1;
     }
+
     .gauge-range {
       display: flex;
       justify-content: space-between;
@@ -1128,15 +2142,32 @@
       font-weight: 700;
       margin-top: 4px;
     }
+
     .gauge-stats-row {
       display: flex;
       justify-content: center;
       gap: 10px;
       margin-top: 6px;
     }
-    .gauge-stat-item { text-align: center; }
-    .gauge-stat-num  { display: block; font-size: 0.8rem; font-weight: 800; color: var(--text); }
-    .gauge-stat-lbl  { display: block; font-size: 0.6rem; color: var(--muted); font-weight: 600; }
+
+    .gauge-stat-item {
+      text-align: center;
+    }
+
+    .gauge-stat-num {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .gauge-stat-lbl {
+      display: block;
+      font-size: 0.6rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
     .gauge-alert {
       font-size: 0.62rem;
       font-weight: 700;
@@ -1145,9 +2176,21 @@
       margin-top: 8px;
       line-height: 1.4;
     }
-    .gauge-alert.safe   { background: var(--green-bg); color: var(--green-text); }
-    .gauge-alert.warn   { background: var(--orange-bg); color: var(--orange-text); }
-    .gauge-alert.danger { background: var(--red-bg);   color: var(--red-text); }
+
+    .gauge-alert.safe {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .gauge-alert.warn {
+      background: var(--orange-bg);
+      color: var(--orange-text);
+    }
+
+    .gauge-alert.danger {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
 
     /* ══ SUBJECT PARTICIPATION HORIZONTAL BARS (middle chart) ══ */
     .participation-card {
@@ -1158,18 +2201,21 @@
       box-shadow: var(--shadow-sm);
       margin-bottom: 14px;
     }
+
     .participation-title {
       font-size: 0.88rem;
       font-weight: 800;
       color: var(--text);
       margin-bottom: 14px;
     }
+
     .participation-row {
       display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 10px;
     }
+
     .participation-label {
       font-size: 0.7rem;
       font-weight: 700;
@@ -1178,6 +2224,7 @@
       flex-shrink: 0;
       text-align: right;
     }
+
     .participation-bar-track {
       flex: 1;
       height: 22px;
@@ -1186,6 +2233,7 @@
       overflow: hidden;
       position: relative;
     }
+
     .participation-bar-fill {
       height: 100%;
       border-radius: 6px;
@@ -1198,9 +2246,18 @@
       transition: width 0.5s ease;
       min-width: 28px;
     }
-    .participation-bar-fill.high   { background: #4476f5; }
-    .participation-bar-fill.medium { background: #f59e0b; }
-    .participation-bar-fill.low    { background: #ef4444; }
+
+    .participation-bar-fill.high {
+      background: #4476f5;
+    }
+
+    .participation-bar-fill.medium {
+      background: #f59e0b;
+    }
+
+    .participation-bar-fill.low {
+      background: #ef4444;
+    }
     }
 
     /* ══════════════════════════════
@@ -1208,12 +2265,15 @@
        - Laptop/Desktop: Left Sidebar layout
        - Mobile/Tablet: Native Bottom Nav app shell
     ══════════════════════════════ */
-    .sidebar-header { display: none; }
+    .sidebar-header {
+      display: none;
+    }
 
     @media (min-width: 768px) {
       body {
         background: #f8fafc;
       }
+
       .app-shell {
         display: grid;
         grid-template-columns: 240px 1fr;
@@ -1236,8 +2296,11 @@
         border-bottom: 1px solid var(--border);
         height: var(--header-h);
         z-index: 100;
+
         /* Hide logo wrap on desktop since it is in the sidebar */
-        .header-logo-wrap { display: none; }
+        .header-logo-wrap {
+          display: none;
+        }
       }
 
       .app-scroll {
@@ -1299,18 +2362,22 @@
         width: 100%;
         color: var(--muted);
       }
+
       .nav-btn svg {
         width: 18px;
         height: 18px;
       }
+
       .nav-btn-label {
         font-size: 0.85rem;
         font-weight: 700;
       }
+
       .nav-btn.active {
         background: var(--primary-light);
         color: var(--primary);
       }
+
       .nav-btn.active .nav-btn-icon-wrap {
         background: none;
         padding: 0;
@@ -1319,9 +2386,10 @@
 
       /* Custom Desktop layout adjustments */
       .gauge-grid {
-        grid-template-columns: 1fr 1fr 1fr; /* 3 columns on wider screens */
+        grid-template-columns: 1fr 1fr 1fr;
+        /* 3 columns on wider screens */
       }
-      
+
       /* Toast position on desktop */
       #toast-container {
         bottom: 24px;
@@ -1344,954 +2412,988 @@
     }
   </style>
 </head>
+
 <body>
 
-<!-- ══════════════════════════════════════════
+  <!-- ══════════════════════════════════════════
      TOAST CONTAINER
 ══════════════════════════════════════════ -->
-<div id="toast-container" role="status" aria-live="polite"></div>
+  <div id="toast-container" role="status" aria-live="polite"></div>
 
-<!-- ══════════════════════════════════════════
+  <!-- ══════════════════════════════════════════
      MODAL — ADD / EDIT SUBJECT
 ══════════════════════════════════════════ -->
-<div class="modal-overlay" id="subjectModal" role="dialog" aria-modal="true">
-  <div class="modal">
-    <h3 id="subjectModalTitle">Add Subject</h3>
-    <p id="subjectModalDesc">Create a new subject to track individual attendance.</p>
-    <div class="modal-form-group">
-      <label class="modal-label" for="modalSubjectName">Subject Name</label>
-      <input type="text" id="modalSubjectName" class="modal-input" placeholder="e.g. COMPUTER VISION" autocomplete="off" />
-    </div>
-    <div class="modal-form-group">
-      <label class="modal-label" for="modalSubjectCode">Badge Letter (1–2 chars)</label>
-      <input type="text" id="modalSubjectCode" class="modal-input" placeholder="e.g. C" maxlength="2" style="width:80px; text-align:center; text-transform:uppercase;" autocomplete="off" />
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeSubjectModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveSubjectFromModal()" style="flex:1;">Save Subject</button>
+  <div class="modal-overlay" id="subjectModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="subjectModalTitle">Add Subject</h3>
+      <p id="subjectModalDesc">Create a new subject to track individual attendance.</p>
+      <div class="modal-form-group">
+        <label class="modal-label" for="modalSubjectName">Subject Name</label>
+        <input type="text" id="modalSubjectName" class="modal-input" placeholder="e.g. COMPUTER VISION"
+          autocomplete="off" />
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label" for="modalSubjectCode">Badge Letter (1–2 chars)</label>
+        <input type="text" id="modalSubjectCode" class="modal-input" placeholder="e.g. C" maxlength="2"
+          style="width:80px; text-align:center; text-transform:uppercase;" autocomplete="off" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeSubjectModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSubjectFromModal()" style="flex:1;">Save Subject</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ══════════════════════════════════════════
+  <!-- ══════════════════════════════════════════
      CONFIRM DIALOG
 ══════════════════════════════════════════ -->
-<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true">
-  <div class="modal" style="text-align:center;">
-    <span style="font-size:2.2rem; display:block; margin-bottom:12px;">⚠️</span>
-    <h3 id="confirmTitle">Confirm Action</h3>
-    <p id="confirmDesc">Are you sure?</p>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="confirmNo" style="flex:1;">Cancel</button>
-      <button class="btn btn-primary btn-danger" id="confirmYes" style="flex:1; background:var(--red); color:#fff;">Confirm</button>
+  <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal" style="text-align:center;">
+      <span style="font-size:2.2rem; display:block; margin-bottom:12px;">⚠️</span>
+      <h3 id="confirmTitle">Confirm Action</h3>
+      <p id="confirmDesc">Are you sure?</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="confirmNo" style="flex:1;">Cancel</button>
+        <button class="btn btn-primary btn-danger" id="confirmYes"
+          style="flex:1; background:var(--red); color:#fff;">Confirm</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ══════════════════════════════════════════
+  <!-- ══════════════════════════════════════════
      ROLL NUMBER OVERLAY
 ══════════════════════════════════════════ -->
-<div class="roll-overlay" id="rollOverlay" role="dialog" aria-modal="true">
-  <div class="roll-card">
-    <span class="roll-icon">🎓</span>
-    <h2 id="rollTitle">Enter Roll Number</h2>
-    <p>Your data is saved per roll number — multiple students can use this on the same device.</p>
+  <div class="roll-overlay" id="rollOverlay" role="dialog" aria-modal="true">
+    <div class="roll-card">
+      <span class="roll-icon">🎓</span>
+      <h2 id="rollTitle">Enter Roll Number</h2>
+      <p>Your data is saved per roll number — multiple students can use this on the same device.</p>
 
-    <div class="prefix-options-wrap">
-      <label class="prefix-option">
-        <input type="radio" name="rollPrefix" value="2473A31" checked onchange="updatePrefixSelection('2473A31')">
-        2473A31___ (Reg)
-      </label>
-      <label class="prefix-option">
-        <input type="radio" name="rollPrefix" value="2573A31L" onchange="updatePrefixSelection('2573A31L')">
-        2573A31L__ (Lat)
-      </label>
+      <div class="prefix-options-wrap">
+        <label class="prefix-option">
+          <input type="radio" name="rollPrefix" value="2473A31" checked onchange="updatePrefixSelection('2473A31')">
+          2473A31___ (Reg)
+        </label>
+        <label class="prefix-option">
+          <input type="radio" name="rollPrefix" value="2573A31L" onchange="updatePrefixSelection('2573A31L')">
+          2573A31L__ (Lat)
+        </label>
+      </div>
+
+      <div class="roll-split-box" id="rollSplitBox">
+        <div class="roll-prefix-display" id="rollPrefixText">2473A31</div>
+        <input type="text" id="rollSuffix" placeholder="___" maxlength="3" inputmode="numeric"
+          oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,this.maxLength)"
+          onkeydown="if(event.key==='Enter')submitRollNumber()" />
+      </div>
+      <div class="roll-error" id="rollError">⚠️ Please enter exactly 3 digits (e.g. 001, 042).</div>
+
+      <div class="roll-saved-list" id="rollSavedList">
+        <p>Recent Profiles</p>
+        <div class="roll-chips-wrap" id="rollSavedChips"></div>
+      </div>
+
+      <button class="roll-submit-btn" onclick="submitRollNumber()">Continue →</button>
     </div>
-
-    <div class="roll-split-box" id="rollSplitBox">
-      <div class="roll-prefix-display" id="rollPrefixText">2473A31</div>
-      <input type="text" id="rollSuffix" placeholder="___" maxlength="3" inputmode="numeric"
-             oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,this.maxLength)"
-             onkeydown="if(event.key==='Enter')submitRollNumber()" />
-    </div>
-    <div class="roll-error" id="rollError">⚠️ Please enter exactly 3 digits (e.g. 001, 042).</div>
-
-    <div class="roll-saved-list" id="rollSavedList">
-      <p>Recent Profiles</p>
-      <div class="roll-chips-wrap" id="rollSavedChips"></div>
-    </div>
-
-    <button class="roll-submit-btn" onclick="submitRollNumber()">Continue →</button>
   </div>
-</div>
 
-<!-- ══════════════════════════════════════════
+  <!-- ══════════════════════════════════════════
      APP SHELL
 ══════════════════════════════════════════ -->
-<div class="app-shell">
+  <div class="app-shell">
 
-  <!-- HEADER -->
-  <header class="app-header">
-    <div class="header-logo-wrap">
-      <div class="header-logo-icon">📚</div>
-      <div>
-        <div class="header-app-name">AttendTrack</div>
-        <div class="header-app-sub">III B.Tech CSE-AI</div>
-      </div>
-    </div>
-    <div class="header-spacer"></div>
-    <div class="header-roll-badge" id="rollDisplayBadge">—</div>
-  </header>
-
-  <!-- SCROLLABLE AREA -->
-  <div class="app-scroll">
-
-    <!-- ══ TAB: DASHBOARD ══ -->
-    <div class="tab-content active" id="tabContent_dashboard">
-
-      <!-- STUDENT DETAILS CARD -->
-      <div class="student-details-card">
-        <div class="sd-header">
-          <span class="sd-title">Student Details</span>
-          <span class="sd-badge">I-SEM 2026</span>
-        </div>
-        <div class="sd-profile-row">
-          <div class="sd-avatar">👤</div>
-          <div>
-            <div class="sd-name" id="profileName">Student</div>
-            <div class="sd-roll" id="profileRoll">Roll No: —</div>
-            <div class="sd-dept">III B.Tech CSE-AI · Visvodaya ITS</div>
-          </div>
-        </div>
-        <div class="sd-info-grid">
-          <div class="sd-info-item">
-            <div class="sd-info-label">Department</div>
-            <div class="sd-info-val">CSE - AI</div>
-          </div>
-          <div class="sd-info-item">
-            <div class="sd-info-label">Year</div>
-            <div class="sd-info-val">III B.Tech</div>
-          </div>
-          <div class="sd-info-item">
-            <div class="sd-info-label">Section</div>
-            <div class="sd-info-val">Fire Flies 🔥</div>
-          </div>
-          <div class="sd-info-item">
-            <div class="sd-info-label">Overall %</div>
-            <div class="sd-info-val" id="overallPctValue">—</div>
-          </div>
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="header-logo-wrap">
+        <div class="header-logo-icon">📚</div>
+        <div>
+          <div class="header-app-name">AttendTrack</div>
+          <div class="header-app-sub">III B.Tech CSE-AI</div>
         </div>
       </div>
+      <div class="header-spacer"></div>
+      <div class="header-roll-badge" id="rollDisplayBadge">—</div>
+    </header>
 
-      <!-- hidden compat SVG -->
-      <svg style="display:none"><circle id="overallRingCircle" /></svg>
+    <!-- SCROLLABLE AREA -->
+    <div class="app-scroll">
 
-      <!-- HORIZONTAL STAT CHIPS -->
-      <div class="stat-chips-scroll">
-        <div class="stat-chip">
-          <div class="chip-icon-ring blue">📅</div>
-          <div>
-            <span class="chip-big" id="overallTotalLabel">0</span>
-            <span class="chip-lbl">Total<br>Attendance</span>
-          </div>
-        </div>
-        <div class="stat-chip">
-          <div class="chip-icon-ring green">✅</div>
-          <div>
-            <span class="chip-big" id="overallPresentCount">0</span>
-            <span class="chip-lbl">Present<br>Classes</span>
-          </div>
-        </div>
-        <div class="stat-chip">
-          <div class="chip-icon-ring orange">⏰</div>
-          <div>
-            <span class="chip-big" id="todayPresentCount">0/0</span>
-            <span class="chip-lbl">Today's<br>Ratio</span>
-          </div>
-        </div>
-        <div class="stat-chip">
-          <div class="chip-icon-ring red">❌</div>
-          <div>
-            <span class="chip-big" id="overallAbsentCount">0</span>
-            <span class="chip-lbl">Total<br>Absent</span>
-          </div>
-        </div>
-      </div>
+      <!-- ══ TAB: DASHBOARD ══ -->
+      <div class="tab-content active" id="tabContent_dashboard">
 
-      <!-- TWO-COL: CLASS DAYS + ATTENDANCE RATE -->
-      <div class="two-col-row">
-        <div class="two-col-card">
-          <div class="tc-label">Class Days</div>
-          <span class="tc-sub">Conducted so far</span>
-          <span class="tc-big" id="classDaysTotal">0</span><span class="tc-unit"> Days</span>
-          <br>
-          <span class="tc-tag blue">Semester</span>
-        </div>
-        <div class="two-col-card">
-          <div class="tc-label">Attendance Rate</div>
-          <span class="tc-sub" id="overallTotalSubLabel">of total classes</span>
-          <span class="tc-big" id="rateVal">—</span>
-          <br>
-          <span class="tc-tag good" id="rateStatusTag">Safe Zone</span>
-          <div style="margin-top:10px;">
-            <div style="font-size:0.65rem; color:var(--muted); font-weight:700; margin-bottom:3px;">This Month</div>
-            <div style="font-size:0.9rem; font-weight:800; color:var(--primary);" id="monthPresentPct">—</div>
-            <div style="font-size:0.65rem; color:var(--muted);" id="monthPresentRatio">0/0 periods</div>
+        <!-- STUDENT DETAILS CARD -->
+        <div class="student-details-card">
+          <div class="sd-header">
+            <span class="sd-title">Student Details</span>
+            <span class="sd-badge">I-SEM 2026</span>
+          </div>
+          <div class="sd-profile-row">
+            <div class="sd-avatar">👤</div>
+            <div>
+              <div class="sd-name" id="profileName">Student</div>
+              <div class="sd-roll" id="profileRoll">Roll No: —</div>
+              <div class="sd-dept">III B.Tech CSE-AI · Visvodaya ITS</div>
+            </div>
+          </div>
+          <div class="sd-info-grid">
+            <div class="sd-info-item">
+              <div class="sd-info-label">Department</div>
+              <div class="sd-info-val">CSE - AI</div>
+            </div>
+            <div class="sd-info-item">
+              <div class="sd-info-label">Year</div>
+              <div class="sd-info-val">III B.Tech</div>
+            </div>
+            <div class="sd-info-item">
+              <div class="sd-info-label">Section</div>
+              <div class="sd-info-val">Fire Flies 🔥</div>
+            </div>
+            <div class="sd-info-item">
+              <div class="sd-info-label">Overall %</div>
+              <div class="sd-info-val" id="overallPctValue">—</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- MONTHLY RATE CHART -->
-      <div class="month-chart-card">
-        <div class="month-chart-header">
-          <span class="month-chart-title">📈 Monthly Rate</span>
-          <span class="month-chart-sub">Tap month to see details</span>
+        <!-- hidden compat SVG -->
+        <svg style="display:none">
+          <circle id="overallRingCircle" />
+        </svg>
+
+        <!-- HORIZONTAL STAT CHIPS -->
+        <div class="stat-chips-scroll">
+          <div class="stat-chip">
+            <div class="chip-icon-ring blue">📅</div>
+            <div>
+              <span class="chip-big" id="overallTotalLabel">0</span>
+              <span class="chip-lbl">Total<br>Attendance</span>
+            </div>
+          </div>
+          <div class="stat-chip">
+            <div class="chip-icon-ring green">✅</div>
+            <div>
+              <span class="chip-big" id="overallPresentCount">0</span>
+              <span class="chip-lbl">Present<br>Classes</span>
+            </div>
+          </div>
+          <div class="stat-chip">
+            <div class="chip-icon-ring orange">⏰</div>
+            <div>
+              <span class="chip-big" id="todayPresentCount">0/0</span>
+              <span class="chip-lbl">Today's<br>Ratio</span>
+            </div>
+          </div>
+          <div class="stat-chip">
+            <div class="chip-icon-ring red">❌</div>
+            <div>
+              <span class="chip-big" id="overallAbsentCount">0</span>
+              <span class="chip-lbl">Total<br>Absent</span>
+            </div>
+          </div>
         </div>
-        <div class="month-chart-wrap" id="trendChartContainer">
+
+        <!-- TWO-COL: CLASS DAYS + ATTENDANCE RATE -->
+        <div class="two-col-row">
+          <div class="two-col-card">
+            <div class="tc-label">Class Days</div>
+            <span class="tc-sub">Conducted so far</span>
+            <span class="tc-big" id="classDaysTotal">0</span><span class="tc-unit"> Days</span>
+            <br>
+            <span class="tc-tag blue">Semester</span>
+          </div>
+          <div class="two-col-card">
+            <div class="tc-label">Attendance Rate</div>
+            <span class="tc-sub" id="overallTotalSubLabel">of total classes</span>
+            <span class="tc-big" id="rateVal">—</span>
+            <br>
+            <span class="tc-tag good" id="rateStatusTag">Safe Zone</span>
+            <div style="margin-top:10px;">
+              <div style="font-size:0.65rem; color:var(--muted); font-weight:700; margin-bottom:3px;">This Month</div>
+              <div style="font-size:0.9rem; font-weight:800; color:var(--primary);" id="monthPresentPct">—</div>
+              <div style="font-size:0.65rem; color:var(--muted);" id="monthPresentRatio">0/0 periods</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MONTHLY RATE CHART -->
+        <div class="month-chart-card">
+          <div class="month-chart-header">
+            <span class="month-chart-title">📈 Monthly Rate</span>
+            <span class="month-chart-sub">Tap month to see details</span>
+          </div>
+          <div class="month-chart-wrap" id="trendChartContainer">
+            <!-- generated by JS -->
+          </div>
+        </div>
+
+        <!-- SUMMARY BARS (Oakridge vertical bar style) -->
+        <div class="summary-card">
+          <div class="summary-title" id="summaryTitle">📊 Summary — <span id="summaryRollLabel">Student</span></div>
+          <div class="summary-bars-row">
+            <div class="summary-bar-wrap">
+              <div class="summary-bar-num" id="breakdownVal_present">0</div>
+              <div class="summary-bar-col">
+                <div class="summary-bar-fill present" id="summaryBar_present" style="height:4px;"></div>
+              </div>
+              <div class="summary-bar-label">Present</div>
+            </div>
+            <div class="summary-bar-wrap">
+              <div class="summary-bar-num" id="breakdownVal_absent">0</div>
+              <div class="summary-bar-col">
+                <div class="summary-bar-fill absent" id="summaryBar_absent" style="height:4px;"></div>
+              </div>
+              <div class="summary-bar-label">Absent</div>
+            </div>
+            <div class="summary-bar-wrap">
+              <div class="summary-bar-num" id="breakdownVal_holiday">0</div>
+              <div class="summary-bar-col">
+                <div class="summary-bar-fill holiday" id="summaryBar_holiday" style="height:4px;"></div>
+              </div>
+              <div class="summary-bar-label">Holiday</div>
+            </div>
+            <div class="summary-bar-wrap">
+              <div class="summary-bar-num" id="breakdownVal_cancelled">0</div>
+              <div class="summary-bar-col">
+                <div class="summary-bar-fill cancelled" id="summaryBar_cancelled" style="height:4px;"></div>
+              </div>
+              <div class="summary-bar-label">Cancelled</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- hidden compat -->
+        <div id="breakdownPieChart" style="display:none;"></div>
+
+        <!-- SUBJECT PARTICIPATION RATE BARS (like middle panel in screenshot) -->
+        <div class="participation-card">
+          <div class="participation-title">📊 Subject Participation Rate</div>
+          <div id="subjectParticipationBars">
+            <!-- generated by JS -->
+          </div>
+        </div>
+
+      </div><!-- /dashboard tab -->
+
+
+
+      <!-- ══ TAB: DAILY ══ -->
+      <div class="tab-content" id="tabContent_daily">
+
+        <div class="date-nav-card">
+          <button class="date-nav-btn" onclick="offsetSelectedDate(-1)">❮</button>
+          <div class="date-center" onclick="triggerNativeDatePicker()">
+            <div class="date-val" id="selectedDateDisplay">—</div>
+            <div class="date-day" id="selectedDateDayDisplay">—</div>
+            <div
+              style="font-size:0.65rem; color:var(--primary); font-weight:700; margin-top:3px; letter-spacing:0.03em;"
+              id="dayCounter"></div>
+            <input type="date" id="nativeDatePicker" onchange="onNativeDateChanged(event)" min="2026-06-29"
+              max="2026-10-24" />
+          </div>
+          <button class="date-nav-btn" onclick="offsetSelectedDate(1)">❯</button>
+        </div>
+
+
+        <div id="dailyPeriodsList">
           <!-- generated by JS -->
         </div>
       </div>
 
-      <!-- SUMMARY BARS (Oakridge vertical bar style) -->
-      <div class="summary-card">
-        <div class="summary-title" id="summaryTitle">📊 Summary — <span id="summaryRollLabel">Student</span></div>
-        <div class="summary-bars-row">
-          <div class="summary-bar-wrap">
-            <div class="summary-bar-num" id="breakdownVal_present">0</div>
-            <div class="summary-bar-col">
-              <div class="summary-bar-fill present" id="summaryBar_present" style="height:4px;"></div>
-            </div>
-            <div class="summary-bar-label">Present</div>
+      <!-- ══ TAB: SUBJECTS ══ -->
+      <div class="tab-content" id="tabContent_subjects">
+
+        <div class="subjects-header">
+          <div>
+            <div class="sec-title" style="margin-bottom:2px;">📚 Subjects</div>
+            <div class="subjects-meta" id="subjectsHeaderMeta">0 subjects • 0 periods</div>
           </div>
-          <div class="summary-bar-wrap">
-            <div class="summary-bar-num" id="breakdownVal_absent">0</div>
-            <div class="summary-bar-col">
-              <div class="summary-bar-fill absent" id="summaryBar_absent" style="height:4px;"></div>
-            </div>
-            <div class="summary-bar-label">Absent</div>
-          </div>
-          <div class="summary-bar-wrap">
-            <div class="summary-bar-num" id="breakdownVal_holiday">0</div>
-            <div class="summary-bar-col">
-              <div class="summary-bar-fill holiday" id="summaryBar_holiday" style="height:4px;"></div>
-            </div>
-            <div class="summary-bar-label">Holiday</div>
-          </div>
-          <div class="summary-bar-wrap">
-            <div class="summary-bar-num" id="breakdownVal_cancelled">0</div>
-            <div class="summary-bar-col">
-              <div class="summary-bar-fill cancelled" id="summaryBar_cancelled" style="height:4px;"></div>
-            </div>
-            <div class="summary-bar-label">Cancelled</div>
-          </div>
+          <button class="add-subj-btn" onclick="openAddSubjectModal()">
+            <span style="font-size:1rem; line-height:1;">+</span> Add
+          </button>
         </div>
-      </div>
 
-      <!-- hidden compat -->
-      <div id="breakdownPieChart" style="display:none;"></div>
-
-      <!-- SUBJECT PARTICIPATION RATE BARS (like middle panel in screenshot) -->
-      <div class="participation-card">
-        <div class="participation-title">📊 Subject Participation Rate</div>
-        <div id="subjectParticipationBars">
+        <div id="subjectsListContainer">
           <!-- generated by JS -->
         </div>
       </div>
 
-    </div><!-- /dashboard tab -->
+      <!-- ══ TAB: REPORTS ══ -->
+      <div class="tab-content" id="tabContent_reports">
 
-
-
-    <!-- ══ TAB: DAILY ══ -->
-    <div class="tab-content" id="tabContent_daily">
-
-      <div class="date-nav-card">
-        <button class="date-nav-btn" onclick="offsetSelectedDate(-1)">❮</button>
-        <div class="date-center" onclick="triggerNativeDatePicker()">
-          <div class="date-val" id="selectedDateDisplay">—</div>
-          <div class="date-day" id="selectedDateDayDisplay">—</div>
-          <div style="font-size:0.65rem; color:var(--primary); font-weight:700; margin-top:3px; letter-spacing:0.03em;" id="dayCounter"></div>
-          <input type="date" id="nativeDatePicker" onchange="onNativeDateChanged(event)" min="2026-06-29" max="2026-10-24" />
-        </div>
-        <button class="date-nav-btn" onclick="offsetSelectedDate(1)">❯</button>
-      </div>
-
-
-      <div id="dailyPeriodsList">
-        <!-- generated by JS -->
-      </div>
-    </div>
-
-    <!-- ══ TAB: SUBJECTS ══ -->
-    <div class="tab-content" id="tabContent_subjects">
-
-      <div class="subjects-header">
-        <div>
-          <div class="sec-title" style="margin-bottom:2px;">📚 Subjects</div>
-          <div class="subjects-meta" id="subjectsHeaderMeta">0 subjects • 0 periods</div>
-        </div>
-        <button class="add-subj-btn" onclick="openAddSubjectModal()">
-          <span style="font-size:1rem; line-height:1;">+</span> Add
-        </button>
-      </div>
-
-      <div id="subjectsListContainer">
-        <!-- generated by JS -->
-      </div>
-    </div>
-
-    <!-- ══ TAB: REPORTS ══ -->
-    <div class="tab-content" id="tabContent_reports">
-
-      <div class="card">
-        <div class="sec-title">🗓️ Semester Overview</div>
-        <p style="font-size:0.78rem; color:var(--muted); margin-bottom:12px;">Tap any day to open it in the Daily Logger.</p>
-        <div class="reports-table-wrap">
-          <table class="reports-table">
-            <thead>
-              <tr>
-                <th>Week</th>
-                <th>Day & Date</th>
-                <th>Periods</th>
-                <th>✅</th>
-                <th>❌</th>
-                <th>%</th>
-              </tr>
-            </thead>
-            <tbody id="semesterReportsTableBody">
-              <!-- generated by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="sec-title">💾 Backup & Export</div>
-        <p style="font-size:0.78rem; color:var(--muted); margin-bottom:14px;">Download or restore your attendance data safely.</p>
-        <div class="backup-action-row">
-          <button class="btn btn-secondary" onclick="downloadAttendanceJSON()" style="font-size:0.8rem;">📥 JSON</button>
-          <button class="btn btn-secondary" onclick="downloadAttendanceCSV()" style="font-size:0.8rem;">📊 CSV</button>
-        </div>
-        <button class="btn btn-primary" onclick="document.getElementById('importFileInput').click()" style="width:100%; font-size:0.85rem;">📤 Upload Backup</button>
-        <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importAttendanceJSON(event)" />
-      </div>
-    </div>
-
-    <!-- ══ TAB: SETTINGS ══ -->
-    <div class="tab-content" id="tabContent_settings">
-
-      <div class="settings-group">
-        <div class="settings-item" onclick="switchRollNumber()">
-          <div class="setting-icon-box blue">👤</div>
-          <div class="setting-text">
-            <div class="setting-title">Change Roll Number</div>
-            <div class="setting-desc">Switch to a different student profile</div>
+        <div class="card">
+          <div class="sec-title">🗓️ Semester Overview</div>
+          <p style="font-size:0.78rem; color:var(--muted); margin-bottom:12px;">Tap any day to open it in the Daily
+            Logger.</p>
+          <div class="reports-table-wrap">
+            <table class="reports-table">
+              <thead>
+                <tr>
+                  <th>Week</th>
+                  <th>Day & Date</th>
+                  <th>Periods</th>
+                  <th>✅</th>
+                  <th>❌</th>
+                  <th>%</th>
+                </tr>
+              </thead>
+              <tbody id="semesterReportsTableBody">
+                <!-- generated by JS -->
+              </tbody>
+            </table>
           </div>
-          <div class="setting-badge" id="settingsCurrentRollBadge">—</div>
         </div>
-        <div class="settings-item" onclick="document.getElementById('importFileInput').click()">
-          <div class="setting-icon-box green">📤</div>
-          <div class="setting-text">
-            <div class="setting-title">Import Backup</div>
-            <div class="setting-desc">Restore from a JSON backup file</div>
+
+        <div class="card">
+          <div class="sec-title">💾 Backup & Export</div>
+          <p style="font-size:0.78rem; color:var(--muted); margin-bottom:14px;">Download or restore your attendance data
+            safely.</p>
+          <div class="backup-action-row">
+            <button class="btn btn-secondary" onclick="downloadAttendanceJSON()" style="font-size:0.8rem;">📥
+              JSON</button>
+            <button class="btn btn-secondary" onclick="downloadAttendanceCSV()" style="font-size:0.8rem;">📊
+              CSV</button>
           </div>
-          <span class="setting-chevron">›</span>
+          <button class="btn btn-primary" onclick="document.getElementById('importFileInput').click()"
+            style="width:100%; font-size:0.85rem;">📤 Upload Backup</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none"
+            onchange="importAttendanceJSON(event)" />
         </div>
-        <div class="settings-item" onclick="triggerSemesterReset()">
-          <div class="setting-icon-box red">🔄</div>
-          <div class="setting-text">
-            <div class="setting-title" style="color:var(--red-text);">Reset Attendance</div>
-            <div class="setting-desc">Clear all records for current profile</div>
+      </div>
+
+      <!-- ══ TAB: SETTINGS ══ -->
+      <div class="tab-content" id="tabContent_settings">
+
+        <div class="settings-group">
+          <div class="settings-item" onclick="switchRollNumber()">
+            <div class="setting-icon-box blue">👤</div>
+            <div class="setting-text">
+              <div class="setting-title">Change Roll Number</div>
+              <div class="setting-desc">Switch to a different student profile</div>
+            </div>
+            <div class="setting-badge" id="settingsCurrentRollBadge">—</div>
           </div>
-          <span class="setting-chevron" style="color:var(--red);">›</span>
+          <div class="settings-item" onclick="document.getElementById('importFileInput').click()">
+            <div class="setting-icon-box green">📤</div>
+            <div class="setting-text">
+              <div class="setting-title">Import Backup</div>
+              <div class="setting-desc">Restore from a JSON backup file</div>
+            </div>
+            <span class="setting-chevron">›</span>
+          </div>
+          <div class="settings-item" onclick="triggerSemesterReset()">
+            <div class="setting-icon-box red">🔄</div>
+            <div class="setting-text">
+              <div class="setting-title" style="color:var(--red-text);">Reset Attendance</div>
+              <div class="setting-desc">Clear all records for current profile</div>
+            </div>
+            <span class="setting-chevron" style="color:var(--red);">›</span>
+          </div>
+        </div>
+
+        <div class="about-card">
+          <h4>📚 AttendTrack</h4>
+          <p>III B.Tech CSE-AI<br>Visvodaya Institute of Technology & Science<br>Kavali – Academic Year 2026–27</p>
         </div>
       </div>
 
-      <div class="about-card">
-        <h4>📚 AttendTrack</h4>
-        <p>III B.Tech CSE-AI<br>Visvodaya Institute of Technology & Science<br>Kavali – Academic Year 2026–27</p>
-      </div>
-    </div>
+    </div><!-- /app-scroll -->
 
-  </div><!-- /app-scroll -->
+    <!-- BOTTOM NAVIGATION / DESKTOP SIDEBAR -->
+    <nav class="bottom-nav" aria-label="Main Navigation">
 
-  <!-- BOTTOM NAVIGATION / DESKTOP SIDEBAR -->
-  <nav class="bottom-nav" aria-label="Main Navigation">
-
-    <!-- Sidebar Header (Desktop only) -->
-    <div class="sidebar-header">
-      <div class="header-logo-wrap" style="margin-bottom: 4px;">
-        <div class="header-logo-icon">🎓</div>
-        <div>
-          <div class="header-app-name" style="font-size: 0.95rem;">AttendTrack</div>
-          <div class="header-app-sub" style="font-size: 0.68rem;">III B.Tech CSE-AI</div>
+      <!-- Sidebar Header (Desktop only) -->
+      <div class="sidebar-header">
+        <div class="header-logo-wrap" style="margin-bottom: 4px;">
+          <div class="header-logo-icon">🎓</div>
+          <div>
+            <div class="header-app-name" style="font-size: 0.95rem;">AttendTrack</div>
+            <div class="header-app-sub" style="font-size: 0.68rem;">III B.Tech CSE-AI</div>
+          </div>
         </div>
       </div>
-    </div>
 
 
-    <button class="nav-btn active" id="navBtn_dashboard" onclick="switchTab('dashboard')">
-      <div class="nav-btn-icon-wrap">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      </div>
-      <span class="nav-btn-label">Dashboard</span>
-    </button>
+      <button class="nav-btn active" id="navBtn_dashboard" onclick="switchTab('dashboard')">
+        <div class="nav-btn-icon-wrap">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </div>
+        <span class="nav-btn-label">Dashboard</span>
+      </button>
 
-    <button class="nav-btn" id="navBtn_daily" onclick="switchTab('daily')">
-      <div class="nav-btn-icon-wrap">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <span class="nav-btn-label">Daily</span>
-    </button>
+      <button class="nav-btn" id="navBtn_daily" onclick="switchTab('daily')">
+        <div class="nav-btn-icon-wrap">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+        </div>
+        <span class="nav-btn-label">Daily</span>
+      </button>
 
-    <button class="nav-btn" id="navBtn_subjects" onclick="switchTab('subjects')">
-      <div class="nav-btn-icon-wrap">
-        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
-      </div>
-      <span class="nav-btn-label">Subjects</span>
-    </button>
+      <button class="nav-btn" id="navBtn_subjects" onclick="switchTab('subjects')">
+        <div class="nav-btn-icon-wrap">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z" />
+          </svg>
+        </div>
+        <span class="nav-btn-label">Subjects</span>
+      </button>
 
-    <button class="nav-btn" id="navBtn_reports" onclick="switchTab('reports')">
-      <div class="nav-btn-icon-wrap">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      </div>
-      <span class="nav-btn-label">Reports</span>
-    </button>
+      <button class="nav-btn" id="navBtn_reports" onclick="switchTab('reports')">
+        <div class="nav-btn-icon-wrap">
+          <svg viewBox="0 0 24 24">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+        </div>
+        <span class="nav-btn-label">Reports</span>
+      </button>
 
-    <button class="nav-btn" id="navBtn_settings" onclick="switchTab('settings')">
-      <div class="nav-btn-icon-wrap">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </div>
-      <span class="nav-btn-label">Settings</span>
-    </button>
+      <button class="nav-btn" id="navBtn_settings" onclick="switchTab('settings')">
+        <div class="nav-btn-icon-wrap">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </div>
+        <span class="nav-btn-label">Settings</span>
+      </button>
 
-  </nav>
-</div><!-- /app-shell -->
+    </nav>
+  </div><!-- /app-shell -->
 
-<script>
-/* ══════════════════════════════════════════════════
-   ACADEMIC SEMESTER CALENDAR DATA
-══════════════════════════════════════════════════ */
-const weeks = [
-  {week:"Week 1",date:"29 Jun - 03 Jul",days:[{day:"Monday",date:"29 Jun",fullDate:"2026-06-29",periods:4},{day:"Tuesday",date:"30 Jun",fullDate:"2026-06-30",periods:4},{day:"Wednesday",date:"01 Jul",fullDate:"2026-07-01",periods:4},{day:"Thursday",date:"02 Jul",fullDate:"2026-07-02",periods:4},{day:"Friday",date:"03 Jul",fullDate:"2026-07-03",periods:4}]},
-  {week:"Week 2",date:"06 Jul - 10 Jul",days:[{day:"Monday",date:"06 Jul",fullDate:"2026-07-06",periods:4},{day:"Tuesday",date:"07 Jul",fullDate:"2026-07-07",periods:4},{day:"Wednesday",date:"08 Jul",fullDate:"2026-07-08",periods:4},{day:"Thursday",date:"09 Jul",fullDate:"2026-07-09",periods:4},{day:"Friday",date:"10 Jul",fullDate:"2026-07-10",periods:4}]},
-  {week:"Week 3",date:"13 Jul - 17 Jul",days:[{day:"Monday",date:"13 Jul",fullDate:"2026-07-13",periods:4},{day:"Tuesday",date:"14 Jul",fullDate:"2026-07-14",periods:4},{day:"Wednesday",date:"15 Jul",fullDate:"2026-07-15",periods:4},{day:"Thursday",date:"16 Jul",fullDate:"2026-07-16",periods:4},{day:"Friday",date:"17 Jul",fullDate:"2026-07-17",periods:4}]},
-  {week:"Week 4",date:"20 Jul - 24 Jul",days:[{day:"Monday",date:"20 Jul",fullDate:"2026-07-20",periods:4},{day:"Tuesday",date:"21 Jul",fullDate:"2026-07-21",periods:4},{day:"Wednesday",date:"22 Jul",fullDate:"2026-07-22",periods:4},{day:"Thursday",date:"23 Jul",fullDate:"2026-07-23",periods:4},{day:"Friday",date:"24 Jul",fullDate:"2026-07-24",periods:4}]},
-  {week:"Week 5",date:"27 Jul - 31 Jul",days:[{day:"Monday",date:"27 Jul",fullDate:"2026-07-27",periods:4},{day:"Tuesday",date:"28 Jul",fullDate:"2026-07-28",periods:4},{day:"Wednesday",date:"29 Jul",fullDate:"2026-07-29",periods:4},{day:"Thursday",date:"30 Jul",fullDate:"2026-07-30",periods:4},{day:"Friday",date:"31 Jul",fullDate:"2026-07-31",periods:4}]},
-  {week:"Week 6",date:"03 Aug - 07 Aug",days:[{day:"Monday",date:"03 Aug",fullDate:"2026-08-03",periods:4},{day:"Tuesday",date:"04 Aug",fullDate:"2026-08-04",periods:4},{day:"Wednesday",date:"05 Aug",fullDate:"2026-08-05",periods:4},{day:"Thursday",date:"06 Aug",fullDate:"2026-08-06",periods:4},{day:"Friday",date:"07 Aug",fullDate:"2026-08-07",periods:4}]},
-  {week:"Week 7",date:"10 Aug - 11 Aug",days:[{day:"Monday",date:"10 Aug",fullDate:"2026-08-10",periods:4},{day:"Tuesday",date:"11 Aug",fullDate:"2026-08-11",periods:4}]},
-  {week:"I MID",date:"12 Aug - 14 Aug",days:[{day:"Wednesday",date:"12 Aug",fullDate:"2026-08-12",periods:2},{day:"Thursday",date:"13 Aug",fullDate:"2026-08-13",periods:2},{day:"Friday",date:"14 Aug",fullDate:"2026-08-14",periods:2}]},
-  {week:"Week 8",date:"17 Aug - 22 Aug",days:[{day:"Monday",date:"17 Aug",fullDate:"2026-08-17",periods:4},{day:"Tuesday",date:"18 Aug",fullDate:"2026-08-18",periods:4},{day:"Wednesday",date:"19 Aug",fullDate:"2026-08-19",periods:4},{day:"Thursday",date:"20 Aug",fullDate:"2026-08-20",periods:4},{day:"Friday",date:"21 Aug",fullDate:"2026-08-21",periods:4},{day:"Saturday (Wed TT)",date:"22 Aug",fullDate:"2026-08-22",periods:4}]},
-  {week:"Week 9",date:"24 Aug - 28 Aug",days:[{day:"Monday",date:"24 Aug",fullDate:"2026-08-24",periods:4},{day:"Tuesday",date:"25 Aug",fullDate:"2026-08-25",periods:4},{day:"Thursday",date:"27 Aug",fullDate:"2026-08-27",periods:4},{day:"Friday",date:"28 Aug",fullDate:"2026-08-28",periods:4}]},
-  {week:"Week 10",date:"31 Aug - 03 Sep",days:[{day:"Monday",date:"31 Aug",fullDate:"2026-08-31",periods:4},{day:"Tuesday",date:"01 Sep",fullDate:"2026-09-01",periods:4},{day:"Wednesday",date:"02 Sep",fullDate:"2026-09-02",periods:4},{day:"Thursday",date:"03 Sep",fullDate:"2026-09-03",periods:4}]},
-  {week:"Week 11",date:"07 Sep - 12 Sep",days:[{day:"Monday",date:"07 Sep",fullDate:"2026-09-07",periods:4},{day:"Tuesday",date:"08 Sep",fullDate:"2026-09-08",periods:4},{day:"Wednesday",date:"09 Sep",fullDate:"2026-09-09",periods:4},{day:"Thursday",date:"10 Sep",fullDate:"2026-09-10",periods:4},{day:"Friday",date:"11 Sep",fullDate:"2026-09-11",periods:4},{day:"Saturday (Fri TT)",date:"12 Sep",fullDate:"2026-09-12",periods:4}]},
-  {week:"Week 12",date:"15 Sep - 19 Sep",days:[{day:"Tuesday",date:"15 Sep",fullDate:"2026-09-15",periods:4},{day:"Wednesday",date:"16 Sep",fullDate:"2026-09-16",periods:4},{day:"Thursday",date:"17 Sep",fullDate:"2026-09-17",periods:4},{day:"Friday",date:"18 Sep",fullDate:"2026-09-18",periods:4},{day:"Saturday (Mon TT)",date:"19 Sep",fullDate:"2026-09-19",periods:4}]},
-  {week:"Week 13",date:"21 Sep - 25 Sep",days:[{day:"Monday",date:"21 Sep",fullDate:"2026-09-21",periods:4},{day:"Tuesday",date:"22 Sep",fullDate:"2026-09-22",periods:4},{day:"Wednesday",date:"23 Sep",fullDate:"2026-09-23",periods:4},{day:"Thursday",date:"24 Sep",fullDate:"2026-09-24",periods:4},{day:"Friday",date:"25 Sep",fullDate:"2026-09-25",periods:4}]},
-  {week:"Week 14",date:"28 Sep - 01 Oct",days:[{day:"Monday",date:"28 Sep",fullDate:"2026-09-28",periods:4},{day:"Tuesday",date:"29 Sep",fullDate:"2026-09-29",periods:4},{day:"Wednesday",date:"30 Sep",fullDate:"2026-09-30",periods:4},{day:"Thursday",date:"01 Oct",fullDate:"2026-10-01",periods:4}]},
-  {week:"Week 15",date:"05 Oct - 10 Oct",days:[{day:"Monday",date:"05 Oct",fullDate:"2026-10-05",periods:4},{day:"Tuesday",date:"06 Oct",fullDate:"2026-10-06",periods:4},{day:"Wednesday",date:"07 Oct",fullDate:"2026-10-07",periods:4},{day:"Thursday",date:"08 Oct",fullDate:"2026-10-08",periods:4},{day:"Friday",date:"09 Oct",fullDate:"2026-10-09",periods:4},{day:"Saturday (Fri TT)",date:"10 Oct",fullDate:"2026-10-10",periods:4}]},
-  {week:"Week 16",date:"12 Oct - 16 Oct",days:[{day:"Monday",date:"12 Oct",fullDate:"2026-10-12",periods:4},{day:"Tuesday",date:"13 Oct",fullDate:"2026-10-13",periods:4},{day:"Wednesday",date:"14 Oct",fullDate:"2026-10-14",periods:4},{day:"Thursday",date:"15 Oct",fullDate:"2026-10-15",periods:4},{day:"Friday",date:"16 Oct",fullDate:"2026-10-16",periods:4}]},
-  {week:"II MID",date:"22 Oct - 24 Oct",days:[{day:"Thursday",date:"22 Oct",fullDate:"2026-10-22",periods:2},{day:"Friday",date:"23 Oct",fullDate:"2026-10-23",periods:2},{day:"Saturday",date:"24 Oct",fullDate:"2026-10-24",periods:2}]}
-];
+  <script>
+    /* ══════════════════════════════════════════════════
+       ACADEMIC SEMESTER CALENDAR DATA
+    ══════════════════════════════════════════════════ */
+    const weeks = [
+      { week: "Week 1", date: "29 Jun - 03 Jul", days: [{ day: "Monday", date: "29 Jun", fullDate: "2026-06-29", periods: 4 }, { day: "Tuesday", date: "30 Jun", fullDate: "2026-06-30", periods: 4 }, { day: "Wednesday", date: "01 Jul", fullDate: "2026-07-01", periods: 4 }, { day: "Thursday", date: "02 Jul", fullDate: "2026-07-02", periods: 4 }, { day: "Friday", date: "03 Jul", fullDate: "2026-07-03", periods: 4 }] },
+      { week: "Week 2", date: "06 Jul - 10 Jul", days: [{ day: "Monday", date: "06 Jul", fullDate: "2026-07-06", periods: 4 }, { day: "Tuesday", date: "07 Jul", fullDate: "2026-07-07", periods: 4 }, { day: "Wednesday", date: "08 Jul", fullDate: "2026-07-08", periods: 4 }, { day: "Thursday", date: "09 Jul", fullDate: "2026-07-09", periods: 4 }, { day: "Friday", date: "10 Jul", fullDate: "2026-07-10", periods: 4 }] },
+      { week: "Week 3", date: "13 Jul - 17 Jul", days: [{ day: "Monday", date: "13 Jul", fullDate: "2026-07-13", periods: 4 }, { day: "Tuesday", date: "14 Jul", fullDate: "2026-07-14", periods: 4 }, { day: "Wednesday", date: "15 Jul", fullDate: "2026-07-15", periods: 4 }, { day: "Thursday", date: "16 Jul", fullDate: "2026-07-16", periods: 4 }, { day: "Friday", date: "17 Jul", fullDate: "2026-07-17", periods: 4 }] },
+      { week: "Week 4", date: "20 Jul - 24 Jul", days: [{ day: "Monday", date: "20 Jul", fullDate: "2026-07-20", periods: 4 }, { day: "Tuesday", date: "21 Jul", fullDate: "2026-07-21", periods: 4 }, { day: "Wednesday", date: "22 Jul", fullDate: "2026-07-22", periods: 4 }, { day: "Thursday", date: "23 Jul", fullDate: "2026-07-23", periods: 4 }, { day: "Friday", date: "24 Jul", fullDate: "2026-07-24", periods: 4 }] },
+      { week: "Week 5", date: "27 Jul - 31 Jul", days: [{ day: "Monday", date: "27 Jul", fullDate: "2026-07-27", periods: 4 }, { day: "Tuesday", date: "28 Jul", fullDate: "2026-07-28", periods: 4 }, { day: "Wednesday", date: "29 Jul", fullDate: "2026-07-29", periods: 4 }, { day: "Thursday", date: "30 Jul", fullDate: "2026-07-30", periods: 4 }, { day: "Friday", date: "31 Jul", fullDate: "2026-07-31", periods: 4 }] },
+      { week: "Week 6", date: "03 Aug - 07 Aug", days: [{ day: "Monday", date: "03 Aug", fullDate: "2026-08-03", periods: 4 }, { day: "Tuesday", date: "04 Aug", fullDate: "2026-08-04", periods: 4 }, { day: "Wednesday", date: "05 Aug", fullDate: "2026-08-05", periods: 4 }, { day: "Thursday", date: "06 Aug", fullDate: "2026-08-06", periods: 4 }, { day: "Friday", date: "07 Aug", fullDate: "2026-08-07", periods: 4 }] },
+      { week: "Week 7", date: "10 Aug - 11 Aug", days: [{ day: "Monday", date: "10 Aug", fullDate: "2026-08-10", periods: 4 }, { day: "Tuesday", date: "11 Aug", fullDate: "2026-08-11", periods: 4 }] },
+      { week: "I MID", date: "12 Aug - 14 Aug", days: [{ day: "Wednesday", date: "12 Aug", fullDate: "2026-08-12", periods: 2 }, { day: "Thursday", date: "13 Aug", fullDate: "2026-08-13", periods: 2 }, { day: "Friday", date: "14 Aug", fullDate: "2026-08-14", periods: 2 }] },
+      { week: "Week 8", date: "17 Aug - 22 Aug", days: [{ day: "Monday", date: "17 Aug", fullDate: "2026-08-17", periods: 4 }, { day: "Tuesday", date: "18 Aug", fullDate: "2026-08-18", periods: 4 }, { day: "Wednesday", date: "19 Aug", fullDate: "2026-08-19", periods: 4 }, { day: "Thursday", date: "20 Aug", fullDate: "2026-08-20", periods: 4 }, { day: "Friday", date: "21 Aug", fullDate: "2026-08-21", periods: 4 }, { day: "Saturday (Wed TT)", date: "22 Aug", fullDate: "2026-08-22", periods: 4 }] },
+      { week: "Week 9", date: "24 Aug - 28 Aug", days: [{ day: "Monday", date: "24 Aug", fullDate: "2026-08-24", periods: 4 }, { day: "Tuesday", date: "25 Aug", fullDate: "2026-08-25", periods: 4 }, { day: "Thursday", date: "27 Aug", fullDate: "2026-08-27", periods: 4 }, { day: "Friday", date: "28 Aug", fullDate: "2026-08-28", periods: 4 }] },
+      { week: "Week 10", date: "31 Aug - 03 Sep", days: [{ day: "Monday", date: "31 Aug", fullDate: "2026-08-31", periods: 4 }, { day: "Tuesday", date: "01 Sep", fullDate: "2026-09-01", periods: 4 }, { day: "Wednesday", date: "02 Sep", fullDate: "2026-09-02", periods: 4 }, { day: "Thursday", date: "03 Sep", fullDate: "2026-09-03", periods: 4 }] },
+      { week: "Week 11", date: "07 Sep - 12 Sep", days: [{ day: "Monday", date: "07 Sep", fullDate: "2026-09-07", periods: 4 }, { day: "Tuesday", date: "08 Sep", fullDate: "2026-09-08", periods: 4 }, { day: "Wednesday", date: "09 Sep", fullDate: "2026-09-09", periods: 4 }, { day: "Thursday", date: "10 Sep", fullDate: "2026-09-10", periods: 4 }, { day: "Friday", date: "11 Sep", fullDate: "2026-09-11", periods: 4 }, { day: "Saturday (Fri TT)", date: "12 Sep", fullDate: "2026-09-12", periods: 4 }] },
+      { week: "Week 12", date: "15 Sep - 19 Sep", days: [{ day: "Tuesday", date: "15 Sep", fullDate: "2026-09-15", periods: 4 }, { day: "Wednesday", date: "16 Sep", fullDate: "2026-09-16", periods: 4 }, { day: "Thursday", date: "17 Sep", fullDate: "2026-09-17", periods: 4 }, { day: "Friday", date: "18 Sep", fullDate: "2026-09-18", periods: 4 }, { day: "Saturday (Mon TT)", date: "19 Sep", fullDate: "2026-09-19", periods: 4 }] },
+      { week: "Week 13", date: "21 Sep - 25 Sep", days: [{ day: "Monday", date: "21 Sep", fullDate: "2026-09-21", periods: 4 }, { day: "Tuesday", date: "22 Sep", fullDate: "2026-09-22", periods: 4 }, { day: "Wednesday", date: "23 Sep", fullDate: "2026-09-23", periods: 4 }, { day: "Thursday", date: "24 Sep", fullDate: "2026-09-24", periods: 4 }, { day: "Friday", date: "25 Sep", fullDate: "2026-09-25", periods: 4 }] },
+      { week: "Week 14", date: "28 Sep - 01 Oct", days: [{ day: "Monday", date: "28 Sep", fullDate: "2026-09-28", periods: 4 }, { day: "Tuesday", date: "29 Sep", fullDate: "2026-09-29", periods: 4 }, { day: "Wednesday", date: "30 Sep", fullDate: "2026-09-30", periods: 4 }, { day: "Thursday", date: "01 Oct", fullDate: "2026-10-01", periods: 4 }] },
+      { week: "Week 15", date: "05 Oct - 10 Oct", days: [{ day: "Monday", date: "05 Oct", fullDate: "2026-10-05", periods: 4 }, { day: "Tuesday", date: "06 Oct", fullDate: "2026-10-06", periods: 4 }, { day: "Wednesday", date: "07 Oct", fullDate: "2026-10-07", periods: 4 }, { day: "Thursday", date: "08 Oct", fullDate: "2026-10-08", periods: 4 }, { day: "Friday", date: "09 Oct", fullDate: "2026-10-09", periods: 4 }, { day: "Saturday (Fri TT)", date: "10 Oct", fullDate: "2026-10-10", periods: 4 }] },
+      { week: "Week 16", date: "12 Oct - 16 Oct", days: [{ day: "Monday", date: "12 Oct", fullDate: "2026-10-12", periods: 4 }, { day: "Tuesday", date: "13 Oct", fullDate: "2026-10-13", periods: 4 }, { day: "Wednesday", date: "14 Oct", fullDate: "2026-10-14", periods: 4 }, { day: "Thursday", date: "15 Oct", fullDate: "2026-10-15", periods: 4 }, { day: "Friday", date: "16 Oct", fullDate: "2026-10-16", periods: 4 }] },
+      { week: "II MID", date: "22 Oct - 24 Oct", days: [{ day: "Thursday", date: "22 Oct", fullDate: "2026-10-22", periods: 2 }, { day: "Friday", date: "23 Oct", fullDate: "2026-10-23", periods: 2 }, { day: "Saturday", date: "24 Oct", fullDate: "2026-10-24", periods: 2 }] }
+    ];
 
-const allDays = [];
-weeks.forEach(w => w.days.forEach(d => allDays.push({ ...d, weekName: w.week })));
+    const allDays = [];
+    weeks.forEach(w => w.days.forEach(d => allDays.push({ ...d, weekName: w.week })));
 
-/* ══════════════════════════════════════════════════
-   DEFAULT CONFIGURED SUBJECTS (Official III B.Tech CSE-AI Timetable)
-══════════════════════════════════════════════════ */
-const defaultSubjects = [
-  { id: 'subj_nlp',        name: 'NLP',                                   code: 'N' },
-  { id: 'subj_ossp',       name: 'OSSP',                                  code: 'O' },
-  { id: 'subj_cvip',       name: 'COMPUTER VISION',                       code: 'C' },
-  { id: 'subj_dv',         name: 'DATA VISUALIZATION',                    code: 'D' },
-  { id: 'subj_esps',       name: 'ESSP',                                  code: 'E' },
-  { id: 'subj_iqta',       name: 'IQTA',                                  code: 'Q' },
-  { id: 'subj_cvnlp_lab',  name: 'CV & NLP (LAB)',                        code: 'L' },
-  { id: 'subj_aisp_lab',   name: 'AISP (LAB)',                            code: 'A' },
-  { id: 'subj_fsd_lab',    name: 'FSD (LAB)',                             code: 'F' },
-  { id: 'subj_soft_skills',name: 'SOFT SKILLS',                           code: 'S' }
-];
+    /* ══════════════════════════════════════════════════
+       DEFAULT CONFIGURED SUBJECTS (Official III B.Tech CSE-AI Timetable)
+    ══════════════════════════════════════════════════ */
+    const defaultSubjects = [
+      { id: 'subj_nlp', name: 'NLP', code: 'N' },
+      { id: 'subj_ossp', name: 'OSSP', code: 'O' },
+      { id: 'subj_cvip', name: 'COMPUTER VISION', code: 'C' },
+      { id: 'subj_dv', name: 'DATA VISUALIZATION', code: 'D' },
+      { id: 'subj_esps', name: 'ESSP', code: 'E' },
+      { id: 'subj_iqta', name: 'IQTA', code: 'Q' },
+      { id: 'subj_cvnlp_lab', name: 'CV & NLP (LAB)', code: 'L' },
+      { id: 'subj_aisp_lab', name: 'AISP (LAB)', code: 'A' },
+      { id: 'subj_fsd_lab', name: 'FSD (LAB)', code: 'F' },
+      { id: 'subj_soft_skills', name: 'SOFT SKILLS', code: 'S' }
+    ];
 
-/* Official timetable — 3–4 class slots per day (Association removed)
-   Slot 1 (9:00–10:30):  MON:ESPS  TUE:OSSP      WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP LAB
-   Slot 2 (10:45–12:15): MON:CVIP  TUE:IQTA      WED:IQTA         THU:CVIP       FRI:OSSP
-   Slot 3 (1:15–2:45):   MON:NLP   TUE:AISP LAB  WED:NLP          THU:ESPS       FRI:DV
-   Slot 4 (2:55–4:25):   MON:SS    —             —                THU:DV         —  */
-const weekdayDefaultSubjects = {
-  1: ['subj_esps','subj_cvip','subj_nlp','subj_soft_skills'],   // Mon: 4 slots
-  2: ['subj_ossp','subj_iqta','subj_aisp_lab'],                 // Tue: 3 slots (assoc removed)
-  3: ['subj_soft_skills','subj_iqta','subj_nlp'],               // Wed: 3 slots (assoc removed)
-  4: ['subj_fsd_lab','subj_cvip','subj_esps','subj_dv'],        // Thu: 4 slots
-  5: ['subj_cvnlp_lab','subj_ossp','subj_dv'],                  // Fri: 3 slots (assoc removed)
-  6: []
-};
-
-/* 4 merged class slot time labels */
-const periodTimes = [
-  '9:00 – 10:30 AM',
-  '10:45 AM – 12:15 PM',
-  '1:15 – 2:45 PM',
-  '2:55 – 4:25 PM'
-];
-
-function getDefaultSubjectsForDay(dayObj) {
-  const dayName = dayObj.day;
-  let weekdayIdx = new Date(dayObj.fullDate + "T00:00:00").getDay();
-  if (dayName.includes("(Mon TT)")) weekdayIdx = 1;
-  else if (dayName.includes("(Tue TT)")) weekdayIdx = 2;
-  else if (dayName.includes("(Wed TT)")) weekdayIdx = 3;
-  else if (dayName.includes("(Thu TT)")) weekdayIdx = 4;
-  else if (dayName.includes("(Fri TT)")) weekdayIdx = 5;
-  return weekdayDefaultSubjects[weekdayIdx] || [];
-}
-
-/* ══════════════════════════════════════════════════
-   STATE
-══════════════════════════════════════════════════ */
-let currentRollNumber = '';
-/* Default to TODAY clamped within semester; will be overridden to
-   the semester start (Jun 29) for fresh profiles with no records */
-const SEMESTER_START = '2026-06-29';
-const SEMESTER_END   = '2026-10-24';
-let selectedDateStr = new Date().toISOString().split('T')[0];
-if (selectedDateStr < SEMESTER_START) selectedDateStr = SEMESTER_START;
-if (selectedDateStr > SEMESTER_END)   selectedDateStr = SEMESTER_END;
-let subjects = [];
-let dailyRecords = {};
-let editSubjectId = null;
-
-const ROLL_PREFIX    = '2473A31';
-const LATERAL_PREFIX = '2573A31L';
-let selectedPrefix   = '2473A31';
-
-/* ══════════════════════════════════════════════════
-   TAB CONTROLLER
-══════════════════════════════════════════════════ */
-function switchTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.getElementById(`tabContent_${tabId}`).classList.add('active');
-
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-  const navEl = document.getElementById(`navBtn_${tabId}`);
-  if (navEl) navEl.classList.add('active');
-
-  if (tabId === 'dashboard') renderDashboard();
-  else if (tabId === 'daily')    renderDailyTab();
-  else if (tabId === 'subjects') renderSubjectsTab();
-  else if (tabId === 'reports')  renderReportsTab();
-  else if (tabId === 'settings') renderSettingsTab();
-}
-
-/* ══════════════════════════════════════════════════
-   ROLL NUMBER & INIT
-══════════════════════════════════════════════════ */
-function updatePrefixSelection(val) {
-  selectedPrefix = val;
-  document.getElementById('rollPrefixText').textContent = val;
-  const suffixEl = document.getElementById('rollSuffix');
-  const errorEl  = document.getElementById('rollError');
-  if (val === LATERAL_PREFIX) {
-    suffixEl.placeholder = '__';
-    suffixEl.maxLength = 2;
-    errorEl.innerHTML = '⚠️ Please enter exactly 2 digits (e.g. 01, 15).';
-    suffixEl.oninput = function(){ this.value = this.value.replace(/[^0-9]/g,'').slice(0,2); };
-  } else {
-    suffixEl.placeholder = '___';
-    suffixEl.maxLength = 3;
-    errorEl.innerHTML = '⚠️ Please enter exactly 3 digits (e.g. 001, 042).';
-    suffixEl.oninput = function(){ this.value = this.value.replace(/[^0-9]/g,'').slice(0,3); };
-  }
-  suffixEl.value = '';
-  suffixEl.focus();
-}
-
-function showRollOverlay() {
-  const overlay = document.getElementById('rollOverlay');
-  overlay.classList.remove('hidden');
-  const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
-  const listEl  = document.getElementById('rollSavedList');
-  const chipsEl = document.getElementById('rollSavedChips');
-  if (saved.length > 0) {
-    listEl.classList.add('show');
-    chipsEl.innerHTML = saved.map(r => {
-      const isLat  = r.startsWith(LATERAL_PREFIX);
-      const prefix = isLat ? LATERAL_PREFIX : ROLL_PREFIX;
-      const suffix = r.replace(prefix, '');
-      return `<span class="roll-chip" onclick="quickSelectRoll('${prefix}','${suffix}')">${r}</span>`;
-    }).join('');
-  } else {
-    listEl.classList.remove('show');
-  }
-  setTimeout(() => document.getElementById('rollSuffix').focus(), 100);
-}
-
-function quickSelectRoll(prefix, suffix) {
-  const radio = document.querySelector(`input[name="rollPrefix"][value="${prefix}"]`);
-  if (radio) radio.checked = true;
-  updatePrefixSelection(prefix);
-  document.getElementById('rollSuffix').value = suffix;
-  submitRollNumber();
-}
-
-function submitRollNumber() {
-  const suffixEl  = document.getElementById('rollSuffix');
-  const splitBox  = document.getElementById('rollSplitBox');
-  const errorEl   = document.getElementById('rollError');
-  const suffix    = suffixEl.value.trim();
-  const requiredLen = selectedPrefix === LATERAL_PREFIX ? 2 : 3;
-
-  if (suffix.length < 1 || suffix.length > requiredLen) {
-    splitBox.classList.add('error');
-    errorEl.classList.add('show');
-    setTimeout(() => splitBox.classList.remove('error'), 400);
-    suffixEl.focus();
-    return;
-  }
-
-  splitBox.classList.remove('error');
-  errorEl.classList.remove('show');
-
-  const paddedSuffix = /^\d+$/.test(suffix) ? suffix.padStart(requiredLen, '0') : suffix.toUpperCase();
-  currentRollNumber = (selectedPrefix + paddedSuffix).toUpperCase();
-
-  const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
-  if (!saved.includes(currentRollNumber)) {
-    saved.push(currentRollNumber);
-    localStorage.setItem('roll_number_list', JSON.stringify(saved));
-  }
-
-  localStorage.setItem('current_roll_number', currentRollNumber);
-  document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
-  document.getElementById('rollOverlay').classList.add('hidden');
-
-  loadDataForProfile();
-  showToast(`Profile loaded: ${currentRollNumber}`, 'success');
-  switchTab('dashboard');
-}
-
-function switchRollNumber() {
-  currentRollNumber = '';
-  document.getElementById('rollSuffix').value = '';
-  showRollOverlay();
-}
-
-/* ══════════════════════════════════════════════════
-   LOCALSTORAGE LOAD / SAVE
-══════════════════════════════════════════════════ */
-function loadDataForProfile() {
-  const storedSubjects = localStorage.getItem('att_subjects');
-  if (storedSubjects) {
-    subjects = JSON.parse(storedSubjects);
-    
-    // Auto-migrate old long subject names to new short names
-    let modified = false;
-    const migrationMap = {
-      'NATURAL LANGUAGE PROCESSING (NLP)': 'NLP',
-      'OPERATING SYSTEMS & SYS PROG (OSSP)': 'OSSP',
-      'COMPUTER VISION & IMAGE PROC (CVIP)': 'COMPUTER VISION',
-      'DATA VISUALIZATION (DV)': 'DATA VISUALIZATION',
-      'ELECTRICAL SAFETY & STANDARDS (ESPS)': 'ESSP',
-      'QUANTUM TECHNOLOGY & APPS (IQTA)': 'IQTA',
-      'CV & NLP LAB': 'CV & NLP (LAB)',
-      'AI & SYS PROGRAMMING LAB': 'AISP (LAB)',
-      'FSD II SOC LAB': 'FSD (LAB)'
+    /* Official timetable — 3–4 class slots per day (Association removed)
+       Slot 1 (9:00–10:30):  MON:ESPS  TUE:OSSP      WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP LAB
+       Slot 2 (10:45–12:15): MON:CVIP  TUE:IQTA      WED:IQTA         THU:CVIP       FRI:OSSP
+       Slot 3 (1:15–2:45):   MON:NLP   TUE:AISP LAB  WED:NLP          THU:ESPS       FRI:DV
+       Slot 4 (2:55–4:25):   MON:SS    —             —                THU:DV         —  */
+    const weekdayDefaultSubjects = {
+      1: ['subj_esps', 'subj_cvip', 'subj_nlp', 'subj_soft_skills'],   // Mon: 4 slots
+      2: ['subj_ossp', 'subj_iqta', 'subj_aisp_lab'],                 // Tue: 3 slots (assoc removed)
+      3: ['subj_soft_skills', 'subj_iqta', 'subj_nlp'],               // Wed: 3 slots (assoc removed)
+      4: ['subj_fsd_lab', 'subj_cvip', 'subj_esps', 'subj_dv'],        // Thu: 4 slots
+      5: ['subj_cvnlp_lab', 'subj_ossp', 'subj_dv'],                  // Fri: 3 slots (assoc removed)
+      6: []
     };
-    if (Array.isArray(subjects)) {
-      subjects.forEach(s => {
-        if (s && migrationMap[s.name]) {
-          s.name = migrationMap[s.name];
-          modified = true;
-        }
-      });
-      if (modified) {
-        localStorage.setItem('att_subjects', JSON.stringify(subjects));
-      }
+
+    /* 4 merged class slot time labels */
+    const periodTimes = [
+      '9:00 – 10:30 AM',
+      '10:45 AM – 12:15 PM',
+      '1:15 – 2:45 PM',
+      '2:55 – 4:25 PM'
+    ];
+
+    function getDefaultSubjectsForDay(dayObj) {
+      const dayName = dayObj.day;
+      let weekdayIdx = new Date(dayObj.fullDate + "T00:00:00").getDay();
+      if (dayName.includes("(Mon TT)")) weekdayIdx = 1;
+      else if (dayName.includes("(Tue TT)")) weekdayIdx = 2;
+      else if (dayName.includes("(Wed TT)")) weekdayIdx = 3;
+      else if (dayName.includes("(Thu TT)")) weekdayIdx = 4;
+      else if (dayName.includes("(Fri TT)")) weekdayIdx = 5;
+      return weekdayDefaultSubjects[weekdayIdx] || [];
     }
-  } else {
-    subjects = [...defaultSubjects];
-    localStorage.setItem('att_subjects', JSON.stringify(subjects));
-  }
-  const key = `att_records_${currentRollNumber}`;
-  const storedRecords = localStorage.getItem(key);
-  dailyRecords = storedRecords ? JSON.parse(storedRecords) : {};
 
-  // For fresh profiles (no records), start from 29 Jun so the user
-  // can fill in attendance from the very first day of college.
-  const hasAnyRecord = Object.keys(dailyRecords).length > 0;
-  if (!hasAnyRecord) {
-    selectedDateStr = SEMESTER_START; // 2026-06-29
-  }
-}
+    /* ══════════════════════════════════════════════════
+       STATE
+    ══════════════════════════════════════════════════ */
+    let currentRollNumber = '';
+    /* Default to TODAY clamped within semester; will be overridden to
+       the semester start (Jun 29) for fresh profiles with no records */
+    const SEMESTER_START = '2026-06-29';
+    const SEMESTER_END = '2026-10-24';
+    let selectedDateStr = new Date().toISOString().split('T')[0];
+    if (selectedDateStr < SEMESTER_START) selectedDateStr = SEMESTER_START;
+    if (selectedDateStr > SEMESTER_END) selectedDateStr = SEMESTER_END;
+    let subjects = [];
+    let dailyRecords = {};
+    let editSubjectId = null;
 
-function saveRecords() {
-  if (!currentRollNumber) return;
-  localStorage.setItem(`att_records_${currentRollNumber}`, JSON.stringify(dailyRecords));
-}
+    const ROLL_PREFIX = '2473A31';
+    const LATERAL_PREFIX = '2573A31L';
+    let selectedPrefix = '2473A31';
 
-/* ══════════════════════════════════════════════════
-   STATS ENGINE
-══════════════════════════════════════════════════ */
-let globalStats = {
-  overallPct: 100, totalConducted: 0, totalPresent: 0,
-  totalAbsent: 0, totalHoliday: 0, totalCancelled: 0,
-  todayConducted: 0, todayPresent: 0,
-  monthRatio: '0/0', monthPct: '0%',
-  monthlyTrend: {}, subjectStats: {}
-};
+    /* ══════════════════════════════════════════════════
+       TAB CONTROLLER
+    ══════════════════════════════════════════════════ */
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(`tabContent_${tabId}`).classList.add('active');
 
-function calculateStats() {
-  globalStats.totalConducted = 0;
-  globalStats.totalPresent   = 0;
-  globalStats.totalAbsent    = 0;
-  globalStats.totalHoliday   = 0;
-  globalStats.totalCancelled = 0;
-  globalStats.todayConducted = 0;
-  globalStats.todayPresent   = 0;
-  let monthConducted = 0;
-  let monthPresent   = 0;
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      const navEl = document.getElementById(`navBtn_${tabId}`);
+      if (navEl) navEl.classList.add('active');
 
-  globalStats.subjectStats = {};
-  subjects.forEach(s => { globalStats.subjectStats[s.id] = { conducted: 0, present: 0, absent: 0 }; });
+      if (tabId === 'dashboard') renderDashboard();
+      else if (tabId === 'daily') renderDailyTab();
+      else if (tabId === 'subjects') renderSubjectsTab();
+      else if (tabId === 'reports') renderReportsTab();
+      else if (tabId === 'settings') renderSettingsTab();
+    }
 
-  const todayDateStr    = new Date().toISOString().split('T')[0];
-  const currentMonthStr = selectedDateStr.slice(0, 7);
-  globalStats.monthlyTrend = {};
-  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    /* ══════════════════════════════════════════════════
+       ROLL NUMBER & INIT
+    ══════════════════════════════════════════════════ */
+    function updatePrefixSelection(val) {
+      selectedPrefix = val;
+      document.getElementById('rollPrefixText').textContent = val;
+      const suffixEl = document.getElementById('rollSuffix');
+      const errorEl = document.getElementById('rollError');
+      if (val === LATERAL_PREFIX) {
+        suffixEl.placeholder = '__';
+        suffixEl.maxLength = 2;
+        errorEl.innerHTML = '⚠️ Please enter exactly 2 digits (e.g. 01, 15).';
+        suffixEl.oninput = function () { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 2); };
+      } else {
+        suffixEl.placeholder = '___';
+        suffixEl.maxLength = 3;
+        errorEl.innerHTML = '⚠️ Please enter exactly 3 digits (e.g. 001, 042).';
+        suffixEl.oninput = function () { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 3); };
+      }
+      suffixEl.value = '';
+      suffixEl.focus();
+    }
 
-  allDays.forEach(day => {
-    const isFuture = isDayInFuture(day.fullDate);
-    const dateStr  = day.fullDate;
-    const records  = dailyRecords[dateStr] || {};
-    const dObj     = new Date(dateStr + "T00:00:00");
-    const mName    = monthNames[dObj.getMonth()];
-    if (!globalStats.monthlyTrend[mName]) globalStats.monthlyTrend[mName] = { conducted: 0, present: 0 };
+    function showRollOverlay() {
+      const overlay = document.getElementById('rollOverlay');
+      overlay.classList.remove('hidden');
+      const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
+      const listEl = document.getElementById('rollSavedList');
+      const chipsEl = document.getElementById('rollSavedChips');
+      if (saved.length > 0) {
+        listEl.classList.add('show');
+        chipsEl.innerHTML = saved.map(r => {
+          const isLat = r.startsWith(LATERAL_PREFIX);
+          const prefix = isLat ? LATERAL_PREFIX : ROLL_PREFIX;
+          const suffix = r.replace(prefix, '');
+          return `<span class="roll-chip" onclick="quickSelectRoll('${prefix}','${suffix}')">${r}</span>`;
+        }).join('');
+      } else {
+        listEl.classList.remove('show');
+      }
+      setTimeout(() => document.getElementById('rollSuffix').focus(), 100);
+    }
 
-    for (let p = 1; p <= day.periods; p++) {
-      const record = records[p];
-      if (record && record.status) {
-        const sId  = record.subjectId;
-        const stat = record.status;
-        if (stat === 'holiday')   { if (!isFuture) globalStats.totalHoliday++;   continue; }
-        if (stat === 'cancelled') { if (!isFuture) globalStats.totalCancelled++;  continue; }
-        if (!isFuture) {
-          globalStats.totalConducted++;
-          if (globalStats.subjectStats[sId]) globalStats.subjectStats[sId].conducted++;
-          globalStats.monthlyTrend[mName].conducted++;
-          if (dateStr.slice(0,7) === currentMonthStr) monthConducted++;
-          if (dateStr === todayDateStr) globalStats.todayConducted++;
-          if (stat === 'present') {
-            globalStats.totalPresent++;
-            globalStats.monthlyTrend[mName].present++;
-            if (globalStats.subjectStats[sId]) globalStats.subjectStats[sId].present++;
-            if (dateStr.slice(0,7) === currentMonthStr) monthPresent++;
-            if (dateStr === todayDateStr) globalStats.todayPresent++;
-          } else if (stat === 'absent') {
-            globalStats.totalAbsent++;
-            if (globalStats.subjectStats[sId]) globalStats.subjectStats[sId].absent++;
+    function quickSelectRoll(prefix, suffix) {
+      const radio = document.querySelector(`input[name="rollPrefix"][value="${prefix}"]`);
+      if (radio) radio.checked = true;
+      updatePrefixSelection(prefix);
+      document.getElementById('rollSuffix').value = suffix;
+      submitRollNumber();
+    }
+
+    function submitRollNumber() {
+      const suffixEl = document.getElementById('rollSuffix');
+      const splitBox = document.getElementById('rollSplitBox');
+      const errorEl = document.getElementById('rollError');
+      const suffix = suffixEl.value.trim();
+      const requiredLen = selectedPrefix === LATERAL_PREFIX ? 2 : 3;
+
+      if (suffix.length < 1 || suffix.length > requiredLen) {
+        splitBox.classList.add('error');
+        errorEl.classList.add('show');
+        setTimeout(() => splitBox.classList.remove('error'), 400);
+        suffixEl.focus();
+        return;
+      }
+
+      splitBox.classList.remove('error');
+      errorEl.classList.remove('show');
+
+      const paddedSuffix = /^\d+$/.test(suffix) ? suffix.padStart(requiredLen, '0') : suffix.toUpperCase();
+      currentRollNumber = (selectedPrefix + paddedSuffix).toUpperCase();
+
+      const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
+      if (!saved.includes(currentRollNumber)) {
+        saved.push(currentRollNumber);
+        localStorage.setItem('roll_number_list', JSON.stringify(saved));
+      }
+
+      localStorage.setItem('current_roll_number', currentRollNumber);
+      document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
+      document.getElementById('rollOverlay').classList.add('hidden');
+
+      loadDataForProfile();
+      showToast(`Profile loaded: ${currentRollNumber}`, 'success');
+      switchTab('dashboard');
+    }
+
+    function switchRollNumber() {
+      currentRollNumber = '';
+      document.getElementById('rollSuffix').value = '';
+      showRollOverlay();
+    }
+
+    /* ══════════════════════════════════════════════════
+       LOCALSTORAGE LOAD / SAVE
+    ══════════════════════════════════════════════════ */
+    function loadDataForProfile() {
+      const storedSubjects = localStorage.getItem('att_subjects');
+      if (storedSubjects) {
+        subjects = JSON.parse(storedSubjects);
+
+        // Auto-migrate old long subject names to new short names
+        let modified = false;
+        const migrationMap = {
+          'NATURAL LANGUAGE PROCESSING (NLP)': 'NLP',
+          'OPERATING SYSTEMS & SYS PROG (OSSP)': 'OSSP',
+          'COMPUTER VISION & IMAGE PROC (CVIP)': 'COMPUTER VISION',
+          'DATA VISUALIZATION (DV)': 'DATA VISUALIZATION',
+          'ELECTRICAL SAFETY & STANDARDS (ESPS)': 'ESSP',
+          'QUANTUM TECHNOLOGY & APPS (IQTA)': 'IQTA',
+          'CV & NLP LAB': 'CV & NLP (LAB)',
+          'AI & SYS PROGRAMMING LAB': 'AISP (LAB)',
+          'FSD II SOC LAB': 'FSD (LAB)'
+        };
+        if (Array.isArray(subjects)) {
+          subjects.forEach(s => {
+            if (s && migrationMap[s.name]) {
+              s.name = migrationMap[s.name];
+              modified = true;
+            }
+          });
+          if (modified) {
+            localStorage.setItem('att_subjects', JSON.stringify(subjects));
           }
         }
+      } else {
+        subjects = [...defaultSubjects];
+        localStorage.setItem('att_subjects', JSON.stringify(subjects));
+      }
+      const key = `att_records_${currentRollNumber}`;
+      const storedRecords = localStorage.getItem(key);
+      dailyRecords = storedRecords ? JSON.parse(storedRecords) : {};
+
+      // For fresh profiles (no records), start from 29 Jun so the user
+      // can fill in attendance from the very first day of college.
+      const hasAnyRecord = Object.keys(dailyRecords).length > 0;
+      if (!hasAnyRecord) {
+        selectedDateStr = SEMESTER_START; // 2026-06-29
       }
     }
-  });
 
-  globalStats.overallPct = globalStats.totalConducted > 0
-    ? (globalStats.totalPresent / globalStats.totalConducted) * 100
-    : 100;
-  globalStats.monthRatio = `${monthPresent}/${monthConducted}`;
-  globalStats.monthPct   = monthConducted > 0 ? Math.round((monthPresent / monthConducted) * 100) + '%' : '100%';
-}
-
-function isDayInFuture(dateStr) {
-  const limit = new Date();
-  limit.setHours(23, 59, 59, 999);
-  return new Date(dateStr + "T00:00:00") > limit;
-}
-
-/* ══════════════════════════════════════════════════
-   RENDER: DASHBOARD
-══════════════════════════════════════════════════ */
-function renderDashboard() {
-  calculateStats();
-
-  const pct    = globalStats.overallPct;
-  const pctStr = pct.toFixed(0) + '%';
-
-  // Profile card
-  document.getElementById('profileName').textContent = currentRollNumber || 'Student';
-  document.getElementById('profileRoll').textContent = 'Roll No: ' + (currentRollNumber || '—');
-  document.getElementById('overallPctValue').textContent  = pctStr;
-  document.getElementById('overallPresentCount').textContent = globalStats.totalPresent;
-  document.getElementById('overallAbsentCount').textContent  = globalStats.totalAbsent;
-  const summaryRollEl = document.getElementById('summaryRollLabel');
-  if (summaryRollEl) summaryRollEl.textContent = currentRollNumber || 'Student';
-
-  // Stat chips
-  document.getElementById('overallTotalLabel').textContent = globalStats.totalConducted;
-  document.getElementById('todayPresentCount').textContent  = `${globalStats.todayPresent}/${globalStats.todayConducted}`;
-  document.getElementById('monthPresentPct').textContent    = globalStats.monthPct;
-  document.getElementById('monthPresentRatio').textContent  = globalStats.monthRatio + ' periods';
-
-  // Attendance rate card
-  document.getElementById('rateVal').textContent = pctStr;
-  const rateTag = document.getElementById('rateStatusTag');
-  if (pct >= 75) {
-    rateTag.textContent = '✔ Safe Zone'; rateTag.className = 'tc-tag good';
-  } else if (pct >= 65) {
-    rateTag.textContent = '⚠ Warning';   rateTag.className = 'tc-tag warn';
-  } else {
-    rateTag.textContent = '✖ At Risk';   rateTag.className = 'tc-tag danger';
-  }
-  document.getElementById('overallTotalSubLabel').textContent = `of ${globalStats.totalConducted} classes`;
-  const classDays = allDays.filter(d => !isDayInFuture(d.fullDate)).length;
-  document.getElementById('classDaysTotal').textContent = classDays;
-
-  // Breakdown nums
-  document.getElementById('breakdownVal_present').textContent   = globalStats.totalPresent;
-  document.getElementById('breakdownVal_absent').textContent    = globalStats.totalAbsent;
-  document.getElementById('breakdownVal_holiday').textContent   = globalStats.totalHoliday;
-  document.getElementById('breakdownVal_cancelled').textContent = globalStats.totalCancelled;
-
-  // Animated summary bars
-  const barMax = Math.max(globalStats.totalPresent, globalStats.totalAbsent, globalStats.totalHoliday, globalStats.totalCancelled, 1);
-  const barContainer = 100; // 100% of column height
-  ['present','absent','holiday','cancelled'].forEach(key => {
-    const bar = document.getElementById(`summaryBar_${key}`);
-    if (!bar) return;
-    const val = globalStats[`total${key.charAt(0).toUpperCase()+key.slice(1)}`] || 0;
-    const pctH = Math.max(6, Math.round((val / barMax) * 100));
-    bar.style.height = pctH + '%';
-  });
-
-
-  // Monthly chart (Oakridge bubble style)
-  const trendContainer = document.getElementById('trendChartContainer');
-  trendContainer.innerHTML = '';
-  const monthNames    = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const semesterMonths = ["Jun","Jul","Aug","Sep","Oct"];
-  const currentMonthIdx = new Date(selectedDateStr + "T00:00:00").getMonth();
-
-  semesterMonths.forEach(m => {
-    const data    = globalStats.monthlyTrend[m] || { conducted: 0, present: 0 };
-    const mPct    = data.conducted > 0 ? (data.present / data.conducted) * 100 : 0;
-    const mIdx    = monthNames.indexOf(m);
-    const isActive = mIdx === currentMonthIdx;
-    let colorClass = 'inactive';
-    if (data.conducted > 0) {
-      colorClass = mPct >= 75 ? 'high' : mPct >= 65 ? 'medium' : 'low';
+    function saveRecords() {
+      if (!currentRollNumber) return;
+      localStorage.setItem(`att_records_${currentRollNumber}`, JSON.stringify(dailyRecords));
     }
-    if (isActive) colorClass = 'active';
 
-    // height proportional: 64px to 120px
-    const minH  = 64;
-    const maxH  = 120;
-    const bubbleH = data.conducted > 0 ? Math.max(minH, Math.min(maxH, minH + (mPct / 100) * (maxH - minH))) : minH;
+    /* ══════════════════════════════════════════════════
+       STATS ENGINE
+    ══════════════════════════════════════════════════ */
+    let globalStats = {
+      overallPct: 100, totalConducted: 0, totalPresent: 0,
+      totalAbsent: 0, totalHoliday: 0, totalCancelled: 0,
+      todayConducted: 0, todayPresent: 0,
+      monthRatio: '0/0', monthPct: '0%',
+      monthlyTrend: {}, subjectStats: {}
+    };
 
-    const item = document.createElement('div');
-    item.className = 'month-bar-item';
-    item.innerHTML = `
+    function calculateStats() {
+      globalStats.totalConducted = 0;
+      globalStats.totalPresent = 0;
+      globalStats.totalAbsent = 0;
+      globalStats.totalHoliday = 0;
+      globalStats.totalCancelled = 0;
+      globalStats.todayConducted = 0;
+      globalStats.todayPresent = 0;
+      let monthConducted = 0;
+      let monthPresent = 0;
+
+      globalStats.subjectStats = {};
+      subjects.forEach(s => { globalStats.subjectStats[s.id] = { conducted: 0, present: 0, absent: 0 }; });
+
+      const todayDateStr = new Date().toISOString().split('T')[0];
+      const currentMonthStr = selectedDateStr.slice(0, 7);
+      globalStats.monthlyTrend = {};
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      allDays.forEach(day => {
+        const isFuture = isDayInFuture(day.fullDate);
+        const dateStr = day.fullDate;
+        const records = dailyRecords[dateStr] || {};
+        const dObj = new Date(dateStr + "T00:00:00");
+        const mName = monthNames[dObj.getMonth()];
+        if (!globalStats.monthlyTrend[mName]) globalStats.monthlyTrend[mName] = { conducted: 0, present: 0 };
+
+        for (let p = 1; p <= day.periods; p++) {
+          const record = records[p];
+          if (record && record.status) {
+            const sId = record.subjectId;
+            const stat = record.status;
+            if (stat === 'holiday') { if (!isFuture) globalStats.totalHoliday++; continue; }
+            if (stat === 'cancelled') { if (!isFuture) globalStats.totalCancelled++; continue; }
+            if (!isFuture) {
+              globalStats.totalConducted++;
+              if (globalStats.subjectStats[sId]) globalStats.subjectStats[sId].conducted++;
+              globalStats.monthlyTrend[mName].conducted++;
+              if (dateStr.slice(0, 7) === currentMonthStr) monthConducted++;
+              if (dateStr === todayDateStr) globalStats.todayConducted++;
+              if (stat === 'present') {
+                globalStats.totalPresent++;
+                globalStats.monthlyTrend[mName].present++;
+                if (globalStats.subjectStats[sId]) globalStats.subjectStats[sId].present++;
+                if (dateStr.slice(0, 7) === currentMonthStr) monthPresent++;
+                if (dateStr === todayDateStr) globalStats.todayPresent++;
+              } else if (stat === 'absent') {
+                globalStats.totalAbsent++;
+                if (globalStats.subjectStats[sId]) globalStats.subjectStats[sId].absent++;
+              }
+            }
+          }
+        }
+      });
+
+      globalStats.overallPct = globalStats.totalConducted > 0
+        ? (globalStats.totalPresent / globalStats.totalConducted) * 100
+        : 100;
+      globalStats.monthRatio = `${monthPresent}/${monthConducted}`;
+      globalStats.monthPct = monthConducted > 0 ? Math.round((monthPresent / monthConducted) * 100) + '%' : '100%';
+    }
+
+    function isDayInFuture(dateStr) {
+      const limit = new Date();
+      limit.setHours(23, 59, 59, 999);
+      return new Date(dateStr + "T00:00:00") > limit;
+    }
+
+    /* ══════════════════════════════════════════════════
+       RENDER: DASHBOARD
+    ══════════════════════════════════════════════════ */
+    function renderDashboard() {
+      calculateStats();
+
+      const pct = globalStats.overallPct;
+      const pctStr = pct.toFixed(0) + '%';
+
+      // Profile card
+      document.getElementById('profileName').textContent = currentRollNumber || 'Student';
+      document.getElementById('profileRoll').textContent = 'Roll No: ' + (currentRollNumber || '—');
+      document.getElementById('overallPctValue').textContent = pctStr;
+      document.getElementById('overallPresentCount').textContent = globalStats.totalPresent;
+      document.getElementById('overallAbsentCount').textContent = globalStats.totalAbsent;
+      const summaryRollEl = document.getElementById('summaryRollLabel');
+      if (summaryRollEl) summaryRollEl.textContent = currentRollNumber || 'Student';
+
+      // Stat chips
+      document.getElementById('overallTotalLabel').textContent = globalStats.totalConducted;
+      document.getElementById('todayPresentCount').textContent = `${globalStats.todayPresent}/${globalStats.todayConducted}`;
+      document.getElementById('monthPresentPct').textContent = globalStats.monthPct;
+      document.getElementById('monthPresentRatio').textContent = globalStats.monthRatio + ' periods';
+
+      // Attendance rate card
+      document.getElementById('rateVal').textContent = pctStr;
+      const rateTag = document.getElementById('rateStatusTag');
+      if (pct >= 75) {
+        rateTag.textContent = '✔ Safe Zone'; rateTag.className = 'tc-tag good';
+      } else if (pct >= 65) {
+        rateTag.textContent = '⚠ Warning'; rateTag.className = 'tc-tag warn';
+      } else {
+        rateTag.textContent = '✖ At Risk'; rateTag.className = 'tc-tag danger';
+      }
+      document.getElementById('overallTotalSubLabel').textContent = `of ${globalStats.totalConducted} classes`;
+      const classDays = allDays.filter(d => !isDayInFuture(d.fullDate)).length;
+      document.getElementById('classDaysTotal').textContent = classDays;
+
+      // Breakdown nums
+      document.getElementById('breakdownVal_present').textContent = globalStats.totalPresent;
+      document.getElementById('breakdownVal_absent').textContent = globalStats.totalAbsent;
+      document.getElementById('breakdownVal_holiday').textContent = globalStats.totalHoliday;
+      document.getElementById('breakdownVal_cancelled').textContent = globalStats.totalCancelled;
+
+      // Animated summary bars
+      const barMax = Math.max(globalStats.totalPresent, globalStats.totalAbsent, globalStats.totalHoliday, globalStats.totalCancelled, 1);
+      const barContainer = 100; // 100% of column height
+      ['present', 'absent', 'holiday', 'cancelled'].forEach(key => {
+        const bar = document.getElementById(`summaryBar_${key}`);
+        if (!bar) return;
+        const val = globalStats[`total${key.charAt(0).toUpperCase() + key.slice(1)}`] || 0;
+        const pctH = Math.max(6, Math.round((val / barMax) * 100));
+        bar.style.height = pctH + '%';
+      });
+
+
+      // Monthly chart (Oakridge bubble style)
+      const trendContainer = document.getElementById('trendChartContainer');
+      trendContainer.innerHTML = '';
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const semesterMonths = ["Jun", "Jul", "Aug", "Sep", "Oct"];
+      const currentMonthIdx = new Date(selectedDateStr + "T00:00:00").getMonth();
+
+      semesterMonths.forEach(m => {
+        const data = globalStats.monthlyTrend[m] || { conducted: 0, present: 0 };
+        const mPct = data.conducted > 0 ? (data.present / data.conducted) * 100 : 0;
+        const mIdx = monthNames.indexOf(m);
+        const isActive = mIdx === currentMonthIdx;
+        let colorClass = 'inactive';
+        if (data.conducted > 0) {
+          colorClass = mPct >= 75 ? 'high' : mPct >= 65 ? 'medium' : 'low';
+        }
+        if (isActive) colorClass = 'active';
+
+        // height proportional: 64px to 120px
+        const minH = 64;
+        const maxH = 120;
+        const bubbleH = data.conducted > 0 ? Math.max(minH, Math.min(maxH, minH + (mPct / 100) * (maxH - minH))) : minH;
+
+        const item = document.createElement('div');
+        item.className = 'month-bar-item';
+        item.innerHTML = `
       <div class="month-bubble ${colorClass}" style="height:${bubbleH}px;">
         <span class="month-pct-label">${data.conducted > 0 ? mPct.toFixed(0) + '%' : '—'}</span>
         <span style="font-size:0.6rem; color:rgba(255,255,255,0.75); font-weight:600; margin-top:2px;">${data.present}/${data.conducted}</span>
       </div>
       <span class="month-name-label">${m}</span>
     `;
-    if (colorClass === 'inactive' && data.conducted === 0) {
-      item.querySelector('.month-pct-label').style.color = 'var(--muted)';
+        if (colorClass === 'inactive' && data.conducted === 0) {
+          item.querySelector('.month-pct-label').style.color = 'var(--muted)';
+        }
+        trendContainer.appendChild(item);
+      });
+
+      // Subject Participation Rate bars
+      renderSubjectParticipationBars();
     }
-    trendContainer.appendChild(item);
-  });
 
-  // Subject Participation Rate bars
-  renderSubjectParticipationBars();
-}
+    function renderSubjectParticipationBars() {
+      const container = document.getElementById('subjectParticipationBars');
+      if (!container) return;
+      container.innerHTML = '';
+      const codeMap = {};
+      subjects.forEach(s => { codeMap[s.id] = s.code; });
 
-function renderSubjectParticipationBars() {
-  const container = document.getElementById('subjectParticipationBars');
-  if (!container) return;
-  container.innerHTML = '';
-  const codeMap = {};
-  subjects.forEach(s => { codeMap[s.id] = s.code; });
-
-  subjects.forEach(subj => {
-    const st  = globalStats.subjectStats[subj.id] || { conducted:0, present:0 };
-    const pct = st.conducted > 0 ? (st.present / st.conducted) * 100 : 0;
-    const cls = pct >= 75 ? 'high' : pct >= 65 ? 'medium' : 'low';
-    const shortName = subj.code + ' - ' + subj.name.split(' ')[0];
-    const row = document.createElement('div');
-    row.className = 'participation-row';
-    row.innerHTML = `
+      subjects.forEach(subj => {
+        const st = globalStats.subjectStats[subj.id] || { conducted: 0, present: 0 };
+        const pct = st.conducted > 0 ? (st.present / st.conducted) * 100 : 0;
+        const cls = pct >= 75 ? 'high' : pct >= 65 ? 'medium' : 'low';
+        const shortName = subj.code + ' - ' + subj.name.split(' ')[0];
+        const row = document.createElement('div');
+        row.className = 'participation-row';
+        row.innerHTML = `
       <div class="participation-label">${subj.code}</div>
       <div class="participation-bar-track">
-        <div class="participation-bar-fill ${cls}" style="width:${Math.max(4,pct)}%;">
-          ${st.conducted > 0 ? pct.toFixed(0)+'%' : ''}
+        <div class="participation-bar-fill ${cls}" style="width:${Math.max(4, pct)}%;">
+          ${st.conducted > 0 ? pct.toFixed(0) + '%' : ''}
         </div>
       </div>
-      <div class="participation-pct">${st.conducted > 0 ? pct.toFixed(0)+'%' : '—'}</div>
+      <div class="participation-pct">${st.conducted > 0 ? pct.toFixed(0) + '%' : '—'}</div>
     `;
-    container.appendChild(row);
-  });
-  if (subjects.length === 0) {
-    container.innerHTML = '<p style="font-size:0.78rem; color:var(--muted); text-align:center; padding:12px 0;">No subjects added yet.</p>';
-  }
-}
+        container.appendChild(row);
+      });
+      if (subjects.length === 0) {
+        container.innerHTML = '<p style="font-size:0.78rem; color:var(--muted); text-align:center; padding:12px 0;">No subjects added yet.</p>';
+      }
+    }
 
 
-/* ══════════════════════════════════════════════════
-   RENDER: DAILY TAB
-══════════════════════════════════════════════════ */
-function renderDailyTab() {
-  const dObj = new Date(selectedDateStr + "T00:00:00");
-  document.getElementById('selectedDateDisplay').textContent    = dObj.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
-  document.getElementById('selectedDateDayDisplay').textContent = dObj.toLocaleDateString('en-GB', { weekday:'long' });
-  document.getElementById('nativeDatePicker').value = selectedDateStr;
+    /* ══════════════════════════════════════════════════
+       RENDER: DAILY TAB
+    ══════════════════════════════════════════════════ */
+    function renderDailyTab() {
+      const dObj = new Date(selectedDateStr + "T00:00:00");
+      document.getElementById('selectedDateDisplay').textContent = dObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      document.getElementById('selectedDateDayDisplay').textContent = dObj.toLocaleDateString('en-GB', { weekday: 'long' });
+      document.getElementById('nativeDatePicker').value = selectedDateStr;
 
-  // Show day position counter  e.g. "Day 3 / 87"
-  const idx = allDays.findIndex(d => d.fullDate === selectedDateStr);
-  const dayCounterEl = document.getElementById('dayCounter');
-  if (dayCounterEl) {
-    dayCounterEl.textContent = idx !== -1 ? `Day ${idx + 1} of ${allDays.length}` : 'Weekend / Holiday';
-  }
-  const currentDayInfo = allDays.find(d => d.fullDate === selectedDateStr);
-  const container      = document.getElementById('dailyPeriodsList');
-  container.innerHTML  = '';
+      // Show day position counter  e.g. "Day 3 / 87"
+      const idx = allDays.findIndex(d => d.fullDate === selectedDateStr);
+      const dayCounterEl = document.getElementById('dayCounter');
+      if (dayCounterEl) {
+        dayCounterEl.textContent = idx !== -1 ? `Day ${idx + 1} of ${allDays.length}` : 'Weekend / Holiday';
+      }
+      const currentDayInfo = allDays.find(d => d.fullDate === selectedDateStr);
+      const container = document.getElementById('dailyPeriodsList');
+      container.innerHTML = '';
 
-  if (!currentDayInfo) {
-    container.innerHTML = `
+      if (!currentDayInfo) {
+        container.innerHTML = `
       <div class="no-class-card">
         <span class="nc-icon">🏖️</span>
         <h3>No Class Today</h3>
         <p>This date has no scheduled periods in the semester calendar.</p>
       </div>
     `;
-    return;
-  }
+        return;
+      }
 
-  const isFuture    = isDayInFuture(selectedDateStr);
-  const defaultList = getDefaultSubjectsForDay(currentDayInfo);
-  const records     = dailyRecords[selectedDateStr] || {};
+      const isFuture = isDayInFuture(selectedDateStr);
+      const defaultList = getDefaultSubjectsForDay(currentDayInfo);
+      const records = dailyRecords[selectedDateStr] || {};
 
-  // Use fewer periods if the timetable for this day has fewer slots than
-  // the calendar default (e.g. Tue/Wed/Fri have 3 slots after removing Association).
-  // MID exam days (periods:2) stay capped at 2 regardless of timetable.
-  const numPeriods = Math.min(
-    defaultList.length > 0 ? defaultList.length : currentDayInfo.periods,
-    currentDayInfo.periods
-  );
+      // Use fewer periods if the timetable for this day has fewer slots than
+      // the calendar default (e.g. Tue/Wed/Fri have 3 slots after removing Association).
+      // MID exam days (periods:2) stay capped at 2 regardless of timetable.
+      const numPeriods = Math.min(
+        defaultList.length > 0 ? defaultList.length : currentDayInfo.periods,
+        currentDayInfo.periods
+      );
 
-  for (let p = 1; p <= numPeriods; p++) {
-    const record          = records[p] || {};
-    const activeSubjectId = record.subjectId || defaultList[p - 1] || (subjects[0] ? subjects[0].id : '');
-    const activeStatus    = record.status || '';
-    const timeLabel       = periodTimes[p - 1] || '';
+      for (let p = 1; p <= numPeriods; p++) {
+        const record = records[p] || {};
+        const activeSubjectId = record.subjectId || defaultList[p - 1] || (subjects[0] ? subjects[0].id : '');
+        const activeStatus = record.status || '';
+        const timeLabel = periodTimes[p - 1] || '';
 
-    const pCard = document.createElement('div');
-    pCard.className = 'period-card';
+        const pCard = document.createElement('div');
+        pCard.className = 'period-card';
 
-    const selectOptions = subjects.map(s =>
-      `<option value="${s.id}" ${s.id === activeSubjectId ? 'selected' : ''}>${s.name}</option>`
-    ).join('');
+        const selectOptions = subjects.map(s =>
+          `<option value="${s.id}" ${s.id === activeSubjectId ? 'selected' : ''}>${s.name}</option>`
+        ).join('');
 
-    pCard.innerHTML = `
+        pCard.innerHTML = `
       <div class="period-header">
         <div class="period-num-badge">${p}</div>
         <div class="period-header-text">
@@ -2311,132 +3413,133 @@ function renderDailyTab() {
         <button class="status-pill cancelled ${activeStatus === 'cancelled' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'cancelled')" ${isFuture ? 'disabled' : ''}>⊘ Can.</button>
       </div>
     `;
-    container.appendChild(pCard);
-  }
+        container.appendChild(pCard);
+      }
 
-  if (isFuture) {
-    const notice = document.createElement('div');
-    notice.style.cssText = 'text-align:center; padding:12px; font-size:0.78rem; color:var(--muted); font-weight:600;';
-    notice.textContent = '📅 Future date — attendance cannot be marked yet.';
-    container.appendChild(notice);
-  }
-}
-
-function offsetSelectedDate(direction) {
-  // direction: +1 = next class day, -1 = prev class day
-  let idx = allDays.findIndex(d => d.fullDate === selectedDateStr);
-
-  if (idx === -1) {
-    // Not a class day — snap to nearest class day first
-    if (direction > 0) idx = allDays.findIndex(d => d.fullDate >= selectedDateStr);
-    else              idx = allDays.map(d => d.fullDate).lastIndexOf(allDays.filter(d => d.fullDate <= selectedDateStr).slice(-1)[0]?.fullDate);
-    if (idx === -1) idx = 0;
-    selectedDateStr = allDays[idx].fullDate;
-    renderDailyTab();
-    return;
-  }
-
-  const newIdx = idx + direction;
-  if (newIdx < 0) { showToast('⬅ First day of semester!', 'info'); return; }
-  if (newIdx >= allDays.length) { showToast('Last day of semester! ➡', 'info'); return; }
-
-  selectedDateStr = allDays[newIdx].fullDate;
-  renderDailyTab();
-}
-
-
-
-function triggerNativeDatePicker() {
-  document.getElementById('nativeDatePicker').showPicker();
-}
-
-function onNativeDateChanged(e) {
-  if (e.target.value) { selectedDateStr = e.target.value; renderDailyTab(); }
-}
-
-function changePeriodSubject(periodNum, val) {
-  if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
-  if (!dailyRecords[selectedDateStr][periodNum]) dailyRecords[selectedDateStr][periodNum] = { status: '' };
-  dailyRecords[selectedDateStr][periodNum].subjectId = val;
-  saveRecords();
-}
-
-function setPeriodStatus(periodNum, status) {
-  if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
-  if (!dailyRecords[selectedDateStr][periodNum]) {
-    const selVal = document.getElementById(`subjSelect_${periodNum}`).value;
-    dailyRecords[selectedDateStr][periodNum] = { subjectId: selVal, status: '' };
-  }
-  if (dailyRecords[selectedDateStr][periodNum].status === status) {
-    dailyRecords[selectedDateStr][periodNum].status = '';
-    showToast(`Period ${periodNum} cleared`, 'info');
-  } else {
-    dailyRecords[selectedDateStr][periodNum].status = status;
-    showToast(`Period ${periodNum}: ${status.toUpperCase()}`, 'success');
-  }
-  saveRecords();
-  renderDailyTab();
-}
-
-
-/* ══════════════════════════════════════════════════
-   RENDER: SUBJECTS TAB
-══════════════════════════════════════════════════ */
-function renderSubjectsTab() {
-  calculateStats();
-  
-  const subjectsCount = Array.isArray(subjects) ? subjects.length : 0;
-  document.getElementById('subjectsHeaderMeta').textContent = `${subjectsCount} subjects • ${globalStats.totalConducted} total periods`;
-
-  const container = document.getElementById('subjectsListContainer');
-  container.innerHTML = '';
-
-  if (subjectsCount === 0) {
-    container.innerHTML = `
-      <div class="card" style="text-align:center; color:var(--muted); padding:40px 20px;">
-        <span style="font-size:2.5rem; display:block; margin-bottom:12px;">📚</span>
-        <h3 style="color:var(--subtext); margin-bottom:6px;">No subjects yet</h3>
-        <p style="font-size:0.82rem;">Add your subjects using the button above to track individual attendance.</p>
-      </div>
-    `;
-    return;
-  }
-
-  // Render as subject cards list grid
-  const grid = document.createElement('div');
-  grid.className = 'subjects-grid';
-  container.appendChild(grid);
-
-  subjects.forEach((subj, idx) => {
-    if (!subj) return;
-    const sId = subj.id || `subj_${idx}`;
-    const sName = subj.name || 'Untitled Subject';
-    const sCode = subj.code || '?';
-
-    const stats = (globalStats.subjectStats && globalStats.subjectStats[sId]) || { conducted:0, present:0, absent:0 };
-    const pct   = stats.conducted > 0 ? (stats.present / stats.conducted) * 100 : 100;
-    
-    let statusClass = 'good';
-    if (pct < 65) statusClass = 'danger';
-    else if (pct < 75) statusClass = 'warning';
-
-    let alertHtml = '';
-    if (stats.conducted === 0) {
-      alertHtml = `<div class="target-alert safe">✅ No classes conducted yet.</div>`;
-    } else if (pct >= 75) {
-      const maxMiss = Math.floor((4 * stats.present - 3 * stats.conducted) / 3);
-      alertHtml = maxMiss <= 0
-        ? `<div class="target-alert warn">⚠️ Missing next class may drop you below 75%!</div>`
-        : `<div class="target-alert safe">✅ Safe — can miss <strong>${maxMiss}</strong> more class${maxMiss > 1 ? 'es' : ''}.</div>`;
-    } else {
-      const reqAttend = Math.ceil(3 * stats.conducted - 4 * stats.present);
-      alertHtml = `<div class="target-alert danger">⚠️ Attend <strong>${reqAttend}</strong> more consecutive periods to reach 75%</div>`;
+      if (isFuture) {
+        const notice = document.createElement('div');
+        notice.style.cssText = 'text-align:center; padding:12px; font-size:0.78rem; color:var(--muted); font-weight:600;';
+        notice.textContent = '📅 Future date — attendance cannot be marked yet.';
+        container.appendChild(notice);
+      }
     }
 
-    const badgeColor = idx % 8;
-    const card = document.createElement('div');
-    card.className = 'subject-card';
-    card.innerHTML = `
+    function offsetSelectedDate(direction) {
+      // direction: +1 = next class day, -1 = prev class day
+      let idx = allDays.findIndex(d => d.fullDate === selectedDateStr);
+
+      if (idx === -1) {
+        // Not a class day — snap to nearest class day first
+        if (direction > 0) idx = allDays.findIndex(d => d.fullDate >= selectedDateStr);
+        else idx = allDays.map(d => d.fullDate).lastIndexOf(allDays.filter(d => d.fullDate <= selectedDateStr).slice(-1)[0]?.fullDate);
+        if (idx === -1) idx = 0;
+        selectedDateStr = allDays[idx].fullDate;
+        renderDailyTab();
+        return;
+      }
+
+      const newIdx = idx + direction;
+      if (newIdx < 0) { showToast('⬅ First day of semester!', 'info'); return; }
+      if (newIdx >= allDays.length) { showToast('Last day of semester! ➡', 'info'); return; }
+
+      selectedDateStr = allDays[newIdx].fullDate;
+      renderDailyTab();
+    }
+
+
+
+    function triggerNativeDatePicker() {
+      document.getElementById('nativeDatePicker').showPicker();
+    }
+
+    function onNativeDateChanged(e) {
+      if (e.target.value) { selectedDateStr = e.target.value; renderDailyTab(); }
+    }
+
+    function changePeriodSubject(periodNum, val) {
+      if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
+      if (!dailyRecords[selectedDateStr][periodNum]) dailyRecords[selectedDateStr][periodNum] = { status: '' };
+      dailyRecords[selectedDateStr][periodNum].subjectId = val;
+      saveRecords();
+    }
+
+    function setPeriodStatus(periodNum, status) {
+      if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
+      if (!dailyRecords[selectedDateStr][periodNum]) {
+        const selVal = document.getElementById(`subjSelect_${periodNum}`).value;
+        dailyRecords[selectedDateStr][periodNum] = { subjectId: selVal, status: '' };
+      }
+      if (dailyRecords[selectedDateStr][periodNum].status === status) {
+        dailyRecords[selectedDateStr][periodNum].status = '';
+        showToast(`Period ${periodNum} cleared`, 'info');
+      } else {
+        dailyRecords[selectedDateStr][periodNum].status = status;
+        showToast(`Period ${periodNum}: ${status.toUpperCase()}`, 'success');
+      }
+      saveRecords();
+      renderDailyTab();
+    }
+
+
+    /* ══════════════════════════════════════════════════
+       RENDER: SUBJECTS TAB
+    ══════════════════════════════════════════════════ */
+    function renderSubjectsTab() {
+      calculateStats();
+
+      const subjectsCount = Array.isArray(subjects) ? subjects.length : 0;
+      document.getElementById('subjectsHeaderMeta').textContent = `${subjectsCount} subjects • ${globalStats.totalConducted} total periods`;
+
+      const container = document.getElementById('subjectsListContainer');
+      container.innerHTML = '';
+
+      if (subjectsCount === 0) {
+        container.innerHTML = `
+      <div class="card" style="text-align:center; color:var(--muted); padding:40px 20px; display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <span style="font-size:2.5rem; display:block; margin-bottom:4px;">📚</span>
+        <h3 style="color:var(--subtext); margin-bottom:0;">No subjects yet</h3>
+        <p style="font-size:0.82rem; max-width:280px; margin:0 auto 8px;">Add your subjects manually or load the default college timetable subjects.</p>
+        <button class="btn btn-primary" onclick="restoreDefaultSubjects()" style="font-size:0.8rem; padding:8px 16px;">📚 Load Default Subjects</button>
+      </div>
+    `;
+        return;
+      }
+
+      // Render as subject cards list grid
+      const grid = document.createElement('div');
+      grid.className = 'subjects-grid';
+      container.appendChild(grid);
+
+      subjects.forEach((subj, idx) => {
+        if (!subj) return;
+        const sId = subj.id || `subj_${idx}`;
+        const sName = subj.name || 'Untitled Subject';
+        const sCode = subj.code || '?';
+
+        const stats = (globalStats.subjectStats && globalStats.subjectStats[sId]) || { conducted: 0, present: 0, absent: 0 };
+        const pct = stats.conducted > 0 ? (stats.present / stats.conducted) * 100 : 100;
+
+        let statusClass = 'good';
+        if (pct < 65) statusClass = 'danger';
+        else if (pct < 75) statusClass = 'warning';
+
+        let alertHtml = '';
+        if (stats.conducted === 0) {
+          alertHtml = `<div class="target-alert safe">✅ No classes conducted yet.</div>`;
+        } else if (pct >= 75) {
+          const maxMiss = Math.floor((4 * stats.present - 3 * stats.conducted) / 3);
+          alertHtml = maxMiss <= 0
+            ? `<div class="target-alert warn">⚠️ Missing next class may drop you below 75%!</div>`
+            : `<div class="target-alert safe">✅ Safe — can miss <strong>${maxMiss}</strong> more class${maxMiss > 1 ? 'es' : ''}.</div>`;
+        } else {
+          const reqAttend = Math.ceil(3 * stats.conducted - 4 * stats.present);
+          alertHtml = `<div class="target-alert danger">⚠️ Attend <strong>${reqAttend}</strong> more consecutive periods to reach 75%</div>`;
+        }
+
+        const badgeColor = idx % 8;
+        const card = document.createElement('div');
+        card.className = 'subject-card';
+        card.innerHTML = `
       <div class="subject-top-row">
         <div class="subj-badge subj-badge-${badgeColor}">${sCode}</div>
         <div class="subj-name" style="font-size:0.95rem; font-weight:800; color:var(--text);">${sName}</div>
@@ -2468,54 +3571,54 @@ function renderSubjectsTab() {
       </div>
       ${alertHtml}
     `;
-    grid.appendChild(card);
-  });
-}
-
-
-/* ══════════════════════════════════════════════════
-   RENDER: REPORTS TAB
-══════════════════════════════════════════════════ */
-function renderReportsTab() {
-  calculateStats();
-  const tbody = document.getElementById('semesterReportsTableBody');
-  tbody.innerHTML = '';
-  let activeWeek  = '';
-  let cumTotal    = 0;
-  let cumPresent  = 0;
-
-  allDays.forEach(day => {
-    const isFuture = isDayInFuture(day.fullDate);
-    if (day.weekName !== activeWeek) {
-      activeWeek = day.weekName;
-      const wRow = document.createElement('tr');
-      wRow.className = 'week-header';
-      wRow.innerHTML = `<td colspan="6">🗓 ${activeWeek}</td>`;
-      tbody.appendChild(wRow);
+        grid.appendChild(card);
+      });
     }
 
-    const dayRecords = dailyRecords[day.fullDate] || {};
-    let absent = 0, present = 0;
-    for (let p = 1; p <= day.periods; p++) {
-      const rec = dayRecords[p];
-      if (rec && rec.status) {
-        if (rec.status === 'present') present++;
-        else if (rec.status === 'absent') absent++;
-      }
-    }
-    if (!isFuture) { cumTotal += (present + absent); cumPresent += present; }
-    const overallPct = cumTotal > 0 ? ((cumPresent / cumTotal) * 100).toFixed(0) : '100';
 
-    const row = document.createElement('tr');
-    row.className = 'clickable';
-    row.onclick = () => { selectedDateStr = day.fullDate; switchTab('daily'); };
+    /* ══════════════════════════════════════════════════
+       RENDER: REPORTS TAB
+    ══════════════════════════════════════════════════ */
+    function renderReportsTab() {
+      calculateStats();
+      const tbody = document.getElementById('semesterReportsTableBody');
+      tbody.innerHTML = '';
+      let activeWeek = '';
+      let cumTotal = 0;
+      let cumPresent = 0;
 
-    const conducted = present + absent;
-    const dailyPct  = !isFuture && conducted > 0 ? ((present / conducted) * 100).toFixed(0) + '%' : (isFuture ? '—' : '100%');
-    row.innerHTML = `
+      allDays.forEach(day => {
+        const isFuture = isDayInFuture(day.fullDate);
+        if (day.weekName !== activeWeek) {
+          activeWeek = day.weekName;
+          const wRow = document.createElement('tr');
+          wRow.className = 'week-header';
+          wRow.innerHTML = `<td colspan="6">🗓 ${activeWeek}</td>`;
+          tbody.appendChild(wRow);
+        }
+
+        const dayRecords = dailyRecords[day.fullDate] || {};
+        let absent = 0, present = 0;
+        for (let p = 1; p <= day.periods; p++) {
+          const rec = dayRecords[p];
+          if (rec && rec.status) {
+            if (rec.status === 'present') present++;
+            else if (rec.status === 'absent') absent++;
+          }
+        }
+        if (!isFuture) { cumTotal += (present + absent); cumPresent += present; }
+        const overallPct = cumTotal > 0 ? ((cumPresent / cumTotal) * 100).toFixed(0) : '100';
+
+        const row = document.createElement('tr');
+        row.className = 'clickable';
+        row.onclick = () => { selectedDateStr = day.fullDate; switchTab('daily'); };
+
+        const conducted = present + absent;
+        const dailyPct = !isFuture && conducted > 0 ? ((present / conducted) * 100).toFixed(0) + '%' : (isFuture ? '—' : '100%');
+        row.innerHTML = `
       <td style="color:var(--muted); font-size:0.72rem;">${day.weekName}</td>
       <td>
-        <span style="display:block; font-weight:700; color:var(--text); font-size:0.8rem;">${day.day.replace(' (Mon TT)','').replace(' (Tue TT)','').replace(' (Wed TT)','').replace(' (Thu TT)','').replace(' (Fri TT)','')}</span>
+        <span style="display:block; font-weight:700; color:var(--text); font-size:0.8rem;">${day.day.replace(' (Mon TT)', '').replace(' (Tue TT)', '').replace(' (Wed TT)', '').replace(' (Thu TT)', '').replace(' (Fri TT)', '')}</span>
         <span style="display:block; font-size:0.68rem; color:var(--muted); margin-top:1px;">${day.date}</span>
       </td>
       <td style="font-size:0.8rem;">${day.periods}</td>
@@ -2523,189 +3626,196 @@ function renderReportsTab() {
       <td style="color:var(--red); font-weight:700; font-size:0.8rem;">${isFuture ? '—' : absent}</td>
       <td style="font-weight:800; font-size:0.8rem;">${isFuture ? '—' : overallPct + '%'}</td>
     `;
-    tbody.appendChild(row);
-  });
-}
-
-/* ══════════════════════════════════════════════════
-   RENDER: SETTINGS TAB
-══════════════════════════════════════════════════ */
-function renderSettingsTab() {
-  document.getElementById('settingsCurrentRollBadge').textContent = currentRollNumber || 'None';
-}
-
-/* ══════════════════════════════════════════════════
-   SUBJECT MODALS
-══════════════════════════════════════════════════ */
-function openAddSubjectModal() {
-  editSubjectId = null;
-  document.getElementById('subjectModalTitle').textContent = 'Add Subject';
-  document.getElementById('subjectModalDesc').textContent  = 'Create a new subject to track individual attendance.';
-  document.getElementById('modalSubjectName').value = '';
-  document.getElementById('modalSubjectCode').value = '';
-  document.getElementById('subjectModal').classList.add('active');
-  document.getElementById('modalSubjectName').focus();
-}
-
-function openEditSubjectModal(id) {
-  const subj = subjects.find(s => s.id === id);
-  if (!subj) return;
-  editSubjectId = id;
-  document.getElementById('subjectModalTitle').textContent = 'Edit Subject';
-  document.getElementById('subjectModalDesc').textContent  = 'Change the name or badge letter.';
-  document.getElementById('modalSubjectName').value = subj.name;
-  document.getElementById('modalSubjectCode').value = subj.code;
-  document.getElementById('subjectModal').classList.add('active');
-  document.getElementById('modalSubjectName').focus();
-}
-
-function closeSubjectModal() {
-  document.getElementById('subjectModal').classList.remove('active');
-}
-
-function saveSubjectFromModal() {
-  const nameInput = document.getElementById('modalSubjectName');
-  const codeInput = document.getElementById('modalSubjectCode');
-  const name = nameInput.value.trim();
-  const code = codeInput.value.trim().toUpperCase().slice(0, 2);
-  if (!name) { showToast('Please enter a subject name!', 'danger'); nameInput.focus(); return; }
-  if (!code) { showToast('Please enter a badge letter!', 'danger'); codeInput.focus(); return; }
-  if (editSubjectId) {
-    const subj = subjects.find(s => s.id === editSubjectId);
-    if (subj) { subj.name = name; subj.code = code; showToast('Subject updated', 'success'); }
-  } else {
-    subjects.push({ id: 'subj_' + Date.now(), name, code });
-    showToast('Subject added', 'success');
-  }
-  localStorage.setItem('att_subjects', JSON.stringify(subjects));
-  closeSubjectModal();
-  renderSubjectsTab();
-}
-
-function triggerDeleteSubject(id, name) {
-  showConfirm(`Delete "${name}"?`, 'This removes the subject from your list. Logged records remain intact.', () => {
-    subjects = subjects.filter(s => s.id !== id);
-    localStorage.setItem('att_subjects', JSON.stringify(subjects));
-    showToast('Subject deleted', 'danger');
-    renderSubjectsTab();
-  });
-}
-
-/* ══════════════════════════════════════════════════
-   RESET & CONFIRM
-══════════════════════════════════════════════════ */
-function triggerSemesterReset() {
-  showConfirm('Reset All Attendance?', 'This will permanently clear all marked attendance records for this student profile.', () => {
-    dailyRecords = {};
-    saveRecords();
-    showToast('All data reset.', 'danger');
-    renderSettingsTab();
-    renderDashboard();
-  });
-}
-
-function showConfirm(title, desc, onYes) {
-  const overlay = document.getElementById('confirmModal');
-  document.getElementById('confirmTitle').textContent = title;
-  document.getElementById('confirmDesc').textContent  = desc;
-  overlay.classList.add('active');
-  document.getElementById('confirmYes').onclick = () => { overlay.classList.remove('active'); onYes(); };
-  document.getElementById('confirmNo').onclick  = () => { overlay.classList.remove('active'); };
-}
-
-/* ══════════════════════════════════════════════════
-   BACKUP & EXPORTS
-══════════════════════════════════════════════════ */
-function downloadAttendanceJSON() {
-  if (!currentRollNumber) return;
-  const data = { app:"Attendance Tracker III B.Tech CSE-AI", rollNumber:currentRollNumber, exportedAt:new Date().toISOString(), subjects, records:dailyRecords };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = `attendance_backup_${currentRollNumber}_${new Date().toISOString().split('T')[0]}.json`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-  showToast('JSON backup downloaded', 'success');
-}
-
-function downloadAttendanceCSV() {
-  if (!currentRollNumber) return;
-  calculateStats();
-  const lines = [`Attendance Report,Roll Number: ${currentRollNumber},Export Date: ${new Date().toLocaleDateString()}`,'','SUBJECTS SUMMARY','Subject Name,Badge,Conducted,Present,Absent,Attendance%'];
-  subjects.forEach(s => {
-    const stat = globalStats.subjectStats[s.id] || { conducted:0, present:0, absent:0 };
-    const pct  = stat.conducted > 0 ? ((stat.present / stat.conducted) * 100).toFixed(0) : '100';
-    lines.push(`"${s.name}",${s.code},${stat.conducted},${stat.present},${stat.absent},${pct}%`);
-  });
-  lines.push('','DAILY LOGS','Date,Week,Day,Period,Subject,Status');
-  allDays.forEach(day => {
-    const recs = dailyRecords[day.fullDate] || {};
-    for (let p = 1; p <= day.periods; p++) {
-      const rec = recs[p];
-      if (rec && rec.status) {
-        const subj = subjects.find(s => s.id === rec.subjectId) || { name:'Unknown' };
-        lines.push(`${day.fullDate},${day.weekName},${day.day},Period ${p},"${subj.name}",${rec.status}`);
-      }
+        tbody.appendChild(row);
+      });
     }
-  });
-  const blob = new Blob([lines.join('\r\n')], { type:'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = `attendance_report_${currentRollNumber}_${new Date().toISOString().split('T')[0]}.csv`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-  showToast('CSV report downloaded', 'success');
-}
 
-function importAttendanceJSON(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    try {
-      const parsed = JSON.parse(evt.target.result);
-      if (!parsed.records || !parsed.subjects) { showToast('Invalid backup file!', 'danger'); return; }
-      if (parsed.rollNumber && parsed.rollNumber !== currentRollNumber) showToast(`Imported from ${parsed.rollNumber}`, 'info');
-      subjects = parsed.subjects;
-      dailyRecords = parsed.records;
+    /* ══════════════════════════════════════════════════
+       RENDER: SETTINGS TAB
+    ══════════════════════════════════════════════════ */
+    function renderSettingsTab() {
+      document.getElementById('settingsCurrentRollBadge').textContent = currentRollNumber || 'None';
+    }
+
+    /* ══════════════════════════════════════════════════
+       SUBJECT MODALS
+    ══════════════════════════════════════════════════ */
+    function openAddSubjectModal() {
+      editSubjectId = null;
+      document.getElementById('subjectModalTitle').textContent = 'Add Subject';
+      document.getElementById('subjectModalDesc').textContent = 'Create a new subject to track individual attendance.';
+      document.getElementById('modalSubjectName').value = '';
+      document.getElementById('modalSubjectCode').value = '';
+      document.getElementById('subjectModal').classList.add('active');
+      document.getElementById('modalSubjectName').focus();
+    }
+
+    function restoreDefaultSubjects() {
+      subjects = [...defaultSubjects];
       localStorage.setItem('att_subjects', JSON.stringify(subjects));
-      saveRecords();
-      showToast('Import complete!', 'success');
+      renderSubjectsTab();
+      showToast('Loaded 10 default subjects successfully!', 'success');
+    }
+
+    function openEditSubjectModal(id) {
+      const subj = subjects.find(s => s.id === id);
+      if (!subj) return;
+      editSubjectId = id;
+      document.getElementById('subjectModalTitle').textContent = 'Edit Subject';
+      document.getElementById('subjectModalDesc').textContent = 'Change the name or badge letter.';
+      document.getElementById('modalSubjectName').value = subj.name;
+      document.getElementById('modalSubjectCode').value = subj.code;
+      document.getElementById('subjectModal').classList.add('active');
+      document.getElementById('modalSubjectName').focus();
+    }
+
+    function closeSubjectModal() {
+      document.getElementById('subjectModal').classList.remove('active');
+    }
+
+    function saveSubjectFromModal() {
+      const nameInput = document.getElementById('modalSubjectName');
+      const codeInput = document.getElementById('modalSubjectCode');
+      const name = nameInput.value.trim();
+      const code = codeInput.value.trim().toUpperCase().slice(0, 2);
+      if (!name) { showToast('Please enter a subject name!', 'danger'); nameInput.focus(); return; }
+      if (!code) { showToast('Please enter a badge letter!', 'danger'); codeInput.focus(); return; }
+      if (editSubjectId) {
+        const subj = subjects.find(s => s.id === editSubjectId);
+        if (subj) { subj.name = name; subj.code = code; showToast('Subject updated', 'success'); }
+      } else {
+        subjects.push({ id: 'subj_' + Date.now(), name, code });
+        showToast('Subject added', 'success');
+      }
+      localStorage.setItem('att_subjects', JSON.stringify(subjects));
+      closeSubjectModal();
+      renderSubjectsTab();
+    }
+
+    function triggerDeleteSubject(id, name) {
+      showConfirm(`Delete "${name}"?`, 'This removes the subject from your list. Logged records remain intact.', () => {
+        subjects = subjects.filter(s => s.id !== id);
+        localStorage.setItem('att_subjects', JSON.stringify(subjects));
+        showToast('Subject deleted', 'danger');
+        renderSubjectsTab();
+      });
+    }
+
+    /* ══════════════════════════════════════════════════
+       RESET & CONFIRM
+    ══════════════════════════════════════════════════ */
+    function triggerSemesterReset() {
+      showConfirm('Reset All Attendance?', 'This will permanently clear all marked attendance records for this student profile.', () => {
+        dailyRecords = {};
+        saveRecords();
+        showToast('All data reset.', 'danger');
+        renderSettingsTab();
+        renderDashboard();
+      });
+    }
+
+    function showConfirm(title, desc, onYes) {
+      const overlay = document.getElementById('confirmModal');
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmDesc').textContent = desc;
+      overlay.classList.add('active');
+      document.getElementById('confirmYes').onclick = () => { overlay.classList.remove('active'); onYes(); };
+      document.getElementById('confirmNo').onclick = () => { overlay.classList.remove('active'); };
+    }
+
+    /* ══════════════════════════════════════════════════
+       BACKUP & EXPORTS
+    ══════════════════════════════════════════════════ */
+    function downloadAttendanceJSON() {
+      if (!currentRollNumber) return;
+      const data = { app: "Attendance Tracker III B.Tech CSE-AI", rollNumber: currentRollNumber, exportedAt: new Date().toISOString(), subjects, records: dailyRecords };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `attendance_backup_${currentRollNumber}_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      showToast('JSON backup downloaded', 'success');
+    }
+
+    function downloadAttendanceCSV() {
+      if (!currentRollNumber) return;
+      calculateStats();
+      const lines = [`Attendance Report,Roll Number: ${currentRollNumber},Export Date: ${new Date().toLocaleDateString()}`, '', 'SUBJECTS SUMMARY', 'Subject Name,Badge,Conducted,Present,Absent,Attendance%'];
+      subjects.forEach(s => {
+        const stat = globalStats.subjectStats[s.id] || { conducted: 0, present: 0, absent: 0 };
+        const pct = stat.conducted > 0 ? ((stat.present / stat.conducted) * 100).toFixed(0) : '100';
+        lines.push(`"${s.name}",${s.code},${stat.conducted},${stat.present},${stat.absent},${pct}%`);
+      });
+      lines.push('', 'DAILY LOGS', 'Date,Week,Day,Period,Subject,Status');
+      allDays.forEach(day => {
+        const recs = dailyRecords[day.fullDate] || {};
+        for (let p = 1; p <= day.periods; p++) {
+          const rec = recs[p];
+          if (rec && rec.status) {
+            const subj = subjects.find(s => s.id === rec.subjectId) || { name: 'Unknown' };
+            lines.push(`${day.fullDate},${day.weekName},${day.day},Period ${p},"${subj.name}",${rec.status}`);
+          }
+        }
+      });
+      const blob = new Blob([lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `attendance_report_${currentRollNumber}_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      showToast('CSV report downloaded', 'success');
+    }
+
+    function importAttendanceJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          if (!parsed.records || !parsed.subjects) { showToast('Invalid backup file!', 'danger'); return; }
+          if (parsed.rollNumber && parsed.rollNumber !== currentRollNumber) showToast(`Imported from ${parsed.rollNumber}`, 'info');
+          subjects = parsed.subjects;
+          dailyRecords = parsed.records;
+          localStorage.setItem('att_subjects', JSON.stringify(subjects));
+          saveRecords();
+          showToast('Import complete!', 'success');
+          switchTab('dashboard');
+        } catch (err) { showToast('Failed to parse file.', 'danger'); }
+        e.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    /* ══════════════════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════════════════ */
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast toast-${type}`;
+      const icon = type === 'success' ? '✅' : type === 'danger' ? '🚨' : 'ℹ️';
+      t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+      container.appendChild(t);
+      setTimeout(() => { t.classList.add('hide'); t.addEventListener('animationend', () => t.remove()); }, 3000);
+    }
+
+    /* ══════════════════════════════════════════════════
+       BOOT
+    ══════════════════════════════════════════════════ */
+    const savedRoll = localStorage.getItem('current_roll_number');
+    if (savedRoll) {
+      currentRollNumber = savedRoll;
+      document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
+      document.getElementById('rollOverlay').classList.add('hidden');
+      loadDataForProfile();
       switchTab('dashboard');
-    } catch(err) { showToast('Failed to parse file.', 'danger'); }
-    e.target.value = '';
-  };
-  reader.readAsText(file);
-}
+    } else {
+      showRollOverlay();
+    }
+  </script>
 
-/* ══════════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════════ */
-function showToast(msg, type = 'info') {
-  const container = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className = `toast toast-${type}`;
-  const icon = type === 'success' ? '✅' : type === 'danger' ? '🚨' : 'ℹ️';
-  t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
-  container.appendChild(t);
-  setTimeout(() => { t.classList.add('hide'); t.addEventListener('animationend', () => t.remove()); }, 3000);
-}
-
-/* ══════════════════════════════════════════════════
-   BOOT
-══════════════════════════════════════════════════ */
-const savedRoll = localStorage.getItem('current_roll_number');
-if (savedRoll) {
-  currentRollNumber = savedRoll;
-  document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
-  document.getElementById('rollOverlay').classList.add('hidden');
-  loadDataForProfile();
-  switchTab('dashboard');
-} else {
-  showRollOverlay();
-}
-</script>
-
-<!-- ══ PWA: SERVICE WORKER + INSTALL BANNER ══ -->
-<div id="pwaInstallBanner" style="
+  <!-- ══ PWA: SERVICE WORKER + INSTALL BANNER ══ -->
+  <div id="pwaInstallBanner" style="
   display:none; position:fixed; bottom:0; left:50%; transform:translateX(-50%);
   width:100%; max-width:480px; z-index:9999;
   background:#fff; border-top:1px solid #e5e7eb;
@@ -2713,66 +3823,78 @@ if (savedRoll) {
   padding:16px 20px; align-items:center; gap:12px;
   animation: slideUp 0.4s ease;
 ">
-  <img src="icon-192.png" style="width:44px;height:44px;border-radius:12px;flex-shrink:0;" alt="AttendTrack icon" />
-  <div style="flex:1;">
-    <div style="font-size:0.9rem;font-weight:800;color:#1a1a2e;">Install AttendTrack</div>
-    <div style="font-size:0.72rem;color:#6b7280;margin-top:2px;">Add to home screen — works offline!</div>
-  </div>
-  <button id="pwaInstallBtn" style="
+    <img src="icon-192.png" style="width:44px;height:44px;border-radius:12px;flex-shrink:0;" alt="AttendTrack icon" />
+    <div style="flex:1;">
+      <div style="font-size:0.9rem;font-weight:800;color:#1a1a2e;">Install AttendTrack</div>
+      <div style="font-size:0.72rem;color:#6b7280;margin-top:2px;">Add to home screen — works offline!</div>
+    </div>
+    <button id="pwaInstallBtn" style="
     background:#4476f5; color:#fff; border:none; border-radius:10px;
     padding:10px 18px; font-size:0.82rem; font-weight:800; cursor:pointer;
     white-space:nowrap;
   ">⬇ Install</button>
-  <button onclick="document.getElementById('pwaInstallBanner').style.display='none'" style="
+    <button onclick="document.getElementById('pwaInstallBanner').style.display='none'" style="
     background:none;border:none;color:#9ca3af;font-size:1.2rem;cursor:pointer;
     padding:4px;
   ">✕</button>
-</div>
-<style>
-  @keyframes slideUp { 
-    from { transform: translate(-50%, 100%); } 
-    to { transform: translate(-50%, 0); } 
-  }
-  #pwaInstallBanner { display:none; }
-  #pwaInstallBanner.show { display:flex !important; }
-</style>
+  </div>
+  <style>
+    @keyframes slideUp {
+      from {
+        transform: translate(-50%, 100%);
+      }
 
-<script>
-  // Register Service Worker
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/attendance-tracker/sw.js')
-        .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
-        .catch(err => console.log('[PWA] SW registration failed:', err));
+      to {
+        transform: translate(-50%, 0);
+      }
+    }
+
+    #pwaInstallBanner {
+      display: none;
+    }
+
+    #pwaInstallBanner.show {
+      display: flex !important;
+    }
+  </style>
+
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/attendance-tracker/sw.js')
+          .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+          .catch(err => console.log('[PWA] SW registration failed:', err));
+      });
+    }
+
+    // Install Prompt (Android Chrome)
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      // Show banner after 3 seconds
+      setTimeout(() => {
+        document.getElementById('pwaInstallBanner').classList.add('show');
+      }, 3000);
     });
-  }
 
-  // Install Prompt (Android Chrome)
-  let deferredInstallPrompt = null;
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    // Show banner after 3 seconds
-    setTimeout(() => {
-      document.getElementById('pwaInstallBanner').classList.add('show');
-    }, 3000);
-  });
+    document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      console.log('[PWA] Install outcome:', outcome);
+      deferredInstallPrompt = null;
+      document.getElementById('pwaInstallBanner').classList.remove('show');
+    });
 
-  document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    console.log('[PWA] Install outcome:', outcome);
-    deferredInstallPrompt = null;
-    document.getElementById('pwaInstallBanner').classList.remove('show');
-  });
-
-  // Hide banner if already installed
-  window.addEventListener('appinstalled', () => {
-    document.getElementById('pwaInstallBanner').classList.remove('show');
-    showToast('✅ AttendTrack installed!', 'success');
-  });
-</script>
+    // Hide banner if already installed
+    window.addEventListener('appinstalled', () => {
+      document.getElementById('pwaInstallBanner').classList.remove('show');
+      showToast('✅ AttendTrack installed!', 'success');
+    });
+  </script>
 
 </body>
+
 </html>
