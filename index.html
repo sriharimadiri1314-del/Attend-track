@@ -2203,6 +2203,93 @@ function setPeriodStatus(periodNum, status) {
 
 
 /* ══════════════════════════════════════════════════
+   RENDER: SUBJECTS TAB
+══════════════════════════════════════════════════ */
+function renderSubjectsTab() {
+  calculateStats();
+  document.getElementById('subjectsHeaderMeta').textContent = `${subjects.length} subjects • ${globalStats.totalConducted} total periods`;
+
+  const container = document.getElementById('subjectsListContainer');
+  container.innerHTML = '';
+
+  if (subjects.length === 0) {
+    container.innerHTML = `
+      <div class="card" style="text-align:center; color:var(--muted); padding:40px 20px;">
+        <span style="font-size:2.5rem; display:block; margin-bottom:12px;">📚</span>
+        <h3 style="color:var(--subtext); margin-bottom:6px;">No subjects yet</h3>
+        <p style="font-size:0.82rem;">Add your subjects using the button above to track individual attendance.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Render as gauge-ring grid (2 columns, matching the screenshot right panel)
+  const grid = document.createElement('div');
+  grid.className = 'gauge-grid';
+  container.appendChild(grid);
+
+  subjects.forEach((subj, idx) => {
+    const stats = globalStats.subjectStats[subj.id] || { conducted:0, present:0, absent:0 };
+    const pct   = stats.conducted > 0 ? (stats.present / stats.conducted) * 100 : 100;
+    const gaugeClass = pct >= 75 ? 'high' : pct >= 65 ? 'medium' : 'low';
+
+    let alertHtml = '';
+    if (stats.conducted === 0) {
+      alertHtml = `<div class="gauge-alert safe">No classes yet</div>`;
+    } else if (pct >= 75) {
+      const maxMiss = Math.floor((4 * stats.present - 3 * stats.conducted) / 3);
+      alertHtml = maxMiss <= 0
+        ? `<div class="gauge-alert warn">⚠ Next miss risky!</div>`
+        : `<div class="gauge-alert safe">✓ Can miss ${maxMiss} more</div>`;
+    } else {
+      const reqAttend = Math.ceil(3 * stats.conducted - 4 * stats.present);
+      alertHtml = `<div class="gauge-alert danger">⚠ Need ${reqAttend} more</div>`;
+    }
+
+    // SVG ring: circumference = 2π*35 ≈ 220
+    const r   = 35, circ = 2 * Math.PI * r;
+    const pctVal = stats.conducted > 0 ? pct : 100;
+    const offset = circ - (pctVal / 100) * circ;
+
+    const card = document.createElement('div');
+    card.className = 'gauge-card';
+    card.innerHTML = `
+      <div class="gauge-subj-name" title="${subj.name}">${subj.name.split('(')[0].trim()}</div>
+      <div class="gauge-svg-wrap">
+        <svg class="gauge-svg" viewBox="0 0 90 90">
+          <circle class="gauge-bg" cx="45" cy="45" r="${r}"/>
+          <circle class="gauge-fill ${gaugeClass}" cx="45" cy="45" r="${r}"
+            stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+        </svg>
+        <div class="gauge-center-text">${pct.toFixed(0)}%</div>
+      </div>
+      <div class="gauge-range"><span>0</span><span>100</span></div>
+      <div class="gauge-stats-row">
+        <div class="gauge-stat-item">
+          <span class="gauge-stat-num">${stats.present}</span>
+          <span class="gauge-stat-lbl">Present</span>
+        </div>
+        <div class="gauge-stat-item">
+          <span class="gauge-stat-num">${stats.absent}</span>
+          <span class="gauge-stat-lbl">Absent</span>
+        </div>
+        <div class="gauge-stat-item">
+          <span class="gauge-stat-num">${stats.conducted}</span>
+          <span class="gauge-stat-lbl">Total</span>
+        </div>
+      </div>
+      ${alertHtml}
+      <div style="display:flex; gap:6px; justify-content:center; margin-top:8px;">
+        <button class="subj-action-btn" onclick="openEditSubjectModal('${subj.id}')" title="Edit" style="font-size:0.75rem; padding:4px 8px;">✏️ Edit</button>
+        <button class="subj-action-btn" onclick="triggerDeleteSubject('${subj.id}','${subj.name}')" title="Delete" style="font-size:0.75rem; padding:4px 8px;">🗑️</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+
+/* ══════════════════════════════════════════════════
    RENDER: REPORTS TAB
 ══════════════════════════════════════════════════ */
 function renderReportsTab() {
