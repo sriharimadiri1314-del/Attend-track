@@ -2,9 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Attendance Tracker | III B.Tech CSE-AI</title>
-  <meta name="description" content="Smart attendance tracker for III B.Tech CSE-AI — Visvodaya Institute of Technology & Science" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AttendTrack | III B.Tech CSE-AI</title>
+  <meta name="description" content="Smart attendance tracker for III B.Tech CSE-AI — Visvodaya Institute of Technology &amp; Science" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#4476f5" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AttendTrack" />
+  <meta name="application-name" content="AttendTrack" />
+  <meta name="msapplication-TileColor" content="#4476f5" />
+
+  <!-- App Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap" rel="stylesheet" />
@@ -2405,5 +2424,72 @@ if (savedRoll) {
   showRollOverlay();
 }
 </script>
+
+<!-- ══ PWA: SERVICE WORKER + INSTALL BANNER ══ -->
+<div id="pwaInstallBanner" style="
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;
+  background:#fff; border-top:1px solid #e5e7eb;
+  box-shadow:0 -4px 24px rgba(0,0,0,0.12);
+  padding:16px 20px; align-items:center; gap:12px;
+  animation: slideUp 0.4s ease;
+">
+  <img src="icon-192.png" style="width:44px;height:44px;border-radius:12px;flex-shrink:0;" alt="AttendTrack icon" />
+  <div style="flex:1;">
+    <div style="font-size:0.9rem;font-weight:800;color:#1a1a2e;">Install AttendTrack</div>
+    <div style="font-size:0.72rem;color:#6b7280;margin-top:2px;">Add to home screen — works offline!</div>
+  </div>
+  <button id="pwaInstallBtn" style="
+    background:#4476f5; color:#fff; border:none; border-radius:10px;
+    padding:10px 18px; font-size:0.82rem; font-weight:800; cursor:pointer;
+    white-space:nowrap;
+  ">⬇ Install</button>
+  <button onclick="document.getElementById('pwaInstallBanner').style.display='none'" style="
+    background:none;border:none;color:#9ca3af;font-size:1.2rem;cursor:pointer;
+    padding:4px;
+  ">✕</button>
+</div>
+<style>
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  #pwaInstallBanner { display:none; }
+  #pwaInstallBanner.show { display:flex !important; }
+</style>
+
+<script>
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/attendance-tracker/sw.js')
+        .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+        .catch(err => console.log('[PWA] SW registration failed:', err));
+    });
+  }
+
+  // Install Prompt (Android Chrome)
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    // Show banner after 3 seconds
+    setTimeout(() => {
+      document.getElementById('pwaInstallBanner').classList.add('show');
+    }, 3000);
+  });
+
+  document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    console.log('[PWA] Install outcome:', outcome);
+    deferredInstallPrompt = null;
+    document.getElementById('pwaInstallBanner').classList.remove('show');
+  });
+
+  // Hide banner if already installed
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('pwaInstallBanner').classList.remove('show');
+    showToast('✅ AttendTrack installed!', 'success');
+  });
+</script>
+
 </body>
 </html>

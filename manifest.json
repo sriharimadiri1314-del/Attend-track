@@ -1,0 +1,44 @@
+{
+  "name": "AttendTrack — III B.Tech CSE-AI",
+  "short_name": "AttendTrack",
+  "description": "Track your college attendance for III B.Tech CSE-AI at Visvodaya ITS",
+  "start_url": "/attendance-tracker/",
+  "scope": "/attendance-tracker/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f9fc",
+  "theme_color": "#4476f5",
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Mark Today's Attendance",
+      "short_name": "Today",
+      "description": "Jump to today's attendance",
+      "url": "/attendance-tracker/?tab=daily",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "View Reports",
+      "short_name": "Reports",
+      "description": "See full semester report",
+      "url": "/attendance-tracker/?tab=reports",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
