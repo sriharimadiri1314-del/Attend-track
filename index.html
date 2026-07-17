@@ -978,6 +978,66 @@
     }
     .about-card h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 4px; }
     .about-card p  { font-size: 0.73rem; opacity: 0.8; line-height: 1.5; }
+
+    /* STUDENT DETAILS CARD */
+    .student-details-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin-bottom:14px; box-shadow:var(--shadow-sm); }
+    .sd-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .sd-title { font-size:1rem; font-weight:800; color:var(--text); }
+    .sd-badge { background:var(--primary); color:#fff; font-size:0.68rem; font-weight:800; padding:4px 12px; border-radius:50px; }
+    .sd-profile-row { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+    .sd-avatar { width:56px; height:56px; background:linear-gradient(135deg,#4476f5,#6356f5); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; box-shadow:0 4px 12px rgba(68,118,245,.3); }
+    .sd-name { font-size:1.1rem; font-weight:800; color:var(--text); margin-bottom:2px; }
+    .sd-roll { font-size:0.72rem; color:var(--primary); font-weight:700; }
+    .sd-dept { font-size:0.68rem; color:var(--muted); margin-top:1px; }
+    .sd-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .sd-info-item { background:var(--bg); border-radius:var(--radius-sm); padding:10px 12px; }
+    .sd-info-label { font-size:0.62rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px; }
+    .sd-info-val { font-size:0.82rem; font-weight:700; color:var(--text); }
+
+    /* HORIZONTAL STAT CHIPS */
+    .stat-chips-scroll { display:flex; gap:10px; overflow-x:auto; padding:2px 0 6px; scrollbar-width:none; margin-bottom:14px; }
+    .stat-chips-scroll::-webkit-scrollbar { display:none; }
+    .stat-chip { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; min-width:130px; display:flex; align-items:center; gap:12px; box-shadow:var(--shadow-sm); flex-shrink:0; }
+    .chip-icon-ring { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+    .chip-icon-ring.blue   { background:#dbeafe; }
+    .chip-icon-ring.green  { background:#dcfce7; }
+    .chip-icon-ring.orange { background:#fef3c7; }
+    .chip-icon-ring.red    { background:#fee2e2; }
+    .chip-big { display:block; font-size:1.15rem; font-weight:800; color:var(--text); line-height:1.1; }
+    .chip-lbl { display:block; font-size:0.67rem; color:var(--muted); font-weight:600; margin-top:2px; line-height:1.3; }
+
+    /* TWO-COL LAYOUT */
+    .two-col-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+    .two-col-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; box-shadow:var(--shadow-sm); }
+    .tc-label { font-size:0.72rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:2px; }
+    .tc-sub   { font-size:0.62rem; color:var(--muted); margin-bottom:8px; display:block; }
+    .tc-big   { font-size:1.6rem; font-weight:800; color:var(--text); display:block; line-height:1; }
+    .tc-unit  { font-size:0.7rem; color:var(--muted); font-weight:600; }
+    .tc-tag   { display:inline-block; font-size:0.6rem; font-weight:800; padding:3px 8px; border-radius:50px; margin-top:6px; }
+    .tc-tag.good   { background:var(--green-bg);  color:var(--green-text); }
+    .tc-tag.warn   { background:var(--orange-bg); color:var(--orange-text); }
+    .tc-tag.danger { background:var(--red-bg);    color:var(--red-text); }
+    .tc-tag.blue   { background:var(--blue-bg);   color:var(--blue-text); }
+
+    /* SUMMARY BARS */
+    .summary-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; box-shadow:var(--shadow-sm); margin-bottom:14px; }
+    .summary-title { font-size:0.88rem; font-weight:800; color:var(--text); margin-bottom:14px; }
+    .summary-bars-row { display:flex; gap:12px; align-items:flex-end; height:130px; }
+    .summary-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; height:100%; }
+    .summary-bar-col  { flex:1; width:100%; display:flex; flex-direction:column; justify-content:flex-end; }
+    .summary-bar-fill { width:100%; border-radius:8px 8px 0 0; min-height:6px; transition:height .5s ease; }
+    .summary-bar-fill.present  { background:var(--primary); }
+    .summary-bar-fill.absent   { background:var(--green); }
+    .summary-bar-fill.holiday  { background:var(--orange); }
+    .summary-bar-fill.cancelled{ background:var(--red); }
+    .summary-bar-label { font-size:0.6rem; color:var(--muted); font-weight:700; text-align:center; }
+    .summary-bar-num   { font-size:1rem; font-weight:800; color:var(--text); }
+
+    /* MONTHLY CHART CARD */
+    .month-chart-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; box-shadow:var(--shadow-sm); margin-bottom:14px; }
+    .month-chart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .month-chart-title { font-size:0.88rem; font-weight:800; color:var(--text); }
+    .month-chart-sub   { font-size:0.68rem; color:var(--muted); font-weight:600; }
   </style>
 </head>
 <body>
@@ -1085,117 +1145,148 @@
     <!-- ══ TAB: DASHBOARD ══ -->
     <div class="tab-content active" id="tabContent_dashboard">
 
-      <!-- Student Profile Card -->
-      <div class="profile-card">
-        <div class="profile-top">
-          <div class="profile-avatar">👤</div>
+      <!-- STUDENT DETAILS CARD -->
+      <div class="student-details-card">
+        <div class="sd-header">
+          <span class="sd-title">Student Details</span>
+          <span class="sd-badge">I-SEM 2026</span>
+        </div>
+        <div class="sd-profile-row">
+          <div class="sd-avatar">👤</div>
           <div>
-            <div class="profile-name" id="profileName">Student</div>
-            <div class="profile-roll" id="profileRoll">—</div>
-            <div class="profile-dept">III B.Tech CSE-AI • Visvodaya ITS</div>
+            <div class="sd-name" id="profileName">Student</div>
+            <div class="sd-roll" id="profileRoll">Roll No: —</div>
+            <div class="sd-dept">III B.Tech CSE-AI · Visvodaya ITS</div>
           </div>
         </div>
-        <div class="profile-meta-row">
-          <div class="profile-meta-chip">
-            <span class="pmc-val" id="overallPctValue">—</span>
-            <span class="pmc-lbl">OVERALL %</span>
+        <div class="sd-info-grid">
+          <div class="sd-info-item">
+            <div class="sd-info-label">Department</div>
+            <div class="sd-info-val">CSE - AI</div>
           </div>
-          <div class="profile-meta-chip">
-            <span class="pmc-val" id="overallPresentCount">0</span>
-            <span class="pmc-lbl">PRESENT</span>
+          <div class="sd-info-item">
+            <div class="sd-info-label">Year</div>
+            <div class="sd-info-val">III B.Tech</div>
           </div>
-          <div class="profile-meta-chip">
-            <span class="pmc-val" id="overallAbsentCount">0</span>
-            <span class="pmc-lbl">ABSENT</span>
+          <div class="sd-info-item">
+            <div class="sd-info-label">Section</div>
+            <div class="sd-info-val">Fire Flies 🔥</div>
+          </div>
+          <div class="sd-info-item">
+            <div class="sd-info-label">Overall %</div>
+            <div class="sd-info-val" id="overallPctValue">—</div>
           </div>
         </div>
       </div>
 
-      <!-- Hidden SVG ring for compatibility -->
+      <!-- hidden compat SVG -->
       <svg style="display:none"><circle id="overallRingCircle" /></svg>
 
-      <!-- Stat Mini Cards -->
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-icon blue">📅</div>
+      <!-- HORIZONTAL STAT CHIPS -->
+      <div class="stat-chips-scroll">
+        <div class="stat-chip">
+          <div class="chip-icon-ring blue">📅</div>
           <div>
-            <span class="stat-val" id="overallTotalLabel">0</span>
-            <span class="stat-lbl">Total Periods</span>
+            <span class="chip-big" id="overallTotalLabel">0</span>
+            <span class="chip-lbl">Total<br>Attendance</span>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon green">✅</div>
+        <div class="stat-chip">
+          <div class="chip-icon-ring green">✅</div>
           <div>
-            <span class="stat-val" id="todayPresentCount">0/0</span>
-            <span class="stat-lbl">Today's Ratio</span>
+            <span class="chip-big" id="overallPresentCount">0</span>
+            <span class="chip-lbl">Present<br>Classes</span>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon blue">📊</div>
+        <div class="stat-chip">
+          <div class="chip-icon-ring orange">⏰</div>
           <div>
-            <span class="stat-val" id="monthPresentPct">—</span>
-            <span class="stat-lbl">This Month %</span>
+            <span class="chip-big" id="todayPresentCount">0/0</span>
+            <span class="chip-lbl">Today's<br>Ratio</span>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon orange">📋</div>
+        <div class="stat-chip">
+          <div class="chip-icon-ring red">❌</div>
           <div>
-            <span class="stat-val" id="monthPresentRatio">0/0</span>
-            <span class="stat-lbl">Month Periods</span>
+            <span class="chip-big" id="overallAbsentCount">0</span>
+            <span class="chip-lbl">Total<br>Absent</span>
           </div>
         </div>
       </div>
 
-      <!-- Attendance Rate Row -->
-      <div class="rate-row">
-        <div class="rate-card">
-          <div class="rate-label">Attendance Rate</div>
-          <span class="rate-tag green" id="rateStatusTag">Safe Zone</span>
-          <span class="rate-big" id="rateVal">—</span>
-          <span class="rate-sub" id="overallTotalSubLabel">of total classes</span>
+      <!-- TWO-COL: CLASS DAYS + ATTENDANCE RATE -->
+      <div class="two-col-row">
+        <div class="two-col-card">
+          <div class="tc-label">Class Days</div>
+          <span class="tc-sub">Conducted so far</span>
+          <span class="tc-big" id="classDaysTotal">0</span><span class="tc-unit"> Days</span>
+          <br>
+          <span class="tc-tag blue">Semester</span>
         </div>
-        <div class="rate-card">
-          <div class="rate-label">Class Days</div>
-          <span class="rate-tag blue">Semester</span>
-          <span class="rate-big" id="classDaysTotal">0</span>
-          <span class="rate-sub">total class days</span>
+        <div class="two-col-card">
+          <div class="tc-label">Attendance Rate</div>
+          <span class="tc-sub" id="overallTotalSubLabel">of total classes</span>
+          <span class="tc-big" id="rateVal">—</span>
+          <br>
+          <span class="tc-tag good" id="rateStatusTag">Safe Zone</span>
+          <div style="margin-top:10px;">
+            <div style="font-size:0.65rem; color:var(--muted); font-weight:700; margin-bottom:3px;">This Month</div>
+            <div style="font-size:0.9rem; font-weight:800; color:var(--primary);" id="monthPresentPct">—</div>
+            <div style="font-size:0.65rem; color:var(--muted);" id="monthPresentRatio">0/0 periods</div>
+          </div>
         </div>
       </div>
 
-      <!-- Monthly Bar Chart -->
-      <div class="card" style="margin-bottom:14px;">
-        <div class="sec-title">📈 Monthly Rate</div>
+      <!-- MONTHLY RATE CHART -->
+      <div class="month-chart-card">
+        <div class="month-chart-header">
+          <span class="month-chart-title">📈 Monthly Rate</span>
+          <span class="month-chart-sub">Tap month to see details</span>
+        </div>
         <div class="month-chart-wrap" id="trendChartContainer">
           <!-- generated by JS -->
         </div>
       </div>
 
-      <!-- Breakdown Summary -->
-      <div class="card">
-        <div class="sec-title">📋 Attendance Breakdown</div>
-        <!-- Compact row -->
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <div style="flex:1; min-width:100px; background:var(--green-bg); border-radius:var(--radius-sm); padding:12px; text-align:center;">
-            <div style="font-size:1.3rem; font-weight:800; color:var(--green-text);" id="breakdownVal_present">0</div>
-            <div style="font-size:0.68rem; color:var(--green-text); font-weight:700; margin-top:2px;">Present</div>
+      <!-- SUMMARY BARS (Oakridge vertical bar style) -->
+      <div class="summary-card">
+        <div class="summary-title" id="summaryTitle">📊 Summary — <span id="summaryRollLabel">Student</span></div>
+        <div class="summary-bars-row">
+          <div class="summary-bar-wrap">
+            <div class="summary-bar-num" id="breakdownVal_present">0</div>
+            <div class="summary-bar-col">
+              <div class="summary-bar-fill present" id="summaryBar_present" style="height:4px;"></div>
+            </div>
+            <div class="summary-bar-label">Present</div>
           </div>
-          <div style="flex:1; min-width:100px; background:var(--red-bg); border-radius:var(--radius-sm); padding:12px; text-align:center;">
-            <div style="font-size:1.3rem; font-weight:800; color:var(--red-text);" id="breakdownVal_absent">0</div>
-            <div style="font-size:0.68rem; color:var(--red-text); font-weight:700; margin-top:2px;">Absent</div>
+          <div class="summary-bar-wrap">
+            <div class="summary-bar-num" id="breakdownVal_absent">0</div>
+            <div class="summary-bar-col">
+              <div class="summary-bar-fill absent" id="summaryBar_absent" style="height:4px;"></div>
+            </div>
+            <div class="summary-bar-label">Absent</div>
           </div>
-          <div style="flex:1; min-width:100px; background:var(--blue-bg); border-radius:var(--radius-sm); padding:12px; text-align:center;">
-            <div style="font-size:1.3rem; font-weight:800; color:var(--blue-text);" id="breakdownVal_holiday">0</div>
-            <div style="font-size:0.68rem; color:var(--blue-text); font-weight:700; margin-top:2px;">Holiday</div>
+          <div class="summary-bar-wrap">
+            <div class="summary-bar-num" id="breakdownVal_holiday">0</div>
+            <div class="summary-bar-col">
+              <div class="summary-bar-fill holiday" id="summaryBar_holiday" style="height:4px;"></div>
+            </div>
+            <div class="summary-bar-label">Holiday</div>
           </div>
-          <div style="flex:1; min-width:100px; background:var(--orange-bg); border-radius:var(--radius-sm); padding:12px; text-align:center;">
-            <div style="font-size:1.3rem; font-weight:800; color:var(--orange-text);" id="breakdownVal_cancelled">0</div>
-            <div style="font-size:0.68rem; color:var(--orange-text); font-weight:700; margin-top:2px;">Cancelled</div>
+          <div class="summary-bar-wrap">
+            <div class="summary-bar-num" id="breakdownVal_cancelled">0</div>
+            <div class="summary-bar-col">
+              <div class="summary-bar-fill cancelled" id="summaryBar_cancelled" style="height:4px;"></div>
+            </div>
+            <div class="summary-bar-label">Cancelled</div>
           </div>
         </div>
-        <!-- hidden donut for JS compat -->
-        <div id="breakdownPieChart" style="display:none;"></div>
       </div>
+
+      <!-- hidden compat -->
+      <div id="breakdownPieChart" style="display:none;"></div>
     </div><!-- /dashboard tab -->
+
 
     <!-- ══ TAB: DAILY ══ -->
     <div class="tab-content" id="tabContent_daily">
@@ -1681,32 +1772,46 @@ function renderDashboard() {
   document.getElementById('overallPctValue').textContent  = pctStr;
   document.getElementById('overallPresentCount').textContent = globalStats.totalPresent;
   document.getElementById('overallAbsentCount').textContent  = globalStats.totalAbsent;
+  const summaryRollEl = document.getElementById('summaryRollLabel');
+  if (summaryRollEl) summaryRollEl.textContent = currentRollNumber || 'Student';
 
-  // Stat cards
+  // Stat chips
   document.getElementById('overallTotalLabel').textContent = globalStats.totalConducted;
   document.getElementById('todayPresentCount').textContent  = `${globalStats.todayPresent}/${globalStats.todayConducted}`;
   document.getElementById('monthPresentPct').textContent    = globalStats.monthPct;
-  document.getElementById('monthPresentRatio').textContent  = globalStats.monthRatio;
+  document.getElementById('monthPresentRatio').textContent  = globalStats.monthRatio + ' periods';
 
-  // Rate row
+  // Attendance rate card
   document.getElementById('rateVal').textContent = pctStr;
   const rateTag = document.getElementById('rateStatusTag');
   if (pct >= 75) {
-    rateTag.textContent = 'Safe Zone'; rateTag.className = 'rate-tag green';
+    rateTag.textContent = '✔ Safe Zone'; rateTag.className = 'tc-tag good';
   } else if (pct >= 65) {
-    rateTag.textContent = 'Warning';   rateTag.className = 'rate-tag orange';
+    rateTag.textContent = '⚠ Warning';   rateTag.className = 'tc-tag warn';
   } else {
-    rateTag.textContent = 'At Risk';   rateTag.className = 'rate-tag red';
+    rateTag.textContent = '✖ At Risk';   rateTag.className = 'tc-tag danger';
   }
-  document.getElementById('overallTotalSubLabel').textContent = `of ${globalStats.totalConducted} total classes`;
+  document.getElementById('overallTotalSubLabel').textContent = `of ${globalStats.totalConducted} classes`;
   const classDays = allDays.filter(d => !isDayInFuture(d.fullDate)).length;
   document.getElementById('classDaysTotal').textContent = classDays;
 
-  // Breakdown chips
+  // Breakdown nums
   document.getElementById('breakdownVal_present').textContent   = globalStats.totalPresent;
   document.getElementById('breakdownVal_absent').textContent    = globalStats.totalAbsent;
   document.getElementById('breakdownVal_holiday').textContent   = globalStats.totalHoliday;
   document.getElementById('breakdownVal_cancelled').textContent = globalStats.totalCancelled;
+
+  // Animated summary bars
+  const barMax = Math.max(globalStats.totalPresent, globalStats.totalAbsent, globalStats.totalHoliday, globalStats.totalCancelled, 1);
+  const barContainer = 100; // 100% of column height
+  ['present','absent','holiday','cancelled'].forEach(key => {
+    const bar = document.getElementById(`summaryBar_${key}`);
+    if (!bar) return;
+    const val = globalStats[`total${key.charAt(0).toUpperCase()+key.slice(1)}`] || 0;
+    const pctH = Math.max(6, Math.round((val / barMax) * 100));
+    bar.style.height = pctH + '%';
+  });
+
 
   // Monthly chart (Oakridge bubble style)
   const trendContainer = document.getElementById('trendChartContainer');
