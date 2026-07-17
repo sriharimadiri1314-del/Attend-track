@@ -1483,21 +1483,20 @@ const defaultSubjects = [
   { id: 'subj_cvnlp_lab',  name: 'CV & NLP LAB',                          code: 'L' },
   { id: 'subj_aisp_lab',   name: 'AI & SYS PROGRAMMING LAB',              code: 'A' },
   { id: 'subj_fsd_lab',    name: 'FSD II SOC LAB',                        code: 'F' },
-  { id: 'subj_soft_skills',name: 'SOFT SKILLS',                           code: 'S' },
-  { id: 'subj_association', name: 'ASSOCIATION ACTIVITIES',               code: 'M' }
+  { id: 'subj_soft_skills',name: 'SOFT SKILLS',                           code: 'S' }
 ];
 
-/* Official timetable — 4 class slots per day (each slot = 2 merged periods)
+/* Official timetable — 3–4 class slots per day (Association removed)
    Slot 1 (9:00–10:30):  MON:ESPS  TUE:OSSP      WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP LAB
-   Slot 2 (10:45–12:15): MON:CVIP  TUE:ASSOC     WED:IQTA         THU:CVIP       FRI:ASSOC
-   Slot 3 (1:15–2:45):   MON:NLP   TUE:IQTA      WED:NLP          THU:ESPS       FRI:OSSP
-   Slot 4 (2:55–4:25):   MON:SS    TUE:AISP LAB  WED:ASSOC        THU:DV         FRI:DV */
+   Slot 2 (10:45–12:15): MON:CVIP  TUE:IQTA      WED:IQTA         THU:CVIP       FRI:OSSP
+   Slot 3 (1:15–2:45):   MON:NLP   TUE:AISP LAB  WED:NLP          THU:ESPS       FRI:DV
+   Slot 4 (2:55–4:25):   MON:SS    —             —                THU:DV         —  */
 const weekdayDefaultSubjects = {
-  1: ['subj_esps','subj_cvip','subj_nlp','subj_soft_skills'],
-  2: ['subj_ossp','subj_association','subj_iqta','subj_aisp_lab'],
-  3: ['subj_soft_skills','subj_iqta','subj_nlp','subj_association'],
-  4: ['subj_fsd_lab','subj_cvip','subj_esps','subj_dv'],
-  5: ['subj_cvnlp_lab','subj_association','subj_ossp','subj_dv'],
+  1: ['subj_esps','subj_cvip','subj_nlp','subj_soft_skills'],   // Mon: 4 slots
+  2: ['subj_ossp','subj_iqta','subj_aisp_lab'],                 // Tue: 3 slots (assoc removed)
+  3: ['subj_soft_skills','subj_iqta','subj_nlp'],               // Wed: 3 slots (assoc removed)
+  4: ['subj_fsd_lab','subj_cvip','subj_esps','subj_dv'],        // Thu: 4 slots
+  5: ['subj_cvnlp_lab','subj_ossp','subj_dv'],                  // Fri: 3 slots (assoc removed)
   6: []
 };
 
@@ -1882,11 +1881,19 @@ function renderDailyTab() {
     return;
   }
 
-  const isFuture   = isDayInFuture(selectedDateStr);
+  const isFuture    = isDayInFuture(selectedDateStr);
   const defaultList = getDefaultSubjectsForDay(currentDayInfo);
-  const records    = dailyRecords[selectedDateStr] || {};
+  const records     = dailyRecords[selectedDateStr] || {};
 
-  for (let p = 1; p <= currentDayInfo.periods; p++) {
+  // Use fewer periods if the timetable for this day has fewer slots than
+  // the calendar default (e.g. Tue/Wed/Fri have 3 slots after removing Association).
+  // MID exam days (periods:2) stay capped at 2 regardless of timetable.
+  const numPeriods = Math.min(
+    defaultList.length > 0 ? defaultList.length : currentDayInfo.periods,
+    currentDayInfo.periods
+  );
+
+  for (let p = 1; p <= numPeriods; p++) {
     const record          = records[p] || {};
     const activeSubjectId = record.subjectId || defaultList[p - 1] || (subjects[0] ? subjects[0].id : '');
     const activeStatus    = record.status || '';
