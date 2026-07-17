@@ -1193,15 +1193,147 @@
     .participation-bar-fill.high   { background: #4476f5; }
     .participation-bar-fill.medium { background: #f59e0b; }
     .participation-bar-fill.low    { background: #ef4444; }
-    .participation-pct {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--subtext);
-      width: 38px;
-      flex-shrink: 0;
-      text-align: left;
     }
 
+    /* ══════════════════════════════
+       DESKTOP RESPONSIVE LAYOUT (Dual Mode)
+       - Laptop/Desktop: Left Sidebar layout
+       - Mobile/Tablet: Native Bottom Nav app shell
+    ══════════════════════════════ */
+    .sidebar-header { display: none; }
+
+    @media (min-width: 768px) {
+      body {
+        background: #f8fafc;
+      }
+      .app-shell {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        grid-template-rows: var(--header-h) 1fr;
+        grid-template-areas:
+          "sidebar header"
+          "sidebar main";
+        max-width: none;
+        margin: 0;
+        min-height: 100vh;
+        height: 100vh;
+        box-shadow: none;
+      }
+
+      .app-header {
+        grid-area: header;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        height: var(--header-h);
+        z-index: 100;
+        /* Hide logo wrap on desktop since it is in the sidebar */
+        .header-logo-wrap { display: none; }
+      }
+
+      .app-scroll {
+        grid-area: main;
+        height: calc(100vh - var(--header-h));
+        overflow-y: auto;
+        padding-bottom: 24px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .tab-content {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px 16px;
+      }
+
+      /* Transform Bottom Navigation to Sidebar */
+      .bottom-nav {
+        grid-area: sidebar;
+        position: sticky;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        height: 100vh;
+        width: 240px;
+        max-width: none;
+        transform: none;
+        background: #fff;
+        border-top: none;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        padding: 24px 16px;
+        gap: 8px;
+        z-index: 200;
+      }
+
+      .sidebar-header {
+        display: block;
+        padding-bottom: 20px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      /* Sidebar navigation items */
+      .nav-btn {
+        flex: none;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        height: auto;
+        border-radius: var(--radius-md);
+        width: 100%;
+        color: var(--muted);
+      }
+      .nav-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+      .nav-btn-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .nav-btn.active {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+      .nav-btn.active .nav-btn-icon-wrap {
+        background: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* Custom Desktop layout adjustments */
+      .gauge-grid {
+        grid-template-columns: 1fr 1fr 1fr; /* 3 columns on wider screens */
+      }
+      
+      /* Toast position on desktop */
+      #toast-container {
+        bottom: 24px;
+        right: 24px;
+        left: auto;
+        transform: none;
+      }
+
+      /* PWA banner desktop style */
+      #pwaInstallBanner {
+        bottom: 24px;
+        right: 24px;
+        left: auto;
+        transform: none !important;
+        width: 360px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
+      }
+    }
   </style>
 </head>
 <body>
@@ -1575,8 +1707,20 @@
 
   </div><!-- /app-scroll -->
 
-  <!-- BOTTOM NAVIGATION -->
+  <!-- BOTTOM NAVIGATION / DESKTOP SIDEBAR -->
   <nav class="bottom-nav" aria-label="Main Navigation">
+
+    <!-- Sidebar Header (Desktop only) -->
+    <div class="sidebar-header">
+      <div class="header-logo-wrap" style="margin-bottom: 4px;">
+        <div class="header-logo-icon">🎓</div>
+        <div>
+          <div class="header-app-name" style="font-size: 0.95rem;">AttendTrack</div>
+          <div class="header-app-sub" style="font-size: 0.68rem;">III B.Tech CSE-AI</div>
+        </div>
+      </div>
+    </div>
+
 
     <button class="nav-btn active" id="navBtn_dashboard" onclick="switchTab('dashboard')">
       <div class="nav-btn-icon-wrap">
