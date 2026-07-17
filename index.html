@@ -3114,6 +3114,11 @@
               modified = true;
             }
           });
+          const originalLength = subjects.length;
+          subjects = subjects.filter(s => s && !s.name.toUpperCase().includes('SOFT SKILLS') && !s.name.toUpperCase().includes('ASSOCIATION ACTIVITIES'));
+          if (subjects.length !== originalLength) {
+            modified = true;
+          }
           if (modified) {
             localStorage.setItem('att_subjects', JSON.stringify(subjects));
           }
