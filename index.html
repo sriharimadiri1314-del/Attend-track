@@ -3614,9 +3614,6 @@
             let newStatus = status;
             if (dailyRecords[selectedDateStr][periodNum].status === status) {
                 newStatus = '';
-                showToast(`Period ${periodNum} cleared`, 'info');
-            } else {
-                showToast(`Period ${periodNum}: ${status.toUpperCase()}`, 'success');
             }
             
             dailyRecords[selectedDateStr][periodNum].status = newStatus;
