@@ -4,13 +4,13 @@
    - Serves cached content when network is unavailable
 ══════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'attendtrack-v3';
+const CACHE_NAME = 'attendtrack-v4';
 const ASSETS = [
-  './',
-  'index.html',
-  'manifest.json',
-  'icon-192.png',
-  'icon-512.png',
+  '/Attend-track/',
+  '/Attend-track/index.html',
+  '/Attend-track/manifest.json',
+  '/Attend-track/icon-192.png',
+  '/Attend-track/icon-512.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap'
 ];
 
@@ -56,7 +56,7 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
         // Offline fallback for navigation
         if (event.request.destination === 'document') {
-          return caches.match('index.html');
+          return caches.match('/Attend-track/index.html');
         }
       });
     })
