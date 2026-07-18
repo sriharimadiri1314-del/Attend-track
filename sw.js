@@ -6,11 +6,11 @@
 
 const CACHE_NAME = 'attendtrack-v2';
 const ASSETS = [
-  '/attendance-tracker/',
-  '/attendance-tracker/index.html',
-  '/attendance-tracker/manifest.json',
-  '/attendance-tracker/icon-192.png',
-  '/attendance-tracker/icon-512.png',
+  '/Attend-track/',
+  '/Attend-track/index.html',
+  '/Attend-track/manifest.json',
+  '/Attend-track/icon-192.png',
+  '/Attend-track/icon-512.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap'
 ];
 
@@ -56,7 +56,7 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
         // Offline fallback for navigation
         if (event.request.destination === 'document') {
-          return caches.match('/attendance-tracker/index.html');
+          return caches.match('/Attend-track/index.html');
         }
       });
     })
