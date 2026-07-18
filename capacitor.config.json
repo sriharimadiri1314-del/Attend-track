@@ -1,0 +1,5 @@
+{
+  "appId": "com.attendtrack.app",
+  "appName": "AttendTrack",
+  "webDir": "dist"
+}

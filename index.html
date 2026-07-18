@@ -372,6 +372,7 @@
             color: var(--muted);
         }
 
+        .prefix-option.active,
         .prefix-option:has(input:checked) {
             border-color: var(--primary);
             background: var(--primary-light);
@@ -490,6 +491,16 @@
         .roll-chip:hover {
             background: var(--primary);
             color: #fff;
+        }
+
+        .status-pill:active,
+        .btn:active,
+        .date-nav-btn:active,
+        .nav-btn:active,
+        .add-subj-btn:active,
+        .roll-submit-btn:active,
+        .roll-chip:active {
+            transform: scale(0.95);
         }
 
         .roll-submit-btn {
@@ -1190,7 +1201,6 @@
             background: var(--bg);
             border-radius: var(--radius-sm);
             border: 1.5px solid var(--border);
-            padding: 9px 30px 9px 12px;
             margin-bottom: 10px;
             transition: var(--transition);
         }
@@ -1203,7 +1213,7 @@
         .subject-select-wrap::after {
             content: '▾';
             position: absolute;
-            right: 10px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--muted);
@@ -1220,6 +1230,10 @@
             font-weight: 600;
             color: var(--text);
             cursor: pointer;
+            padding: 9px 30px 9px 12px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .status-pills {
@@ -2478,7 +2492,7 @@
             <p>Your data is saved per roll number — multiple students can use this on the same device.</p>
 
             <div class="prefix-options-wrap">
-                <label class="prefix-option">
+                <label class="prefix-option active">
                     <input type="radio" name="rollPrefix" value="2473A31" checked
                         onchange="updatePrefixSelection('2473A31')">
                     2473A31___ (Reg)
@@ -3062,6 +3076,16 @@
         function updatePrefixSelection(val) {
             selectedPrefix = val;
             document.getElementById('rollPrefixText').textContent = val;
+            
+            // Toggle active styling class for options manually to support older browsers without CSS :has()
+            document.querySelectorAll('.prefix-option').forEach(el => {
+                const radio = el.querySelector('input[type="radio"]');
+                if (radio && radio.value === val) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
             const suffixEl = document.getElementById('rollSuffix');
             const errorEl = document.getElementById('rollError');
             if (val === LATERAL_PREFIX) {
@@ -3586,15 +3610,39 @@
                 const selVal = document.getElementById(`subjSelect_${periodNum}`).value;
                 dailyRecords[selectedDateStr][periodNum] = { subjectId: selVal, status: '' };
             }
+            
+            let newStatus = status;
             if (dailyRecords[selectedDateStr][periodNum].status === status) {
-                dailyRecords[selectedDateStr][periodNum].status = '';
+                newStatus = '';
                 showToast(`Period ${periodNum} cleared`, 'info');
             } else {
-                dailyRecords[selectedDateStr][periodNum].status = status;
                 showToast(`Period ${periodNum}: ${status.toUpperCase()}`, 'success');
             }
+            
+            dailyRecords[selectedDateStr][periodNum].status = newStatus;
             saveRecords();
-            renderDailyTab();
+
+            // Direct DOM update instead of full page re-render for smooth CSS transitions
+            const selectEl = document.getElementById(`subjSelect_${periodNum}`);
+            if (selectEl) {
+                const card = selectEl.closest('.period-card');
+                if (card) {
+                    const pills = card.querySelectorAll('.status-pill');
+                    pills.forEach(pill => {
+                        let pillType = '';
+                        if (pill.classList.contains('present')) pillType = 'present';
+                        else if (pill.classList.contains('absent')) pillType = 'absent';
+                        else if (pill.classList.contains('holiday')) pillType = 'holiday';
+                        else if (pill.classList.contains('cancelled')) pillType = 'cancelled';
+                        
+                        if (pillType === newStatus) {
+                            pill.classList.add('active');
+                        } else {
+                            pill.classList.remove('active');
+                        }
+                    });
+                }
+            }
         }
 
 
@@ -3929,12 +3977,26 @@
         ══════════════════════════════════════════════════ */
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
+            
+            // Clear any existing toasts to prevent cluttered stacking/overlapping
+            container.innerHTML = '';
+            
             const t = document.createElement('div');
             t.className = `toast toast-${type}`;
             const icon = type === 'success' ? '✅' : type === 'danger' ? '🚨' : 'ℹ️';
             t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
             container.appendChild(t);
-            setTimeout(() => { t.classList.add('hide'); t.addEventListener('animationend', () => t.remove()); }, 3000);
+            
+            // Cancel any pending automatic dismissals
+            if (window.toastTimeout) {
+                clearTimeout(window.toastTimeout);
+            }
+            
+            // Automatically hide after 2.5 seconds
+            window.toastTimeout = setTimeout(() => {
+                t.classList.add('hide');
+                t.addEventListener('animationend', () => t.remove());
+            }, 2500);
         }
 
         /* ══════════════════════════════════════════════════
