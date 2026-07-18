@@ -4078,10 +4078,18 @@
         });
 
         document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
-            if (!deferredInstallPrompt) return;
-            deferredInstallPrompt.prompt();
-            const { outcome } = await deferredInstallPrompt.userChoice;
-            console.log('[PWA] Install outcome:', outcome);
+            if (!deferredInstallPrompt) {
+                showToast("Install prompt is not active. Try using the browser menu (⋮ -> Add to Home screen).", "info");
+                return;
+            }
+            try {
+                deferredInstallPrompt.prompt();
+                const { outcome } = await deferredInstallPrompt.userChoice;
+                console.log('[PWA] Install outcome:', outcome);
+            } catch (err) {
+                console.error('[PWA] Prompt failed:', err);
+                showToast("Install failed. Please use your browser menu instead.", "danger");
+            }
             deferredInstallPrompt = null;
             document.getElementById('pwaInstallBanner').classList.remove('show');
         });
