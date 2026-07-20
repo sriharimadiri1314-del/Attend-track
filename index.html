@@ -2282,6 +2282,16 @@
             padding-left: 0;
         }
 
+        /* PARTICIPATION PCT LABEL */
+        .participation-pct {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--subtext);
+            width: 38px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
         /* ══════════════════════════════
        DESKTOP RESPONSIVE LAYOUT (Dual Mode)
        - Laptop/Desktop: Left Sidebar layout
@@ -2318,11 +2328,11 @@
                 border-bottom: 1px solid var(--border);
                 height: var(--header-h);
                 z-index: 100;
+            }
 
-                /* Hide logo wrap on desktop since it is in the sidebar */
-                .header-logo-wrap {
-                    display: none;
-                }
+            /* Hide logo wrap on desktop since it is in the sidebar */
+            .app-header .header-logo-wrap {
+                display: none;
             }
 
             .app-scroll {
@@ -2932,57 +2942,73 @@
            DEFAULT CONFIGURED SUBJECTS (Official III B.Tech CSE-AI Timetable)
         ══════════════════════════════════════════════════ */
         const defaultSubjects = [
-            { id: 'subj_nlp', name: 'NLP', code: 'N' },
-            { id: 'subj_ossp', name: 'OSSP', code: 'O' },
-            { id: 'subj_cvip', name: 'CVIP', code: 'C' },
-            { id: 'subj_dv', name: 'DV', code: 'D' },
-            { id: 'subj_esps', name: 'ESPS', code: 'E' },
-            { id: 'subj_iqta', name: 'IQTA', code: 'Q' },
-            { id: 'subj_cvnlp_lab', name: 'CVNLP LAB', code: 'L' },
-            { id: 'subj_aisp_lab', name: 'AISP (LAB)', code: 'A' },
-            { id: 'subj_fsd_lab', name: 'FSD II LAB', code: 'F' }
+            { id: 'subj_nlp',           name: 'NATURAL LANGUAGE PROCESSING',                   code: 'NLP'  },
+            { id: 'subj_ossp',          name: 'OPERATING SYSTEMS & SYSTEM PROGRAMMING',        code: 'OSSP' },
+            { id: 'subj_cvip',          name: 'COMPUTER VISION & IMAGE PROCESSING',            code: 'CVIP' },
+            { id: 'subj_dv',            name: 'DATA VISUALIZATION',                            code: 'DV'   },
+            { id: 'subj_esps',          name: 'ELECTRICAL SAFETY, PRACTICES & STANDARDS',      code: 'ESPS' },
+            { id: 'subj_iqta',          name: 'INTRO TO QUANTUM TECHNOLOGY & APPLICATIONS',    code: 'IQTA' },
+            { id: 'subj_cvnlp_lab',     name: 'CV & NLP LAB',                                  code: 'CVNLP'},
+            { id: 'subj_aisp_lab',      name: 'AI & SYSTEM PROGRAMMING LAB',                  code: 'AISP' },
+            { id: 'subj_fsd_lab',       name: 'FULL STACK DEVELOPMENT II SOC LAB',             code: 'FSD'  },
+            { id: 'subj_tinkering_lab', name: 'TINKERING LAB',                                 code: 'TINK' },
+            { id: 'subj_soft_skills',   name: 'SOFT SKILLS',                                   code: 'SS'   },
+            { id: 'subj_coding',        name: 'CODING',                                        code: 'CODE' }
         ];
 
-        /* Official timetable — 3–4 class slots per day (Association removed)
-           Slot 1 (9:00–10:30):  MON:ESPS  TUE:OSSP      WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP LAB
-           Slot 2 (10:45–12:15): MON:CVIP  TUE:IQTA      WED:IQTA         THU:CVIP       FRI:OSSP
-           Slot 3 (1:15–2:45):   MON:NLP   TUE:AISP LAB  WED:NLP          THU:ESPS       FRI:DV
-           Slot 4 (2:55–4:25):   MON:SS    —             —                THU:DV         —  */
+        /* Official timetable — III B.Tech CSE-AI (I-SEM 2026-27) Fire Flies · Room C-203 · w.e.f. 29-06-2026
+           Each slot = 2 periods (45 min each). Slots 5+6 are special single-entry combined coding blocks.
+           Slot 1 (9:00–10:30):   MON:ESPS    TUE:—(coding in slot6) WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP/AISP LAB*
+           Slot 2 (10:45–12:15):  MON:CVIP    TUE:—(coding in slot6) WED:IQTA         THU:CVIP       FRI:IQTA
+           Slot 3 (1:15–2:45):    MON:—(coding in slot5) TUE:NLP   WED:NLP          THU:ESPS       FRI:OSSP
+           Slot 4 (2:55–4:25):    MON:—(coding in slot5) TUE:AISP* WED:DV           THU:OSSP       FRI:DV
+           Slot 5 (1:15–4:25):    MON:CODING  (full afternoon combined block)
+           Slot 6 (9:00–12:15):   TUE:CODING  (full morning combined block)
+           * Group 1 (roll ≤30 / lateral ≤06): FRI slot1 = CVNLP LAB, TUE slot4 = AISP LAB
+             Group 2 (roll >30  / lateral >06): FRI slot1 = AISP LAB,  TUE slot4 = CVNLP LAB  */
         const weekdayDefaultSubjects = {
             1: [
                 { slot: 1, id: 'subj_esps' },
                 { slot: 2, id: 'subj_cvip' },
-                { slot: 3, id: 'subj_nlp' }
+                { slot: 5, id: 'subj_coding' }
             ],
             2: [
-                { slot: 1, id: 'subj_ossp' },
-                { slot: 3, id: 'subj_iqta' },
+                { slot: 6, id: 'subj_coding' },
+                { slot: 3, id: 'subj_nlp' },
                 { slot: 4, id: 'subj_aisp_lab' }
             ],
             3: [
+                { slot: 1, id: 'subj_soft_skills' },
                 { slot: 2, id: 'subj_iqta' },
-                { slot: 3, id: 'subj_nlp' }
+                { slot: 3, id: 'subj_nlp' },
+                { slot: 4, id: 'subj_dv' }
             ],
             4: [
                 { slot: 1, id: 'subj_fsd_lab' },
                 { slot: 2, id: 'subj_cvip' },
                 { slot: 3, id: 'subj_esps' },
-                { slot: 4, id: 'subj_dv' }
+                { slot: 4, id: 'subj_ossp' }
             ],
             5: [
                 { slot: 1, id: 'subj_cvnlp_lab' },
+                { slot: 2, id: 'subj_iqta' },
                 { slot: 3, id: 'subj_ossp' },
                 { slot: 4, id: 'subj_dv' }
             ],
             6: []
         };
 
-        /* Fallback class slot time labels mapping slots 1-4 */
+        /* Class slot time labels
+           Slots 1-4: Standard double-period blocks
+           Slot 5:    Afternoon CODING block (Mon P5-P8, combined)
+           Slot 6:    Morning CODING block (Tue P1-P4, combined)  */
         const periodTimes = {
             1: { title: 'Period 1 & 2', time: '9:00 AM - 10:30 AM' },
             2: { title: 'Period 3 & 4', time: '10:45 AM - 12:15 PM' },
             3: { title: 'Period 5 & 6', time: '1:15 PM - 2:45 PM' },
-            4: { title: 'Period 7 & 8', time: '2:55 PM - 4:25 PM' }
+            4: { title: 'Period 7 & 8', time: '2:55 PM - 4:25 PM' },
+            5: { title: 'Coding (P5-P8)', time: '1:15 PM - 4:25 PM' },
+            6: { title: 'Coding (P1-P4)', time: '9:00 AM - 12:15 PM' }
         };
 
         function getStudentGroup(rollNumber) {
@@ -3181,40 +3207,31 @@
             if (storedSubjects) {
                 subjects = JSON.parse(storedSubjects);
 
-                // Auto-migrate old long subject names to new short names
+                // Sync name & code from defaultSubjects by ID so any rename in code flows to users automatically
                 let modified = false;
-                const migrationMap = {
-                    'NATURAL LANGUAGE PROCESSING (NLP)': 'NLP',
-                    'OPERATING SYSTEMS & SYS PROG (OSSP)': 'OSSP',
-                    'DATA VISUALIZATION (DV)': 'DV',
-                    'ELECTRICAL SAFETY & STANDARDS (ESPS)': 'ESPS',
-                    'ELECTRICAL SAFETY& PRACTICES AND STANDARDS': 'ESPS',
-                    'ELECTRICAL SAFETY & STANDARDS': 'ESPS',
-                    'ESSP': 'ESPS',
-                    'QUANTUM TECHNOLOGY & APPS (IQTA)': 'IQTA',
-                    'COMPUTER VISION & IMAGE PROC (CVIP)': 'CVIP',
-                    'COMPUTER VISION & IMAGE PROCESSING': 'CVIP',
-                    'CVNLP': 'CVIP',
-                    'CV & NLP LAB': 'CVNLP LAB',
-                    'AI & SYS PROGRAMMING LAB': 'AISP (LAB)',
-                    'FSD II SOC LAB': 'FSD II LAB',
-                    'FSD (LAB)': 'FSD II LAB',
-                    'COMPUTER VISION': 'CVIP',
-                    'DATA VISUALIZATION': 'DV',
-                    'CV & NLP (LAB)': 'CVNLP LAB'
-                };
                 if (Array.isArray(subjects)) {
                     subjects.forEach(s => {
-                        if (s && migrationMap[s.name]) {
-                            s.name = migrationMap[s.name];
+                        const def = defaultSubjects.find(d => d.id === s.id);
+                        if (def && (s.name !== def.name || s.code !== def.code)) {
+                            s.name = def.name;
+                            s.code = def.code;
                             modified = true;
                         }
                     });
                     const originalLength = subjects.length;
-                    subjects = subjects.filter(s => s && !s.name.toUpperCase().includes('SOFT SKILLS') && !s.name.toUpperCase().includes('ASSOCIATION ACTIVITIES'));
+                    subjects = subjects.filter(s => s && !s.name.toUpperCase().includes('ASSOCIATION ACTIVITIES'));
                     if (subjects.length !== originalLength) {
                         modified = true;
                     }
+
+                    // Auto-merge any missing default subjects
+                    defaultSubjects.forEach(defSub => {
+                        if (!subjects.some(s => s && s.id === defSub.id)) {
+                            subjects.push(defSub);
+                            modified = true;
+                        }
+                    });
+
                     if (modified) {
                         localStorage.setItem('att_subjects', JSON.stringify(subjects));
                     }
@@ -3226,7 +3243,39 @@
             const key = `att_records_${currentRollNumber}`;
             const storedRecords = localStorage.getItem(key);
             dailyRecords = storedRecords ? JSON.parse(storedRecords) : {};
-            // Loaded records.
+
+            // Migrate old double-CODING slots to new single combined slots
+            // Mon: old slots 3+4 → new slot 5 | Tue: old slots 1+2 → new slot 6
+            let recordsModified = false;
+            const statusPriority = { 'present': 3, 'absent': 2, 'holiday': 1, 'cancelled': 1, '': 0 };
+            allDays.forEach(day => {
+                const weekdayIdx = new Date(day.fullDate + 'T00:00:00').getDay();
+                const rec = dailyRecords[day.fullDate];
+                if (!rec) return;
+                if (weekdayIdx === 1) {
+                    // Monday: migrate slots 3 & 4 → slot 5
+                    if ((rec[3] || rec[4]) && !rec[5]) {
+                        const s3 = rec[3] || {}; const s4 = rec[4] || {};
+                        const bestStatus = (statusPriority[s3.status] || 0) >= (statusPriority[s4.status] || 0) ? s3.status : s4.status;
+                        rec[5] = { subjectId: 'subj_coding', status: bestStatus || '' };
+                        delete rec[3]; delete rec[4];
+                        recordsModified = true;
+                    }
+                } else if (weekdayIdx === 2) {
+                    // Tuesday: migrate slots 1 & 2 → slot 6
+                    if ((rec[1] || rec[2]) && !rec[6]) {
+                        const s1 = rec[1] || {}; const s2 = rec[2] || {};
+                        // Only migrate if slot 1 had CODING (not another subject)
+                        if (!s1.subjectId || s1.subjectId === 'subj_coding') {
+                            const bestStatus = (statusPriority[s1.status] || 0) >= (statusPriority[s2.status] || 0) ? s1.status : s2.status;
+                            rec[6] = { subjectId: 'subj_coding', status: bestStatus || '' };
+                            delete rec[1]; delete rec[2];
+                            recordsModified = true;
+                        }
+                    }
+                }
+            });
+            if (recordsModified) saveRecords();
         }
 
         function saveRecords() {
@@ -3510,21 +3559,60 @@
                 }
             }
 
-            renderSlots.forEach(slot => {
-                const p = slot.p;
+            // Group consecutive slots with the same active subject
+            const mergedSlots = [];
+            let i = 0;
+            while (i < renderSlots.length) {
+                const currentSlot = renderSlots[i];
+                const p = currentSlot.p;
                 const record = records[p] || {};
+                let activeSubjectId = record.subjectId !== undefined ? record.subjectId : currentSlot.defaultSubjectId;
 
-                let activeSubjectId = '';
-                if (record.subjectId !== undefined) {
-                    activeSubjectId = record.subjectId;
-                } else {
-                    activeSubjectId = slot.defaultSubjectId;
+                const periods = [p];
+                let nextIdx = i + 1;
+                while (nextIdx < renderSlots.length) {
+                    const nextSlot = renderSlots[nextIdx];
+                    const nextP = nextSlot.p;
+                    const nextRecord = records[nextP] || {};
+                    let nextActiveSubjectId = nextRecord.subjectId !== undefined ? nextRecord.subjectId : nextSlot.defaultSubjectId;
+
+                    if (nextActiveSubjectId === activeSubjectId && activeSubjectId !== '') {
+                        periods.push(nextP);
+                        nextIdx++;
+                    } else {
+                        break;
+                    }
                 }
 
-                const activeStatus = record.status || '';
-                const slotConfig = periodTimes[p] || { title: 'Period ' + p, time: '' };
-                const displayTitle = slotConfig.title;
-                const timeLabel = slotConfig.time;
+                mergedSlots.push({
+                    periods: periods,
+                    subjectId: activeSubjectId
+                });
+                i = nextIdx;
+            }
+
+            mergedSlots.forEach(slot => {
+                const periods = slot.periods;
+                const activeSubjectId = slot.subjectId;
+                const pKey = periods.join('_');
+
+                // Determine overall status for the merged group
+                const activeStatus = records[periods[0]]?.status || '';
+
+                const firstSlotConfig = periodTimes[periods[0]] || { title: 'Period ' + periods[0], time: '' };
+                const lastSlotConfig = periodTimes[periods[periods.length - 1]] || { title: 'Period ' + periods[periods.length - 1], time: '' };
+
+                let displayTitle = firstSlotConfig.title;
+                if (periods.length > 1) {
+                    displayTitle = firstSlotConfig.title.split(' & ')[0] + ' - ' + lastSlotConfig.title.split(' & ').slice(-1)[0];
+                }
+
+                let timeLabel = firstSlotConfig.time;
+                if (periods.length > 1) {
+                    const startTime = firstSlotConfig.time.split(' - ')[0];
+                    const endTime = lastSlotConfig.time.split(' - ')[1];
+                    timeLabel = `${startTime} - ${endTime}`;
+                }
 
                 const pCard = document.createElement('div');
                 pCard.className = 'period-card';
@@ -3536,22 +3624,22 @@
 
                 pCard.innerHTML = `
       <div class="period-header">
-        <div class="period-num-badge">${p}</div>
+        <div class="period-num-badge">${periods.length > 1 ? periods.join('-') : periods[0]}</div>
         <div class="period-header-text">
           <div class="period-num-label">${displayTitle}</div>
           <div class="period-time-label">${timeLabel}</div>
         </div>
       </div>
       <div class="subject-select-wrap">
-        <select class="subject-select" id="subjSelect_${p}" onchange="changePeriodSubject(${p}, this.value)" ${isFuture ? 'disabled' : ''}>
+        <select class="subject-select" id="subjSelect_${pKey}" onchange="changePeriodSubject('${pKey}', this.value)" ${isFuture ? 'disabled' : ''}>
           ${selectOptions}
         </select>
       </div>
       <div class="status-pills">
-        <button class="status-pill present ${activeStatus === 'present' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'present')" ${isFuture ? 'disabled' : ''}>✓ Present</button>
-        <button class="status-pill absent ${activeStatus === 'absent' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'absent')" ${isFuture ? 'disabled' : ''}>✗ Absent</button>
-        <button class="status-pill holiday ${activeStatus === 'holiday' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'holiday')" ${isFuture ? 'disabled' : ''}>🏖 Hol.</button>
-        <button class="status-pill cancelled ${activeStatus === 'cancelled' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'cancelled')" ${isFuture ? 'disabled' : ''}>⊘ Can.</button>
+        <button class="status-pill present ${activeStatus === 'present' ? 'active' : ''}" onclick="setPeriodStatus('${pKey}', 'present')" ${isFuture ? 'disabled' : ''}>✓ Present</button>
+        <button class="status-pill absent ${activeStatus === 'absent' ? 'active' : ''}" onclick="setPeriodStatus('${pKey}', 'absent')" ${isFuture ? 'disabled' : ''}>✗ Absent</button>
+        <button class="status-pill holiday ${activeStatus === 'holiday' ? 'active' : ''}" onclick="setPeriodStatus('${pKey}', 'holiday')" ${isFuture ? 'disabled' : ''}>🏖 Hol.</button>
+        <button class="status-pill cancelled ${activeStatus === 'cancelled' ? 'active' : ''}" onclick="setPeriodStatus('${pKey}', 'cancelled')" ${isFuture ? 'disabled' : ''}>⊘ Can.</button>
       </div>
     `;
                 container.appendChild(pCard);
@@ -3599,47 +3687,40 @@
 
         function changePeriodSubject(periodNum, val) {
             if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
-            if (!dailyRecords[selectedDateStr][periodNum]) dailyRecords[selectedDateStr][periodNum] = { status: '' };
-            dailyRecords[selectedDateStr][periodNum].subjectId = val;
+            const periods = typeof periodNum === 'string' ? periodNum.split('_').map(Number) : [Number(periodNum)];
+            periods.forEach(p => {
+                if (!dailyRecords[selectedDateStr][p]) dailyRecords[selectedDateStr][p] = { status: '' };
+                dailyRecords[selectedDateStr][p].subjectId = val;
+            });
             saveRecords();
+            renderDailyTab();
         }
 
         function setPeriodStatus(periodNum, status) {
             if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
-            if (!dailyRecords[selectedDateStr][periodNum]) {
-                const selVal = document.getElementById(`subjSelect_${periodNum}`).value;
-                dailyRecords[selectedDateStr][periodNum] = { subjectId: selVal, status: '' };
-            }
+            const periods = typeof periodNum === 'string' ? periodNum.split('_').map(Number) : [Number(periodNum)];
             
-            let newStatus = status;
-            if (dailyRecords[selectedDateStr][periodNum].status === status) {
-                newStatus = '';
-            }
-            
-            dailyRecords[selectedDateStr][periodNum].status = newStatus;
-            saveRecords();
-
-            // Direct DOM update instead of full page re-render for smooth CSS transitions
-            const selectEl = document.getElementById(`subjSelect_${periodNum}`);
-            if (selectEl) {
-                const card = selectEl.closest('.period-card');
-                if (card) {
-                    const pills = card.querySelectorAll('.status-pill');
-                    pills.forEach(pill => {
-                        let pillType = '';
-                        if (pill.classList.contains('present')) pillType = 'present';
-                        else if (pill.classList.contains('absent')) pillType = 'absent';
-                        else if (pill.classList.contains('holiday')) pillType = 'holiday';
-                        else if (pill.classList.contains('cancelled')) pillType = 'cancelled';
-                        
-                        if (pillType === newStatus) {
-                            pill.classList.add('active');
-                        } else {
-                            pill.classList.remove('active');
-                        }
-                    });
+            let allHaveStatus = true;
+            periods.forEach(p => {
+                const rec = dailyRecords[selectedDateStr][p] || {};
+                if (rec.status !== status) {
+                    allHaveStatus = false;
                 }
-            }
+            });
+            
+            const newStatus = allHaveStatus ? '' : status;
+            
+            periods.forEach(p => {
+                if (!dailyRecords[selectedDateStr][p]) {
+                    const selEl = document.getElementById(`subjSelect_${periods.join('_')}`);
+                    const selVal = selEl ? selEl.value : '';
+                    dailyRecords[selectedDateStr][p] = { subjectId: selVal, status: '' };
+                }
+                dailyRecords[selectedDateStr][p].status = newStatus;
+            });
+            
+            saveRecords();
+            renderDailyTab();
         }
 
 
