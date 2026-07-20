@@ -2940,7 +2940,10 @@
             { id: 'subj_iqta', name: 'IQTA', code: 'Q' },
             { id: 'subj_cvnlp_lab', name: 'CVNLP LAB', code: 'L' },
             { id: 'subj_aisp_lab', name: 'AISP (LAB)', code: 'A' },
-            { id: 'subj_fsd_lab', name: 'FSD II LAB', code: 'F' }
+            { id: 'subj_fsd_lab', name: 'FSD II LAB', code: 'F' },
+            { id: 'subj_tinkering_lab', name: 'TINKERING LAB', code: 'T' },
+            { id: 'subj_soft_skills', name: 'SOFT SKILLS', code: 'SS' },
+            { id: 'subj_coding', name: 'CODING', code: 'CD' }
         ];
 
         /* Official timetable — 3–4 class slots per day (Association removed)
@@ -2952,25 +2955,30 @@
             1: [
                 { slot: 1, id: 'subj_esps' },
                 { slot: 2, id: 'subj_cvip' },
-                { slot: 3, id: 'subj_nlp' }
+                { slot: 3, id: 'subj_coding' },
+                { slot: 4, id: 'subj_coding' }
             ],
             2: [
-                { slot: 1, id: 'subj_ossp' },
-                { slot: 3, id: 'subj_iqta' },
+                { slot: 1, id: 'subj_coding' },
+                { slot: 2, id: 'subj_coding' },
+                { slot: 3, id: 'subj_nlp' },
                 { slot: 4, id: 'subj_aisp_lab' }
             ],
             3: [
+                { slot: 1, id: 'subj_soft_skills' },
                 { slot: 2, id: 'subj_iqta' },
-                { slot: 3, id: 'subj_nlp' }
+                { slot: 3, id: 'subj_nlp' },
+                { slot: 4, id: 'subj_dv' }
             ],
             4: [
                 { slot: 1, id: 'subj_fsd_lab' },
                 { slot: 2, id: 'subj_cvip' },
                 { slot: 3, id: 'subj_esps' },
-                { slot: 4, id: 'subj_dv' }
+                { slot: 4, id: 'subj_ossp' }
             ],
             5: [
                 { slot: 1, id: 'subj_cvnlp_lab' },
+                { slot: 2, id: 'subj_iqta' },
                 { slot: 3, id: 'subj_ossp' },
                 { slot: 4, id: 'subj_dv' }
             ],
@@ -3211,10 +3219,19 @@
                         }
                     });
                     const originalLength = subjects.length;
-                    subjects = subjects.filter(s => s && !s.name.toUpperCase().includes('SOFT SKILLS') && !s.name.toUpperCase().includes('ASSOCIATION ACTIVITIES'));
+                    subjects = subjects.filter(s => s && !s.name.toUpperCase().includes('ASSOCIATION ACTIVITIES'));
                     if (subjects.length !== originalLength) {
                         modified = true;
                     }
+
+                    // Auto-merge any missing default subjects
+                    defaultSubjects.forEach(defSub => {
+                        if (!subjects.some(s => s && s.id === defSub.id)) {
+                            subjects.push(defSub);
+                            modified = true;
+                        }
+                    });
+
                     if (modified) {
                         localStorage.setItem('att_subjects', JSON.stringify(subjects));
                     }
@@ -3510,21 +3527,60 @@
                 }
             }
 
-            renderSlots.forEach(slot => {
-                const p = slot.p;
+            // Group consecutive slots with the same active subject
+            const mergedSlots = [];
+            let i = 0;
+            while (i < renderSlots.length) {
+                const currentSlot = renderSlots[i];
+                const p = currentSlot.p;
                 const record = records[p] || {};
+                let activeSubjectId = record.subjectId !== undefined ? record.subjectId : currentSlot.defaultSubjectId;
 
-                let activeSubjectId = '';
-                if (record.subjectId !== undefined) {
-                    activeSubjectId = record.subjectId;
-                } else {
-                    activeSubjectId = slot.defaultSubjectId;
+                const periods = [p];
+                let nextIdx = i + 1;
+                while (nextIdx < renderSlots.length) {
+                    const nextSlot = renderSlots[nextIdx];
+                    const nextP = nextSlot.p;
+                    const nextRecord = records[nextP] || {};
+                    let nextActiveSubjectId = nextRecord.subjectId !== undefined ? nextRecord.subjectId : nextSlot.defaultSubjectId;
+
+                    if (nextActiveSubjectId === activeSubjectId && activeSubjectId !== '') {
+                        periods.push(nextP);
+                        nextIdx++;
+                    } else {
+                        break;
+                    }
                 }
 
-                const activeStatus = record.status || '';
-                const slotConfig = periodTimes[p] || { title: 'Period ' + p, time: '' };
-                const displayTitle = slotConfig.title;
-                const timeLabel = slotConfig.time;
+                mergedSlots.push({
+                    periods: periods,
+                    subjectId: activeSubjectId
+                });
+                i = nextIdx;
+            }
+
+            mergedSlots.forEach(slot => {
+                const periods = slot.periods;
+                const activeSubjectId = slot.subjectId;
+                const pKey = periods.join('_');
+
+                // Determine overall status for the merged group
+                const activeStatus = records[periods[0]]?.status || '';
+
+                const firstSlotConfig = periodTimes[periods[0]] || { title: 'Period ' + periods[0], time: '' };
+                const lastSlotConfig = periodTimes[periods[periods.length - 1]] || { title: 'Period ' + periods[periods.length - 1], time: '' };
+
+                let displayTitle = firstSlotConfig.title;
+                if (periods.length > 1) {
+                    displayTitle = firstSlotConfig.title.split(' & ')[0] + ' - ' + lastSlotConfig.title.split(' & ').slice(-1)[0];
+                }
+
+                let timeLabel = firstSlotConfig.time;
+                if (periods.length > 1) {
+                    const startTime = firstSlotConfig.time.split(' - ')[0];
+                    const endTime = lastSlotConfig.time.split(' - ')[1];
+                    timeLabel = `${startTime} - ${endTime}`;
+                }
 
                 const pCard = document.createElement('div');
                 pCard.className = 'period-card';
@@ -3536,22 +3592,22 @@
 
                 pCard.innerHTML = `
       <div class="period-header">
-        <div class="period-num-badge">${p}</div>
+        <div class="period-num-badge">${periods.length > 1 ? periods.join('-') : periods[0]}</div>
         <div class="period-header-text">
           <div class="period-num-label">${displayTitle}</div>
           <div class="period-time-label">${timeLabel}</div>
         </div>
       </div>
       <div class="subject-select-wrap">
-        <select class="subject-select" id="subjSelect_${p}" onchange="changePeriodSubject(${p}, this.value)" ${isFuture ? 'disabled' : ''}>
+        <select class="subject-select" id="subjSelect_${pKey}" onchange="changePeriodSubject('${pKey}', this.value)" ${isFuture ? 'disabled' : ''}>
           ${selectOptions}
         </select>
       </div>
       <div class="status-pills">
-        <button class="status-pill present ${activeStatus === 'present' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'present')" ${isFuture ? 'disabled' : ''}>✓ Present</button>
-        <button class="status-pill absent ${activeStatus === 'absent' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'absent')" ${isFuture ? 'disabled' : ''}>✗ Absent</button>
-        <button class="status-pill holiday ${activeStatus === 'holiday' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'holiday')" ${isFuture ? 'disabled' : ''}>🏖 Hol.</button>
-        <button class="status-pill cancelled ${activeStatus === 'cancelled' ? 'active' : ''}" onclick="setPeriodStatus(${p}, 'cancelled')" ${isFuture ? 'disabled' : ''}>⊘ Can.</button>
+        <button class="status-pill present ${activeStatus === 'present' ? 'active' : ''}" onclick="setPeriodStatus('${pKey}', 'present')" ${isFuture ? 'disabled' : ''}>✓ Present</button>
+        <button class="status-pill absent ${activeStatus === 'absent' ? 'active' : ''}" onclick="setPeriodStatus('${pKey}', 'absent')" ${isFuture ? 'disabled' : ''}>✗ Absent</button>
+        <button class="status-pill holiday ${activeStatus === 'holiday' ? 'active' : ''}" onclick="setPeriodStatus('${pKey}', 'holiday')" ${isFuture ? 'disabled' : ''}>🏖 Hol.</button>
+        <button class="status-pill cancelled ${activeStatus === 'cancelled' ? 'active' : ''}" onclick="setPeriodStatus('${pKey}', 'cancelled')" ${isFuture ? 'disabled' : ''}>⊘ Can.</button>
       </div>
     `;
                 container.appendChild(pCard);
@@ -3599,47 +3655,40 @@
 
         function changePeriodSubject(periodNum, val) {
             if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
-            if (!dailyRecords[selectedDateStr][periodNum]) dailyRecords[selectedDateStr][periodNum] = { status: '' };
-            dailyRecords[selectedDateStr][periodNum].subjectId = val;
+            const periods = typeof periodNum === 'string' ? periodNum.split('_').map(Number) : [Number(periodNum)];
+            periods.forEach(p => {
+                if (!dailyRecords[selectedDateStr][p]) dailyRecords[selectedDateStr][p] = { status: '' };
+                dailyRecords[selectedDateStr][p].subjectId = val;
+            });
             saveRecords();
+            renderDailyTab();
         }
 
         function setPeriodStatus(periodNum, status) {
             if (!dailyRecords[selectedDateStr]) dailyRecords[selectedDateStr] = {};
-            if (!dailyRecords[selectedDateStr][periodNum]) {
-                const selVal = document.getElementById(`subjSelect_${periodNum}`).value;
-                dailyRecords[selectedDateStr][periodNum] = { subjectId: selVal, status: '' };
-            }
+            const periods = typeof periodNum === 'string' ? periodNum.split('_').map(Number) : [Number(periodNum)];
             
-            let newStatus = status;
-            if (dailyRecords[selectedDateStr][periodNum].status === status) {
-                newStatus = '';
-            }
-            
-            dailyRecords[selectedDateStr][periodNum].status = newStatus;
-            saveRecords();
-
-            // Direct DOM update instead of full page re-render for smooth CSS transitions
-            const selectEl = document.getElementById(`subjSelect_${periodNum}`);
-            if (selectEl) {
-                const card = selectEl.closest('.period-card');
-                if (card) {
-                    const pills = card.querySelectorAll('.status-pill');
-                    pills.forEach(pill => {
-                        let pillType = '';
-                        if (pill.classList.contains('present')) pillType = 'present';
-                        else if (pill.classList.contains('absent')) pillType = 'absent';
-                        else if (pill.classList.contains('holiday')) pillType = 'holiday';
-                        else if (pill.classList.contains('cancelled')) pillType = 'cancelled';
-                        
-                        if (pillType === newStatus) {
-                            pill.classList.add('active');
-                        } else {
-                            pill.classList.remove('active');
-                        }
-                    });
+            let allHaveStatus = true;
+            periods.forEach(p => {
+                const rec = dailyRecords[selectedDateStr][p] || {};
+                if (rec.status !== status) {
+                    allHaveStatus = false;
                 }
-            }
+            });
+            
+            const newStatus = allHaveStatus ? '' : status;
+            
+            periods.forEach(p => {
+                if (!dailyRecords[selectedDateStr][p]) {
+                    const selEl = document.getElementById(`subjSelect_${periods.join('_')}`);
+                    const selVal = selEl ? selEl.value : '';
+                    dailyRecords[selectedDateStr][p] = { subjectId: selVal, status: '' };
+                }
+                dailyRecords[selectedDateStr][p].status = newStatus;
+            });
+            
+            saveRecords();
+            renderDailyTab();
         }
 
 
