@@ -2957,23 +2957,23 @@
         ];
 
         /* Official timetable — III B.Tech CSE-AI (I-SEM 2026-27) Fire Flies · Room C-203 · w.e.f. 29-06-2026
-           Each slot = 2 periods (45 min each)
-           Slot 1 (9:00–10:30):   MON:ESPS    TUE:CODING      WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP/AISP LAB*
-           Slot 2 (10:45–12:15):  MON:CVIP    TUE:CODING      WED:IQTA         THU:CVIP       FRI:IQTA
-           Slot 3 (1:15–2:45):    MON:CODING  TUE:NLP         WED:NLP          THU:ESPS       FRI:OSSP
-           Slot 4 (2:55–4:25):    MON:CODING  TUE:AISP/CVNLP* WED:DV          THU:OSSP       FRI:DV
+           Each slot = 2 periods (45 min each). Slots 5+6 are special single-entry combined coding blocks.
+           Slot 1 (9:00–10:30):   MON:ESPS    TUE:—(coding in slot6) WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP/AISP LAB*
+           Slot 2 (10:45–12:15):  MON:CVIP    TUE:—(coding in slot6) WED:IQTA         THU:CVIP       FRI:IQTA
+           Slot 3 (1:15–2:45):    MON:—(coding in slot5) TUE:NLP   WED:NLP          THU:ESPS       FRI:OSSP
+           Slot 4 (2:55–4:25):    MON:—(coding in slot5) TUE:AISP* WED:DV           THU:OSSP       FRI:DV
+           Slot 5 (1:15–4:25):    MON:CODING  (full afternoon combined block)
+           Slot 6 (9:00–12:15):   TUE:CODING  (full morning combined block)
            * Group 1 (roll ≤30 / lateral ≤06): FRI slot1 = CVNLP LAB, TUE slot4 = AISP LAB
              Group 2 (roll >30  / lateral >06): FRI slot1 = AISP LAB,  TUE slot4 = CVNLP LAB  */
         const weekdayDefaultSubjects = {
             1: [
                 { slot: 1, id: 'subj_esps' },
                 { slot: 2, id: 'subj_cvip' },
-                { slot: 3, id: 'subj_coding' },
-                { slot: 4, id: 'subj_coding' }
+                { slot: 5, id: 'subj_coding' }
             ],
             2: [
-                { slot: 1, id: 'subj_coding' },
-                { slot: 2, id: 'subj_coding' },
+                { slot: 6, id: 'subj_coding' },
                 { slot: 3, id: 'subj_nlp' },
                 { slot: 4, id: 'subj_aisp_lab' }
             ],
@@ -2998,12 +2998,17 @@
             6: []
         };
 
-        /* Fallback class slot time labels mapping slots 1-4 */
+        /* Class slot time labels
+           Slots 1-4: Standard double-period blocks
+           Slot 5:    Afternoon CODING block (Mon P5-P8, combined)
+           Slot 6:    Morning CODING block (Tue P1-P4, combined)  */
         const periodTimes = {
             1: { title: 'Period 1 & 2', time: '9:00 AM - 10:30 AM' },
             2: { title: 'Period 3 & 4', time: '10:45 AM - 12:15 PM' },
             3: { title: 'Period 5 & 6', time: '1:15 PM - 2:45 PM' },
-            4: { title: 'Period 7 & 8', time: '2:55 PM - 4:25 PM' }
+            4: { title: 'Period 7 & 8', time: '2:55 PM - 4:25 PM' },
+            5: { title: 'Coding (P5-P8)', time: '1:15 PM - 4:25 PM' },
+            6: { title: 'Coding (P1-P4)', time: '9:00 AM - 12:15 PM' }
         };
 
         function getStudentGroup(rollNumber) {
@@ -3238,7 +3243,39 @@
             const key = `att_records_${currentRollNumber}`;
             const storedRecords = localStorage.getItem(key);
             dailyRecords = storedRecords ? JSON.parse(storedRecords) : {};
-            // Loaded records.
+
+            // Migrate old double-CODING slots to new single combined slots
+            // Mon: old slots 3+4 → new slot 5 | Tue: old slots 1+2 → new slot 6
+            let recordsModified = false;
+            const statusPriority = { 'present': 3, 'absent': 2, 'holiday': 1, 'cancelled': 1, '': 0 };
+            allDays.forEach(day => {
+                const weekdayIdx = new Date(day.fullDate + 'T00:00:00').getDay();
+                const rec = dailyRecords[day.fullDate];
+                if (!rec) return;
+                if (weekdayIdx === 1) {
+                    // Monday: migrate slots 3 & 4 → slot 5
+                    if ((rec[3] || rec[4]) && !rec[5]) {
+                        const s3 = rec[3] || {}; const s4 = rec[4] || {};
+                        const bestStatus = (statusPriority[s3.status] || 0) >= (statusPriority[s4.status] || 0) ? s3.status : s4.status;
+                        rec[5] = { subjectId: 'subj_coding', status: bestStatus || '' };
+                        delete rec[3]; delete rec[4];
+                        recordsModified = true;
+                    }
+                } else if (weekdayIdx === 2) {
+                    // Tuesday: migrate slots 1 & 2 → slot 6
+                    if ((rec[1] || rec[2]) && !rec[6]) {
+                        const s1 = rec[1] || {}; const s2 = rec[2] || {};
+                        // Only migrate if slot 1 had CODING (not another subject)
+                        if (!s1.subjectId || s1.subjectId === 'subj_coding') {
+                            const bestStatus = (statusPriority[s1.status] || 0) >= (statusPriority[s2.status] || 0) ? s1.status : s2.status;
+                            rec[6] = { subjectId: 'subj_coding', status: bestStatus || '' };
+                            delete rec[1]; delete rec[2];
+                            recordsModified = true;
+                        }
+                    }
+                }
+            });
+            if (recordsModified) saveRecords();
         }
 
         function saveRecords() {
