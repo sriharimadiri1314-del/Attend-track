@@ -2282,6 +2282,16 @@
             padding-left: 0;
         }
 
+        /* PARTICIPATION PCT LABEL */
+        .participation-pct {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--subtext);
+            width: 38px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
         /* ══════════════════════════════
        DESKTOP RESPONSIVE LAYOUT (Dual Mode)
        - Laptop/Desktop: Left Sidebar layout
@@ -2318,11 +2328,11 @@
                 border-bottom: 1px solid var(--border);
                 height: var(--header-h);
                 z-index: 100;
+            }
 
-                /* Hide logo wrap on desktop since it is in the sidebar */
-                .header-logo-wrap {
-                    display: none;
-                }
+            /* Hide logo wrap on desktop since it is in the sidebar */
+            .app-header .header-logo-wrap {
+                display: none;
             }
 
             .app-scroll {
