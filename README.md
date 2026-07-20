@@ -4,7 +4,7 @@
 > Academic Year: **2026-27 | I Semester**
 
 ## 🌐 Live Site
-**[https://sriharimadiri1314-del.github.io/attendance-tracker/](https://sriharimadiri1314-del.github.io/attendance-tracker/)**
+**[(https://sriharimadiri1314-del.github.io/Attend-track/)](https://sriharimadiri1314-del.github.io/Attend-track/)**
 
 ---
 
