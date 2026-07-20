@@ -2942,25 +2942,28 @@
            DEFAULT CONFIGURED SUBJECTS (Official III B.Tech CSE-AI Timetable)
         ══════════════════════════════════════════════════ */
         const defaultSubjects = [
-            { id: 'subj_nlp', name: 'NLP', code: 'N' },
-            { id: 'subj_ossp', name: 'OSSP', code: 'O' },
-            { id: 'subj_cvip', name: 'CVIP', code: 'C' },
-            { id: 'subj_dv', name: 'DV', code: 'D' },
-            { id: 'subj_esps', name: 'ESPS', code: 'E' },
-            { id: 'subj_iqta', name: 'IQTA', code: 'Q' },
-            { id: 'subj_cvnlp_lab', name: 'CVNLP LAB', code: 'L' },
-            { id: 'subj_aisp_lab', name: 'AISP (LAB)', code: 'A' },
-            { id: 'subj_fsd_lab', name: 'FSD II LAB', code: 'F' },
-            { id: 'subj_tinkering_lab', name: 'TINKERING LAB', code: 'T' },
-            { id: 'subj_soft_skills', name: 'SOFT SKILLS', code: 'SS' },
-            { id: 'subj_coding', name: 'CODING', code: 'CD' }
+            { id: 'subj_nlp',           name: 'NATURAL LANGUAGE PROCESSING',                   code: 'NLP'  },
+            { id: 'subj_ossp',          name: 'OPERATING SYSTEMS & SYSTEM PROGRAMMING',        code: 'OSSP' },
+            { id: 'subj_cvip',          name: 'COMPUTER VISION & IMAGE PROCESSING',            code: 'CVIP' },
+            { id: 'subj_dv',            name: 'DATA VISUALIZATION',                            code: 'DV'   },
+            { id: 'subj_esps',          name: 'ELECTRICAL SAFETY, PRACTICES & STANDARDS',      code: 'ESPS' },
+            { id: 'subj_iqta',          name: 'INTRO TO QUANTUM TECHNOLOGY & APPLICATIONS',    code: 'IQTA' },
+            { id: 'subj_cvnlp_lab',     name: 'CV & NLP LAB',                                  code: 'CVNLP'},
+            { id: 'subj_aisp_lab',      name: 'AI & SYSTEM PROGRAMMING LAB',                  code: 'AISP' },
+            { id: 'subj_fsd_lab',       name: 'FULL STACK DEVELOPMENT II SOC LAB',             code: 'FSD'  },
+            { id: 'subj_tinkering_lab', name: 'TINKERING LAB',                                 code: 'TINK' },
+            { id: 'subj_soft_skills',   name: 'SOFT SKILLS',                                   code: 'SS'   },
+            { id: 'subj_coding',        name: 'CODING',                                        code: 'CODE' }
         ];
 
-        /* Official timetable — 3–4 class slots per day (Association removed)
-           Slot 1 (9:00–10:30):  MON:ESPS  TUE:OSSP      WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP LAB
-           Slot 2 (10:45–12:15): MON:CVIP  TUE:IQTA      WED:IQTA         THU:CVIP       FRI:OSSP
-           Slot 3 (1:15–2:45):   MON:NLP   TUE:AISP LAB  WED:NLP          THU:ESPS       FRI:DV
-           Slot 4 (2:55–4:25):   MON:SS    —             —                THU:DV         —  */
+        /* Official timetable — III B.Tech CSE-AI (I-SEM 2026-27) Fire Flies · Room C-203 · w.e.f. 29-06-2026
+           Each slot = 2 periods (45 min each)
+           Slot 1 (9:00–10:30):   MON:ESPS    TUE:CODING      WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP/AISP LAB*
+           Slot 2 (10:45–12:15):  MON:CVIP    TUE:CODING      WED:IQTA         THU:CVIP       FRI:IQTA
+           Slot 3 (1:15–2:45):    MON:CODING  TUE:NLP         WED:NLP          THU:ESPS       FRI:OSSP
+           Slot 4 (2:55–4:25):    MON:CODING  TUE:AISP/CVNLP* WED:DV          THU:OSSP       FRI:DV
+           * Group 1 (roll ≤30 / lateral ≤06): FRI slot1 = CVNLP LAB, TUE slot4 = AISP LAB
+             Group 2 (roll >30  / lateral >06): FRI slot1 = AISP LAB,  TUE slot4 = CVNLP LAB  */
         const weekdayDefaultSubjects = {
             1: [
                 { slot: 1, id: 'subj_esps' },
@@ -3199,32 +3202,14 @@
             if (storedSubjects) {
                 subjects = JSON.parse(storedSubjects);
 
-                // Auto-migrate old long subject names to new short names
+                // Sync name & code from defaultSubjects by ID so any rename in code flows to users automatically
                 let modified = false;
-                const migrationMap = {
-                    'NATURAL LANGUAGE PROCESSING (NLP)': 'NLP',
-                    'OPERATING SYSTEMS & SYS PROG (OSSP)': 'OSSP',
-                    'DATA VISUALIZATION (DV)': 'DV',
-                    'ELECTRICAL SAFETY & STANDARDS (ESPS)': 'ESPS',
-                    'ELECTRICAL SAFETY& PRACTICES AND STANDARDS': 'ESPS',
-                    'ELECTRICAL SAFETY & STANDARDS': 'ESPS',
-                    'ESSP': 'ESPS',
-                    'QUANTUM TECHNOLOGY & APPS (IQTA)': 'IQTA',
-                    'COMPUTER VISION & IMAGE PROC (CVIP)': 'CVIP',
-                    'COMPUTER VISION & IMAGE PROCESSING': 'CVIP',
-                    'CVNLP': 'CVIP',
-                    'CV & NLP LAB': 'CVNLP LAB',
-                    'AI & SYS PROGRAMMING LAB': 'AISP (LAB)',
-                    'FSD II SOC LAB': 'FSD II LAB',
-                    'FSD (LAB)': 'FSD II LAB',
-                    'COMPUTER VISION': 'CVIP',
-                    'DATA VISUALIZATION': 'DV',
-                    'CV & NLP (LAB)': 'CVNLP LAB'
-                };
                 if (Array.isArray(subjects)) {
                     subjects.forEach(s => {
-                        if (s && migrationMap[s.name]) {
-                            s.name = migrationMap[s.name];
+                        const def = defaultSubjects.find(d => d.id === s.id);
+                        if (def && (s.name !== def.name || s.code !== def.code)) {
+                            s.name = def.name;
+                            s.code = def.code;
                             modified = true;
                         }
                     });
