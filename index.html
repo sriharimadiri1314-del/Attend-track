@@ -2956,8 +2956,48 @@
             { id: 'subj_coding',        name: 'CODING',                                        code: 'CODE' }
         ];
 
-        /* Official timetable — III B.Tech CSE-AI (I-SEM 2026-27) Fire Flies · Room C-203 · w.e.f. 29-06-2026
-           Each slot = 2 periods (45 min each). Slots 5+6 are special single-entry combined coding blocks.
+        /* ── TIMETABLE PHASE 1: 29-Jun-2026 to 17-Jul-2026 (w.e.f. 29-06-2026) ──
+           Official timetable — III B.Tech CSE-AI (I-SEM 2026-27) Fire Flies · Room C-203
+           Each slot = 2 periods (45 min each). NO CODING block in this phase.
+           Slot 1 (9:00–10:30):  MON:ESPS    TUE:OSSP   WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP/AISP LAB*
+           Slot 2 (10:45–12:15): MON:CVIP    WED:IQTA   THU:CVIP
+           Slot 3 (1:15–2:45):   MON:NLP     TUE:IQTA   WED:NLP          THU:ESPS       FRI:OSSP
+           Slot 4 (2:55–4:25):   MON:SOFT SK TUE:AISP*  THU:DV           FRI:DV
+           * Group 1 (roll ≤30 / lateral ≤06): FRI slot1 = CVNLP LAB, TUE slot4 = AISP LAB
+             Group 2 (roll >30  / lateral >06): FRI slot1 = AISP LAB,  TUE slot4 = CVNLP LAB  */
+        const weekdayDefaultSubjectsOld = {
+            1: [
+                { slot: 1, id: 'subj_esps' },
+                { slot: 2, id: 'subj_cvip' },
+                { slot: 3, id: 'subj_nlp' },
+                { slot: 4, id: 'subj_soft_skills' }
+            ],
+            2: [
+                { slot: 1, id: 'subj_ossp' },
+                { slot: 3, id: 'subj_iqta' },
+                { slot: 4, id: 'subj_aisp_lab' }  /* group-dependent */
+            ],
+            3: [
+                { slot: 1, id: 'subj_soft_skills' },
+                { slot: 2, id: 'subj_iqta' },
+                { slot: 3, id: 'subj_nlp' }
+            ],
+            4: [
+                { slot: 1, id: 'subj_fsd_lab' },
+                { slot: 2, id: 'subj_cvip' },
+                { slot: 3, id: 'subj_esps' },
+                { slot: 4, id: 'subj_dv' }
+            ],
+            5: [
+                { slot: 1, id: 'subj_cvnlp_lab' },  /* group-dependent */
+                { slot: 3, id: 'subj_ossp' },
+                { slot: 4, id: 'subj_dv' }
+            ],
+            6: []
+        };
+
+        /* ── TIMETABLE PHASE 2: from 20-Jul-2026 onwards ──
+           Slots 5+6 are special single-entry combined coding blocks.
            Slot 1 (9:00–10:30):   MON:ESPS    TUE:—(coding in slot6) WED:SOFT SKILLS  THU:FSD LAB    FRI:CVNLP/AISP LAB*
            Slot 2 (10:45–12:15):  MON:CVIP    TUE:—(coding in slot6) WED:IQTA         THU:CVIP       FRI:IQTA
            Slot 3 (1:15–2:45):    MON:—(coding in slot5) TUE:NLP   WED:NLP          THU:ESPS       FRI:OSSP
@@ -2998,6 +3038,9 @@
             6: []
         };
 
+        /* Switch date: new timetable (with CODING) starts from 20-Jul-2026 */
+        const TIMETABLE_SWITCH_DATE = '2026-07-20';
+
         /* Class slot time labels
            Slots 1-4: Standard double-period blocks
            Slot 5:    Afternoon CODING block (Mon P5-P8, combined)
@@ -3037,7 +3080,11 @@
             else if (dayName.includes("(Thu TT)")) weekdayIdx = 4;
             else if (dayName.includes("(Fri TT)")) weekdayIdx = 5;
 
-            const defaults = weekdayDefaultSubjects[weekdayIdx] || [];
+            /* Pick timetable phase based on date */
+            const dayDate = new Date(dayObj.fullDate + 'T00:00:00');
+            const switchDate = new Date(TIMETABLE_SWITCH_DATE + 'T00:00:00');
+            const ttMap = dayDate >= switchDate ? weekdayDefaultSubjects : weekdayDefaultSubjectsOld;
+            const defaults = ttMap[weekdayIdx] || [];
             const group = getStudentGroup(currentRollNumber);
 
             return defaults.map(item => {
