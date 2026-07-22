@@ -324,9 +324,9 @@
         .roll-card {
             background: #ffffff;
             border-radius: 24px;
-            padding: 36px 28px;
+            padding: 32px 28px;
             width: 100%;
-            max-width: 380px;
+            max-width: 420px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
             text-align: center;
         }
@@ -387,17 +387,15 @@
 
         .roll-split-box {
             display: flex;
-            align-items: center;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
+            align-items: stretch;
             margin-bottom: 12px;
-            transition: var(--transition);
+            transition: box-shadow 0.22s ease;
+            box-shadow: 0 0 0 2px var(--border);
             background: var(--bg);
         }
 
         .roll-split-box.error {
-            border-color: var(--red);
+            box-shadow: 0 0 0 2px var(--red);
             animation: shake 0.3s ease;
         }
 
@@ -420,15 +418,20 @@
         .roll-prefix-display {
             background: var(--primary);
             color: #fff;
-            padding: 12px 14px;
+            padding: 0 16px;
             font-weight: 800;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             white-space: nowrap;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            letter-spacing: 0.04em;
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
         }
 
         #rollSuffix {
             flex: 1;
-            padding: 12px 10px;
+            padding: 13px 12px;
             border: none;
             background: transparent;
             font-size: 1rem;
@@ -437,6 +440,7 @@
             outline: none;
             text-transform: uppercase;
             letter-spacing: 0.08em;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
         }
 
         .roll-error {
@@ -3099,6 +3103,32 @@
         }
 
         /* ══════════════════════════════════════════════════
+           BACKEND API LAYER
+           Calls Flask REST API; falls back to localStorage
+           if the server is unreachable (offline / PWA mode).
+        ══════════════════════════════════════════════════ */
+        const API_BASE = '/api';
+        const API = {
+            async get(path) {
+                try {
+                    const r = await fetch(API_BASE + path);
+                    if (!r.ok) return null;
+                    return await r.json();
+                } catch { return null; }
+            },
+            async post(path, body) {
+                try {
+                    const r = await fetch(API_BASE + path, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    return r.ok;
+                } catch { return false; }
+            }
+        };
+
+        /* ══════════════════════════════════════════════════
            STATE
         ══════════════════════════════════════════════════ */
         let currentRollNumber = '';
@@ -3176,10 +3206,12 @@
             suffixEl.focus();
         }
 
-        function showRollOverlay() {
+        async function showRollOverlay() {
             const overlay = document.getElementById('rollOverlay');
             overlay.classList.remove('hidden');
-            const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
+            // Fetch roll list from API; fallback to localStorage
+            let saved = await API.get('/rolls');
+            if (!saved) saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
             const listEl = document.getElementById('rollSavedList');
             const chipsEl = document.getElementById('rollSavedChips');
             if (saved.length > 0) {
@@ -3204,7 +3236,7 @@
             submitRollNumber();
         }
 
-        function submitRollNumber() {
+        async function submitRollNumber() {
             const suffixEl = document.getElementById('rollSuffix');
             const splitBox = document.getElementById('rollSplitBox');
             const errorEl = document.getElementById('rollError');
@@ -3225,17 +3257,22 @@
             const paddedSuffix = /^\d+$/.test(suffix) ? suffix.padStart(requiredLen, '0') : suffix.toUpperCase();
             currentRollNumber = (selectedPrefix + paddedSuffix).toUpperCase();
 
-            const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
-            if (!saved.includes(currentRollNumber)) {
-                saved.push(currentRollNumber);
-                localStorage.setItem('roll_number_list', JSON.stringify(saved));
+            // Register roll in backend (also keep localStorage fallback)
+            const okAPI = await API.post('/rolls', { roll_number: currentRollNumber });
+            if (!okAPI) {
+                // Offline fallback
+                const saved = JSON.parse(localStorage.getItem('roll_number_list') || '[]');
+                if (!saved.includes(currentRollNumber)) {
+                    saved.push(currentRollNumber);
+                    localStorage.setItem('roll_number_list', JSON.stringify(saved));
+                }
             }
 
-            localStorage.setItem('current_roll_number', currentRollNumber);
+            sessionStorage.setItem('current_roll_number', currentRollNumber);
             document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
             document.getElementById('rollOverlay').classList.add('hidden');
 
-            loadDataForProfile();
+            await loadDataForProfile();
             showToast(`Profile loaded: ${currentRollNumber}`, 'success');
             switchTab('dashboard');
         }
@@ -3247,51 +3284,57 @@
         }
 
         /* ══════════════════════════════════════════════════
-           LOCALSTORAGE LOAD / SAVE
+           API / LOAD / SAVE
+           Primary: Flask backend API
+           Fallback: localStorage (offline / PWA mode)
         ══════════════════════════════════════════════════ */
-        function loadDataForProfile() {
-            const storedSubjects = localStorage.getItem('att_subjects');
-            if (storedSubjects) {
-                subjects = JSON.parse(storedSubjects);
+        async function loadDataForProfile() {
+            // ── Load subjects ───────────────────────────────
+            let storedSubjects = await API.get(`/subjects/${currentRollNumber}`);
+            if (storedSubjects === null) {
+                // API returned null (no row yet) or error — try localStorage
+                const ls = localStorage.getItem(`att_subjects_${currentRollNumber}`);
+                storedSubjects = ls ? JSON.parse(ls) : null;
+            }
 
-                // Sync name & code from defaultSubjects by ID so any rename in code flows to users automatically
+            if (storedSubjects && Array.isArray(storedSubjects)) {
+                subjects = storedSubjects;
+
+                // Sync name & code from defaultSubjects by ID so any rename flows to users
                 let modified = false;
-                if (Array.isArray(subjects)) {
-                    subjects.forEach(s => {
-                        const def = defaultSubjects.find(d => d.id === s.id);
-                        if (def && (s.name !== def.name || s.code !== def.code)) {
-                            s.name = def.name;
-                            s.code = def.code;
-                            modified = true;
-                        }
-                    });
-                    const originalLength = subjects.length;
-                    subjects = subjects.filter(s => s && !s.name.toUpperCase().includes('ASSOCIATION ACTIVITIES'));
-                    if (subjects.length !== originalLength) {
-                        modified = true;
+                subjects.forEach(s => {
+                    const def = defaultSubjects.find(d => d.id === s.id);
+                    if (def && (s.name !== def.name || s.code !== def.code)) {
+                        s.name = def.name; s.code = def.code; modified = true;
                     }
+                });
+                const origLen = subjects.length;
+                subjects = subjects.filter(s => s && !s.name.toUpperCase().includes('ASSOCIATION ACTIVITIES'));
+                if (subjects.length !== origLen) modified = true;
 
-                    // Auto-merge any missing default subjects
-                    defaultSubjects.forEach(defSub => {
-                        if (!subjects.some(s => s && s.id === defSub.id)) {
-                            subjects.push(defSub);
-                            modified = true;
-                        }
-                    });
-
-                    if (modified) {
-                        localStorage.setItem('att_subjects', JSON.stringify(subjects));
+                // Auto-merge any missing default subjects
+                defaultSubjects.forEach(defSub => {
+                    if (!subjects.some(s => s && s.id === defSub.id)) {
+                        subjects.push(defSub); modified = true;
                     }
-                }
+                });
+
+                if (modified) await saveSubjects();
             } else {
                 subjects = [...defaultSubjects];
-                localStorage.setItem('att_subjects', JSON.stringify(subjects));
+                await saveSubjects();
             }
-            const key = `att_records_${currentRollNumber}`;
-            const storedRecords = localStorage.getItem(key);
-            dailyRecords = storedRecords ? JSON.parse(storedRecords) : {};
 
-            // Migrate old double-CODING slots to new single combined slots
+            // ── Load records ────────────────────────────────
+            let apiRecords = await API.get(`/records/${currentRollNumber}`);
+            if (apiRecords === null) {
+                // Fallback to localStorage
+                const ls = localStorage.getItem(`att_records_${currentRollNumber}`);
+                apiRecords = ls ? JSON.parse(ls) : {};
+            }
+            dailyRecords = apiRecords || {};
+
+            // ── Migrate old double-CODING slots to new single combined slots ──
             // Mon: old slots 3+4 → new slot 5 | Tue: old slots 1+2 → new slot 6
             let recordsModified = false;
             const statusPriority = { 'present': 3, 'absent': 2, 'holiday': 1, 'cancelled': 1, '': 0 };
@@ -3312,7 +3355,6 @@
                     // Tuesday: migrate slots 1 & 2 → slot 6
                     if ((rec[1] || rec[2]) && !rec[6]) {
                         const s1 = rec[1] || {}; const s2 = rec[2] || {};
-                        // Only migrate if slot 1 had CODING (not another subject)
                         if (!s1.subjectId || s1.subjectId === 'subj_coding') {
                             const bestStatus = (statusPriority[s1.status] || 0) >= (statusPriority[s2.status] || 0) ? s1.status : s2.status;
                             rec[6] = { subjectId: 'subj_coding', status: bestStatus || '' };
@@ -3322,12 +3364,23 @@
                     }
                 }
             });
-            if (recordsModified) saveRecords();
+            if (recordsModified) await saveRecords();
         }
 
-        function saveRecords() {
+        async function saveRecords() {
             if (!currentRollNumber) return;
+            const ok = await API.post(`/records/${currentRollNumber}`, dailyRecords);
+            // Always keep localStorage as offline cache
             localStorage.setItem(`att_records_${currentRollNumber}`, JSON.stringify(dailyRecords));
+            return ok;
+        }
+
+        async function saveSubjects() {
+            if (!currentRollNumber) return;
+            const ok = await API.post(`/subjects/${currentRollNumber}`, subjects);
+            // Always keep localStorage as offline cache
+            localStorage.setItem(`att_subjects_${currentRollNumber}`, JSON.stringify(subjects));
+            return ok;
         }
 
         /* ══════════════════════════════════════════════════
@@ -3381,27 +3434,30 @@
                 activePeriods.forEach(p => {
                     const record = records[p];
                     if (record && record.status) {
-                        const sId = record.subjectId;
+                        const defaultItem = defaultList.find(item => item.slot === p);
+                        const fallbackSubjId = defaultItem ? defaultItem.id : (subjects[0] ? subjects[0].id : '');
+                        const sId = record.subjectId || fallbackSubjId;
                         const stat = record.status;
                         if (stat === 'holiday') { if (!isFuture) globalStats.totalHoliday++; return; }
                         if (stat === 'cancelled') { if (!isFuture) globalStats.totalCancelled++; return; }
                         if (!isFuture) {
-                            if (globalStats.subjectStats[sId]) {
-                                globalStats.totalConducted++;
-                                globalStats.subjectStats[sId].conducted++;
-                                globalStats.monthlyTrend[mName].conducted++;
-                                if (dateStr.slice(0, 7) === currentMonthStr) monthConducted++;
-                                if (dateStr === todayDateStr) globalStats.todayConducted++;
-                                if (stat === 'present') {
-                                    globalStats.totalPresent++;
-                                    globalStats.monthlyTrend[mName].present++;
-                                    globalStats.subjectStats[sId].present++;
-                                    if (dateStr.slice(0, 7) === currentMonthStr) monthPresent++;
-                                    if (dateStr === todayDateStr) globalStats.todayPresent++;
-                                } else if (stat === 'absent') {
-                                    globalStats.totalAbsent++;
-                                    globalStats.subjectStats[sId].absent++;
-                                }
+                            if (!globalStats.subjectStats[sId]) {
+                                globalStats.subjectStats[sId] = { conducted: 0, present: 0, absent: 0 };
+                            }
+                            globalStats.totalConducted++;
+                            globalStats.subjectStats[sId].conducted++;
+                            globalStats.monthlyTrend[mName].conducted++;
+                            if (dateStr.slice(0, 7) === currentMonthStr) monthConducted++;
+                            if (dateStr === todayDateStr) globalStats.todayConducted++;
+                            if (stat === 'present') {
+                                globalStats.totalPresent++;
+                                globalStats.monthlyTrend[mName].present++;
+                                globalStats.subjectStats[sId].present++;
+                                if (dateStr.slice(0, 7) === currentMonthStr) monthPresent++;
+                                if (dateStr === todayDateStr) globalStats.todayPresent++;
+                            } else if (stat === 'absent') {
+                                globalStats.totalAbsent++;
+                                globalStats.subjectStats[sId].absent++;
                             }
                         }
                     }
@@ -3706,8 +3762,12 @@
 
             if (idx === -1) {
                 // Not a class day — snap to nearest class day first
-                if (direction > 0) idx = allDays.findIndex(d => d.fullDate >= selectedDateStr);
-                else idx = allDays.map(d => d.fullDate).lastIndexOf(allDays.filter(d => d.fullDate <= selectedDateStr).slice(-1)[0]?.fullDate);
+                if (direction > 0) {
+                    idx = allDays.findIndex(d => d.fullDate >= selectedDateStr);
+                } else {
+                    const prevDays = allDays.filter(d => d.fullDate <= selectedDateStr);
+                    idx = prevDays.length > 0 ? allDays.indexOf(prevDays[prevDays.length - 1]) : -1;
+                }
                 if (idx === -1) idx = 0;
                 selectedDateStr = allDays[idx].fullDate;
                 renderDailyTab();
@@ -3756,12 +3816,20 @@
             });
             
             const newStatus = allHaveStatus ? '' : status;
+            const currentDayInfo = allDays.find(d => d.fullDate === selectedDateStr);
+            const defaultList = currentDayInfo ? getDefaultSubjectsForDay(currentDayInfo) : [];
             
             periods.forEach(p => {
+                const defaultItem = defaultList.find(item => item.slot === p);
+                const fallbackSubjId = defaultItem ? defaultItem.id : (subjects[0] ? subjects[0].id : '');
+                const selEl = document.getElementById(`subjSelect_${periods.join('_')}`);
+                const selVal = selEl ? selEl.value : '';
+                
                 if (!dailyRecords[selectedDateStr][p]) {
-                    const selEl = document.getElementById(`subjSelect_${periods.join('_')}`);
-                    const selVal = selEl ? selEl.value : '';
-                    dailyRecords[selectedDateStr][p] = { subjectId: selVal, status: '' };
+                    dailyRecords[selectedDateStr][p] = { subjectId: selVal || fallbackSubjId, status: '' };
+                }
+                if (!dailyRecords[selectedDateStr][p].subjectId) {
+                    dailyRecords[selectedDateStr][p].subjectId = selVal || fallbackSubjId;
                 }
                 dailyRecords[selectedDateStr][p].status = newStatus;
             });
@@ -3951,9 +4019,9 @@
             document.getElementById('modalSubjectName').focus();
         }
 
-        function restoreDefaultSubjects() {
+        async function restoreDefaultSubjects() {
             subjects = [...defaultSubjects];
-            localStorage.setItem('att_subjects', JSON.stringify(subjects));
+            await saveSubjects();
             renderSubjectsTab();
             showToast('Loaded 9 default subjects successfully!', 'success');
         }
@@ -3974,7 +4042,7 @@
             document.getElementById('subjectModal').classList.remove('active');
         }
 
-        function saveSubjectFromModal() {
+        async function saveSubjectFromModal() {
             const nameInput = document.getElementById('modalSubjectName');
             const codeInput = document.getElementById('modalSubjectCode');
             const name = nameInput.value.trim();
@@ -3988,15 +4056,15 @@
                 subjects.push({ id: 'subj_' + Date.now(), name, code });
                 showToast('Subject added', 'success');
             }
-            localStorage.setItem('att_subjects', JSON.stringify(subjects));
+            await saveSubjects();
             closeSubjectModal();
             renderSubjectsTab();
         }
 
         function triggerDeleteSubject(id, name) {
-            showConfirm(`Delete "${name}"?`, 'This removes the subject from your list. Logged records remain intact.', () => {
+            showConfirm(`Delete "${name}"?`, 'This removes the subject from your list. Logged records remain intact.', async () => {
                 subjects = subjects.filter(s => s.id !== id);
-                localStorage.setItem('att_subjects', JSON.stringify(subjects));
+                await saveSubjects();
                 showToast('Subject deleted', 'danger');
                 renderSubjectsTab();
             });
@@ -4076,19 +4144,19 @@
             showToast('CSV report downloaded', 'success');
         }
 
-        function importAttendanceJSON(e) {
+        async function importAttendanceJSON(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function (evt) {
+            reader.onload = async function (evt) {
                 try {
                     const parsed = JSON.parse(evt.target.result);
                     if (!parsed.records || !parsed.subjects) { showToast('Invalid backup file!', 'danger'); return; }
                     if (parsed.rollNumber && parsed.rollNumber !== currentRollNumber) showToast(`Imported from ${parsed.rollNumber}`, 'info');
                     subjects = parsed.subjects;
                     dailyRecords = parsed.records;
-                    localStorage.setItem('att_subjects', JSON.stringify(subjects));
-                    saveRecords();
+                    await saveSubjects();
+                    await saveRecords();
                     showToast('Import complete!', 'success');
                     switchTab('dashboard');
                 } catch (err) { showToast('Failed to parse file.', 'danger'); }
@@ -4127,16 +4195,19 @@
         /* ══════════════════════════════════════════════════
            BOOT
         ══════════════════════════════════════════════════ */
-        const savedRoll = localStorage.getItem('current_roll_number');
-        if (savedRoll) {
-            currentRollNumber = savedRoll;
-            document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
-            document.getElementById('rollOverlay').classList.add('hidden');
-            loadDataForProfile();
-            switchTab('dashboard');
-        } else {
-            showRollOverlay();
-        }
+        // Boot: restore last active roll from sessionStorage (tab-local) or prompt
+        (async () => {
+            const savedRoll = sessionStorage.getItem('current_roll_number');
+            if (savedRoll) {
+                currentRollNumber = savedRoll;
+                document.getElementById('rollDisplayBadge').textContent = currentRollNumber;
+                document.getElementById('rollOverlay').classList.add('hidden');
+                await loadDataForProfile();
+                switchTab('dashboard');
+            } else {
+                await showRollOverlay();
+            }
+        })();
     </script>
 
     <!-- ══ PWA: SERVICE WORKER + INSTALL BANNER ══ -->
