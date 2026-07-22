@@ -4,13 +4,13 @@
    - Serves cached content when network is unavailable
 ══════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'attendtrack-v5';
+const CACHE_NAME = 'attendtrack-v6';
 const ASSETS = [
-  '/Attend-track/',
-  '/Attend-track/index.html',
-  '/Attend-track/manifest.json',
-  '/Attend-track/icon-192.png',
-  '/Attend-track/icon-512.png',
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap'
 ];
 
@@ -39,8 +39,8 @@ self.addEventListener('activate', event => {
 
 // Fetch: serve from cache, fallback to network
 self.addEventListener('fetch', event => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') return;
+  // Skip non-GET requests or API calls
+  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {
@@ -56,9 +56,10 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
         // Offline fallback for navigation
         if (event.request.destination === 'document') {
-          return caches.match('/Attend-track/index.html');
+          return caches.match('./index.html') || caches.match('./');
         }
       });
     })
   );
 });
+
